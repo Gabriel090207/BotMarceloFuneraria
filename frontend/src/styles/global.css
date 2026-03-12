@@ -1,0 +1,67 @@
+/* Import da fonte */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+/* Reset básico */
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body,#root{
+  height:100%;
+}
+
+/* Variáveis da paleta da funerária */
+
+:root{
+
+  --color-primary:#15803D;
+  --color-secondary:#A3E635;
+  --color-accent:#4ADE80;
+
+  --color-background:#F0FDF4;
+  --color-text:#14532D;
+
+}
+
+/* Estilo base */
+
+body{
+
+  font-family:'Inter',sans-serif;
+
+  background:var(--color-background);
+
+  color:var(--color-text);
+
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Títulos */
+
+h1{
+  font-size:28px;
+  font-weight:600;
+}
+
+h2{
+  font-size:22px;
+  font-weight:500;
+}
+
+/* Links */
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* Botões base */
+
+button{
+  border:none;
+  cursor:pointer;
+  font-family:'Inter',sans-serif;
+}

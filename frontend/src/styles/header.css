@@ -1,0 +1,41 @@
+.header{
+
+  position:fixed;
+
+  top:0;
+  left:0;
+  right:0;
+
+  height:90px;
+
+  background:#15803D;
+  color: #fff;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 30px;
+
+  border-bottom:1px solid #eee;
+
+  z-index:10;
+
+}
+
+.header-title{
+
+  font-size:18px;
+  font-weight:600;
+
+}
+
+.header-actions{
+
+  display:flex;
+  gap:20px;
+
+  align-items:center;
+
+}

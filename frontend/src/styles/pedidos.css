@@ -1,0 +1,144 @@
+.pedidos-page{
+
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+
+}
+
+.pedidos-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+}
+
+.pedidos-filtros{
+
+  display:flex;
+  gap:20px;
+  align-items:center;
+
+}
+
+/* SEARCH BAR */
+
+.search{
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  background:white;
+
+  border:1px solid #eee;
+
+  padding:10px 14px;
+
+  border-radius:6px;
+
+}
+
+.search input{
+
+  border:none;
+  outline:none;
+  font-size:14px;
+
+}
+
+/* FILTRO */
+
+.filtro{
+
+  background:white;
+
+  border:1px solid #eee;
+
+  padding:10px;
+
+  border-radius:6px;
+
+}
+
+/* TABELA */
+
+.pedidos-table{
+
+  background:white;
+
+  border-radius:8px;
+
+  padding:20px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+
+}
+
+.pedidos-table table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+}
+
+.pedidos-table th{
+
+  text-align:left;
+
+  font-size:14px;
+
+  opacity:0.7;
+
+  padding-bottom:12px;
+
+}
+
+.pedidos-table td{
+
+  padding:12px 0;
+
+  border-top:1px solid #eee;
+
+}
+
+/* AÇÕES */
+
+.pedido-acoes{
+
+  display:flex;
+  gap:10px;
+
+}
+
+.btn{
+
+  padding:6px 12px;
+
+  border-radius:6px;
+
+  font-size:13px;
+
+  cursor:pointer;
+
+  border:none;
+
+}
+
+.btn-ver{
+
+  background:#e8f5e9;
+
+  color:#15803D;
+
+}
+
+.btn-cancelar{
+
+  background:#fde8e8;
+
+  color:#a31717;
+
+}

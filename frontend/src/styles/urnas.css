@@ -1,0 +1,113 @@
+.urnas-page{
+
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+
+}
+
+.urnas-header{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+}
+
+.btn-adicionar{
+
+  background:#15803D;
+
+  color:white;
+
+  border:none;
+
+  padding:10px 16px;
+
+  border-radius:6px;
+
+  cursor:pointer;
+
+  font-size:14px;
+
+}
+
+.urnas-table{
+
+  background:white;
+
+  border-radius:8px;
+
+  padding:20px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+
+}
+
+.urnas-table table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+}
+
+.urnas-table th{
+
+  text-align:left;
+
+  font-size:14px;
+
+  opacity:0.7;
+
+  padding-bottom:12px;
+
+}
+
+.urnas-table td{
+
+  padding:12px 0;
+
+  border-top:1px solid #eee;
+
+}
+
+.urna-acoes{
+
+  display:flex;
+
+  gap:10px;
+
+}
+
+.btn-editar{
+
+  background:#e8f5e9;
+
+  color:#15803D;
+
+  border:none;
+
+  padding:6px 12px;
+
+  border-radius:6px;
+
+  cursor:pointer;
+
+}
+
+.btn-remover{
+
+  background:#fde8e8;
+
+  color:#a31717;
+
+  border:none;
+
+  padding:6px 12px;
+
+  border-radius:6px;
+
+  cursor:pointer;
+
+}

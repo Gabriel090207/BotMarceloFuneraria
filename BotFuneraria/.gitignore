@@ -1,0 +1,20 @@
+# ambiente virtual
+venv/
+.env
+.env.example
+
+# cache python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# logs
+*.log
+
+BotFuneraria/firebase_key.json
+firebase_key.json

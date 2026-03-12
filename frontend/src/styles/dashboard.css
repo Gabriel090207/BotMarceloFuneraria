@@ -1,0 +1,131 @@
+.dashboard{
+
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+
+}
+
+.cards{
+
+  display:grid;
+
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+  gap:20px;
+
+}
+
+.card{
+
+  background:white;
+
+  padding:20px;
+
+  border-radius:8px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+
+}
+
+.card-title{
+
+  font-size:14px;
+
+  opacity:0.6;
+
+}
+
+.card-value{
+
+  font-size:26px;
+
+  font-weight:600;
+
+  margin-top:8px;
+
+}
+
+.pedidos{
+
+  background:white;
+
+  border-radius:8px;
+
+  padding:20px;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+
+}
+
+.pedidos table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+}
+
+.pedidos th{
+
+  text-align:left;
+  padding-top: 30px;
+  padding-bottom:10px;
+
+  font-size:14px;
+
+  opacity:0.7;
+
+}
+
+.pedidos td{
+
+  padding:10px 0;
+
+  border-top:1px solid #eee;
+
+}
+
+
+/* STATUS */
+
+.status{
+
+  padding:6px 14px;
+
+  border-radius:20px;
+
+  font-size:13px;
+
+  font-weight:500;
+
+  display:inline-block;
+
+}
+
+/* Em aberto */
+
+.status-open{
+
+  background:#f3e8c9;
+  color:#8a4b08;
+
+}
+
+/* Pago */
+
+.status-paid{
+
+  background:#cfe9db;
+  color:#1c6b42;
+
+}
+
+/* Offline */
+
+.status-cancelado{
+
+  background:#f2c9c9;
+  color:#a31717;
+
+}
