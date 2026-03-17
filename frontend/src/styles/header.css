@@ -9,7 +9,8 @@
   height:90px;
 
   background:#15803D;
-  color: #fff;
+
+  color:white;
 
   display:flex;
 
@@ -18,11 +19,11 @@
 
   padding:0 30px;
 
-  border-bottom:1px solid #eee;
-
   z-index:10;
 
 }
+
+/* TITLE */
 
 .header-title{
 
@@ -31,11 +32,179 @@
 
 }
 
+/* ACTIONS */
+
 .header-actions{
 
   display:flex;
-  gap:20px;
 
   align-items:center;
+
+  gap:25px;
+
+  position:relative;
+
+}
+
+/* USER BOX */
+
+.user-box{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  cursor:pointer;
+
+}
+
+/* AVATAR */
+
+.user-avatar{
+
+  width:40px;
+  height:40px;
+
+  border-radius:50%;
+
+  background:rgba(255,255,255,0.25);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight:600;
+
+  font-size:16px;
+
+}
+
+/* USER INFO */
+
+.user-info{
+
+  display:flex;
+  flex-direction:column;
+
+  line-height:1.1;
+
+}
+
+.user-name{
+
+  font-size:14px;
+
+}
+
+.user-role{
+
+  font-size:12px;
+
+  opacity:0.8;
+
+  text-transform:capitalize;
+
+}
+
+/* ARROW */
+
+.user-arrow{
+
+  font-size:18px;
+
+  transition:transform 0.2s;
+
+}
+
+.user-arrow.rotate{
+
+  transform:rotate(180deg);
+
+}
+
+/* MENU */
+
+.user-menu{
+
+  position:absolute;
+
+  top:38px;
+  right:0;
+
+  background:white;
+
+  border-radius:12px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+
+  padding:6px;
+
+  animation:dropdown 0.18s ease;
+
+}
+
+/* ANIMAÇÃO */
+
+@keyframes dropdown{
+
+  from{
+
+    opacity:0;
+
+    transform:translateY(-8px);
+
+  }
+
+  to{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+  }
+
+}
+
+/* BOTÃO LOGOUT */
+
+.logout-btn{
+
+
+
+  display:flex;
+
+  align-items:center;
+
+  gap:10px;
+
+  background:none;
+
+  border:none;
+
+  padding:10px 16px;
+
+  width:120px;
+
+  border-radius:8px;
+
+  font-size:14px;
+
+  cursor:pointer;
+
+  color:#dc2626;
+
+}
+
+.logout-btn svg{
+
+  font-size:16px;
+
+}
+
+.logout-btn:hover{
+
+  background:#fee2e2;
 
 }

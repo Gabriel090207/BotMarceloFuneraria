@@ -1,5 +1,6 @@
 from core.menus import criar_menu
 from core.firebase import salvar_pedido
+from core.urnas import listar_urnas
 from datetime import datetime
 
 
@@ -124,14 +125,22 @@ Qual é o nome da pessoa responsável?
         session["dados"]["tipo_urna"] = opcoes[mensagem]
         session["etapa"] = "urna_modelo"
 
+        urnas = listar_urnas()
+
+        opcoes = []
+
+        for i, urna in enumerate(urnas):
+            opcoes.append((str(i+1), urna["nome"]))
+
+        session["urnas"] = urnas
+
         return criar_menu(
             "Escolha o modelo da urna:",
-            [
-                ("1", "Urna 1"),
-                ("2", "Urna 2"),
-                ("3", "Urna 3")
-            ]
+            opcoes
         )
+
+
+    
 
     # ---------------------------
     # MODELO URNA
@@ -139,16 +148,17 @@ Qual é o nome da pessoa responsável?
 
     if session["etapa"] == "urna_modelo":
 
-        opcoes = {
-            "1": "Urna 1",
-            "2": "Urna 2",
-            "3": "Urna 3"
-        }
+        urnas = session.get("urnas", [])
 
-        if mensagem not in opcoes:
-            return "Escolha 1, 2 ou 3."
+        try:
+            urna = urnas[int(mensagem) - 1]
+        except:
+            return "Escolha uma opção válida."
 
-        session["dados"]["modelo_urna"] = opcoes[mensagem]
+        session["dados"]["modelo_urna"] = urna["nome"]
+        session["dados"]["urna_id"] = urna["id"]
+        session["dados"]["urna_imagem"] = urna["imagem"]
+
         session["etapa"] = "velorio"
 
         return criar_menu(

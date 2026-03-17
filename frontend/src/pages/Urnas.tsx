@@ -1,31 +1,61 @@
+import { useEffect, useState } from "react"
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"
+
+import { db } from "../services/firebase"
+
 import "../styles/urnas.css"
 
 export default function Urnas(){
 
-  const urnas = [
+  const [urnas,setUrnas] = useState<any[]>([])
+  const [loading,setLoading] = useState(true)
 
-    {
-      id:1,
-      nome:"Urna Simples",
-      tipo:"Simples",
-      preco:"R$ 800"
-    },
+  const [urnaExcluir,setUrnaExcluir] = useState<any>(null)
 
-    {
-      id:2,
-      nome:"Urna Intermediária",
-      tipo:"Intermediária",
-      preco:"R$ 1.200"
-    },
+  async function carregarUrnas(){
 
-    {
-      id:3,
-      nome:"Urna Premium",
-      tipo:"Premium",
-      preco:"R$ 2.000"
-    }
+    const snapshot = await getDocs(collection(db,"urnas"))
 
-  ]
+    const lista:any[] = []
+
+    snapshot.forEach((d)=>{
+
+      lista.push({
+        id:d.id,
+        ...d.data()
+      })
+
+    })
+
+    setUrnas(lista)
+
+    setLoading(false)
+
+  }
+
+  useEffect(()=>{
+
+    carregarUrnas()
+
+  },[])
+
+  async function removerUrna(){
+
+    if(!urnaExcluir) return
+
+    await deleteDoc(doc(db,"urnas",urnaExcluir.id))
+
+    setUrnas(urnas.filter(u=>u.id !== urnaExcluir.id))
+
+    setUrnaExcluir(null)
+
+  }
+
+  if(loading){
+
+    return <p>Carregando urnas...</p>
+
+  }
 
   return(
 
@@ -35,7 +65,10 @@ export default function Urnas(){
 
         <h1>Urnas</h1>
 
-        <button className="btn-adicionar">
+        <button
+          className="btn-adicionar"
+          onClick={()=>window.location.href="/nova-urna"}
+        >
           + Nova Urna
         </button>
 
@@ -49,6 +82,7 @@ export default function Urnas(){
 
             <tr>
 
+              <th>Imagem</th>
               <th>Nome</th>
               <th>Tipo</th>
               <th>Preço</th>
@@ -64,21 +98,47 @@ export default function Urnas(){
 
               <tr key={urna.id}>
 
+                <td>
+
+                  {urna.imagens?.[0] && (
+
+                    <img
+                      src={urna.imagens[0]}
+                      className="urna-thumb"
+                    />
+
+                  )}
+
+                </td>
+
                 <td>{urna.nome}</td>
 
                 <td>{urna.tipo}</td>
 
-                <td>{urna.preco}</td>
+                <td>
+
+                  {Number(urna.preco).toLocaleString("pt-BR",{
+                    style:"currency",
+                    currency:"BRL"
+                  })}
+
+                </td>
 
                 <td>
 
                   <div className="urna-acoes">
 
-                    <button className="btn-editar">
+                    <button
+                      className="btn-editar"
+                      onClick={()=>window.location.href=`/editar-urna/${urna.id}`}
+                    >
                       Editar
                     </button>
 
-                    <button className="btn-remover">
+                    <button
+                      className="btn-remover"
+                      onClick={()=>setUrnaExcluir(urna)}
+                    >
                       Remover
                     </button>
 
@@ -95,6 +155,42 @@ export default function Urnas(){
         </table>
 
       </div>
+
+      {urnaExcluir && (
+
+        <div className="modal-overlay">
+
+          <div className="modal-confirm">
+
+            <h2>Remover urna</h2>
+
+            <p>
+              Deseja realmente remover esta urna?
+            </p>
+
+            <div className="modal-actions">
+
+              <button
+                className="btn-cancelar"
+                onClick={()=>setUrnaExcluir(null)}
+              >
+                Cancelar
+              </button>
+
+              <button
+                className="btn-remover"
+                onClick={removerUrna}
+              >
+                Remover
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </div>
 

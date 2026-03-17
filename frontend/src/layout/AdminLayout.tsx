@@ -1,14 +1,11 @@
-import React from "react"
 import Sidebar from "../components/Sidebar"
 import Header from "../components/Header"
 
+import { Outlet } from "react-router-dom"
+
 import "../styles/layout.css"
 
-type Props = {
-  children: React.ReactNode
-}
-
-export default function AdminLayout({ children }: Props){
+export default function AdminLayout(){
 
   return(
 
@@ -22,7 +19,7 @@ export default function AdminLayout({ children }: Props){
 
         <main className="content">
 
-          {children}
+          <Outlet />
 
         </main>
 

@@ -1,0 +1,121 @@
+.config-page{
+
+  display:flex;
+  flex-direction:column;
+
+  gap:30px;
+
+}
+
+/* HEADER */
+
+.config-header h1{
+
+  font-size:26px;
+  font-weight:600;
+
+}
+
+.config-header p{
+
+  font-size:14px;
+
+  opacity:0.7;
+
+}
+
+/* GRID */
+
+.config-grid{
+
+  display:grid;
+
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+  gap:20px;
+  margin-bottom: -30px;
+
+}
+
+/* CARD */
+
+.config-card{
+
+  background:white;
+
+  border-radius:10px;
+
+  padding:25px;
+
+  display:flex;
+
+  gap:15px;
+
+  align-items:flex-start;
+
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+
+  cursor:pointer;
+
+  transition:all 0.2s;
+
+}
+
+.config-card:hover{
+
+  transform:translateY(-3px);
+
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
+}
+
+/* ICON */
+
+.config-icon{
+
+  font-size:22px;
+
+  color:#15803D;
+
+}
+
+/* TEXT */
+
+.config-card h3{
+
+  font-size:16px;
+
+  margin-bottom:4px;
+
+}
+
+.config-card p{
+
+  font-size:13px;
+
+  opacity:0.7;
+
+}
+
+
+.config-card.ativo{
+
+  border:2px solid #15803D;
+
+  background:#f0fdf4;
+
+}
+
+.config-content{
+
+  margin-top:30px;
+
+  padding:0;
+
+}
+
+.config-placeholder{
+
+  opacity:0.6;
+
+}

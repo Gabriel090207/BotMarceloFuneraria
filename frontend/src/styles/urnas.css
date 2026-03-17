@@ -111,3 +111,116 @@
   cursor:pointer;
 
 }
+
+
+/* imagem da urna */
+
+.urna-thumb{
+
+  width:60px;
+  height:60px;
+
+  object-fit:cover;
+
+  border-radius:6px;
+
+}
+
+/* modal overlay */
+
+.modal-overlay{
+
+  position:fixed;
+
+  top:0;
+  left:0;
+
+  width:100%;
+  height:100%;
+
+  background:rgba(0,0,0,0.45);
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  animation:fadeIn 0.2s;
+
+}
+
+/* modal */
+
+.modal-confirm{
+
+  background:white;
+
+  padding:30px;
+
+  border-radius:12px;
+
+  width:340px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:20px;
+
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+
+  animation:scaleIn 0.2s;
+
+}
+
+.modal-actions{
+
+  display:flex;
+
+  justify-content:flex-end;
+
+  gap:10px;
+
+}
+
+.btn-cancelar{
+
+  background:#eee;
+
+  border:none;
+
+  padding:8px 14px;
+
+  border-radius:6px;
+
+  cursor:pointer;
+
+}
+
+/* animações */
+
+@keyframes fadeIn{
+
+  from{
+    opacity:0
+  }
+
+  to{
+    opacity:1
+  }
+
+}
+
+@keyframes scaleIn{
+
+  from{
+    transform:scale(0.9);
+    opacity:0
+  }
+
+  to{
+    transform:scale(1);
+    opacity:1
+  }
+
+}
