@@ -10,6 +10,8 @@ import { doc, setDoc } from "firebase/firestore"
 
 import { FiCheck } from "react-icons/fi"
 
+import { updateDoc } from "firebase/firestore"
+
 import "../../styles/usuarios.css"
 
 export default function Usuarios(){
@@ -25,6 +27,10 @@ export default function Usuarios(){
 const [sucesso,setSucesso] = useState(false)
 
 const [usuarios,setUsuarios] = useState<any[]>([])
+
+
+const [editar,setEditar] = useState(false)
+const [usuarioEdit,setUsuarioEdit] = useState<any>(null)
 
 
 async function criarUsuario(){
@@ -102,12 +108,48 @@ async function carregarUsuarios(){
 
 }
 
+async function salvarEdicao(){
+
+  try{
+
+    setLoading(true)
+
+    await updateDoc(doc(db,"users",usuarioEdit.id),{
+
+      nome,
+      sobrenome,
+      email,
+      role
+
+    })
+
+    carregarUsuarios()
+
+    setEditar(false)
+
+    setSucesso(true)
+
+  }catch(e){
+
+    console.error(e)
+
+    alert("Erro ao editar usuário")
+
+  }finally{
+
+    setLoading(false)
+
+  }
+
+}
+
 useEffect(()=>{
 
   carregarUsuarios()
 
 },[])
   
+
 
   return(
 
@@ -256,11 +298,23 @@ useEffect(()=>{
 
             <td>
 
-              <button className="btn-editar">
+            <button
+  className="btn-editar"
+  onClick={()=>{
 
-                <FiEdit/>
+    setUsuarioEdit(u)
 
-              </button>
+    setNome(u.nome)
+    setSobrenome(u.sobrenome)
+    setEmail(u.email)
+    setRole(u.role)
+
+    setEditar(true)
+
+  }}
+>
+  <FiEdit/>
+</button>
 
             </td>
 
@@ -275,6 +329,98 @@ useEffect(()=>{
   </table>
 
 </div>
+
+
+{editar && (
+
+  <div className="modal-overlay">
+
+    <div className="modal-editar">
+
+      <h2>Editar usuário</h2>
+
+      <div className="usuarios-grid">
+
+        <div className="usuarios-field">
+
+          <label>Nome</label>
+
+          <input
+            value={nome}
+            onChange={(e)=>setNome(e.target.value)}
+          />
+
+        </div>
+
+        <div className="usuarios-field">
+
+          <label>Sobrenome</label>
+
+          <input
+            value={sobrenome}
+            onChange={(e)=>setSobrenome(e.target.value)}
+          />
+
+        </div>
+
+        <div className="usuarios-field">
+
+          <label>Email</label>
+
+          <input
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
+          />
+
+        </div>
+
+        <div className="usuarios-field">
+
+          <label>Tipo</label>
+
+          <select
+            value={role}
+            onChange={(e)=>setRole(e.target.value)}
+          >
+
+            <option value="admin">
+              Administrador
+            </option>
+
+            <option value="funcionario">
+              Funcionário
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <div className="editar-actions">
+
+        <button
+          className="btn-cancelar"
+          onClick={()=>setEditar(false)}
+        >
+          Cancelar
+        </button>
+
+        <button
+          className="btn-salvar"
+          onClick={salvarEdicao}
+          disabled={loading}
+        >
+          {loading ? "Salvando..." : "Salvar alterações"}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
 
     </div>
 
