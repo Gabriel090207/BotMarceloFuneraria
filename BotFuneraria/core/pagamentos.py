@@ -1,5 +1,15 @@
 import os
+import uuid
 import mercadopago
+
+
+def formatar_reais(valor):
+    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def gerar_referencia_externa(prefixo="funeraria"):
+    return f"{prefixo}_{uuid.uuid4().hex[:10]}"
+
 
 def gerar_link_pagamento_sinal(valor_total, nome_cliente, referencia):
 
@@ -28,5 +38,6 @@ def gerar_link_pagamento_sinal(valor_total, nome_cliente, referencia):
 
     return {
         "link_pagamento": response["response"]["init_point"],
-        "valor_sinal": valor_sinal
+        "valor_sinal": valor_sinal,
+        "preference_id": response["response"]["id"]
     }
