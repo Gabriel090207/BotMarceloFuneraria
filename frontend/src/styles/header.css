@@ -208,3 +208,50 @@
   background:#fee2e2;
 
 }
+
+
+/* ===== HEADER MOBILE ===== */
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.menu-btn{
+  background:none;
+  border:none;
+  color:white;
+  cursor:pointer;
+  display:none;
+
+}
+
+/* MOBILE */
+@media (max-width:768px){
+
+  .menu-btn{
+    display:block;
+  }
+
+  .header{
+    padding:0 15px;
+  }
+
+  /* esconder nome e função */
+  .user-info{
+    display:none;
+  }
+
+  /* compactar */
+  .header-actions{
+    gap:15px;
+  }
+
+  .header-title{
+
+ display: none;
+
+}
+
+}

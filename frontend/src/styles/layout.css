@@ -17,3 +17,17 @@
   min-height:calc(100vh - 70px);
 
 }
+
+@media (max-width:768px){
+
+  .layout{
+    flex-direction:column;
+    margin-top:90px;
+  }
+
+  .content{
+    margin-left:0;
+    padding: 50px;
+  }
+
+}

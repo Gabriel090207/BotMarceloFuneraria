@@ -1,49 +1,130 @@
 from core.session import get_session
+from datetime import datetime
 
 from fluxos.floricultura import fluxo_floricultura
 from fluxos.funeraria import fluxo_funeraria
 from fluxos.atendente import fluxo_atendente
+from fluxos.planos_familiares import fluxo_planos_familiares
+from fluxos.planos_empresariais import fluxo_planos_empresariais
 
 
 def responder(numero, mensagem):
 
     session = get_session(numero)
 
+    # garante telefone na sessão
+    session["numero"] = numero
+
+    # ---------------------------
+    # ENCERRAR BOT (ATENDENTE)
+    # ---------------------------
+
+    if session.get("encerrar_bot") is True:
+        return None
+
+    # ---------------------------
+    # CONTROLE GLOBAL
+    # ---------------------------
+
+    if "etapa_global" not in session:
+        session["etapa_global"] = "inicio"
+
+    if "nome" not in session:
+        session["nome"] = None
+
+    if "fluxo" not in session:
+        session["fluxo"] = None
+
+    # ---------------------------
+    # INICIO (SAUDAÇÃO)
+    # ---------------------------
+
+    if session["etapa_global"] == "inicio":
+
+        hora = datetime.now().hour
+
+        if hora < 12:
+            saudacao = "Bom dia"
+        elif hora < 18:
+            saudacao = "Boa tarde"
+        else:
+            saudacao = "Boa noite"
+
+        session["etapa_global"] = "nome"
+
+        return f"""
+{saudacao}, seja bem-vindo à nossa funerária 🙏
+
+Antes de iniciar o atendimento, poderia me informar seu nome?
+"""
+
+    # ---------------------------
+    # CAPTURA NOME
+    # ---------------------------
+
+    if session["etapa_global"] == "nome":
+
+        session["nome"] = mensagem.strip().title()
+        session["etapa_global"] = "menu"
+
+        nome = session["nome"]
+
+        return f"""
+Prazer, {nome} 🙏
+
+Como podemos te ajudar hoje?
+
+1 - Serviços funerários
+2 - Planos familiares
+3 - Planos empresariais
+4 - Floricultura
+5 - Falar com atendente
+"""
+
+    # ---------------------------
     # MENU PRINCIPAL
-    if session["fluxo"] is None:
+    # ---------------------------
+
+    if session["etapa_global"] == "menu" and session["fluxo"] is None:
 
         if mensagem == "1":
-
-            session["fluxo"] = "floricultura"
-            return fluxo_floricultura(session, mensagem)
-
-        elif mensagem == "2":
-
             session["fluxo"] = "funeraria"
             return fluxo_funeraria(session, mensagem)
 
-        elif mensagem == "3":
+        elif mensagem == "2":
+            session["fluxo"] = "planos_familiares"
+            return fluxo_planos_familiares(session, mensagem)
 
+        elif mensagem == "3":
+            session["fluxo"] = "planos_empresariais"
+            return fluxo_planos_empresariais(session, mensagem)
+
+        elif mensagem == "4":
+            session["fluxo"] = "floricultura"
+            return fluxo_floricultura(session, mensagem)
+
+        elif mensagem == "5":
             session["fluxo"] = "atendente"
             return fluxo_atendente(session, mensagem)
 
         else:
+            return "Escolha uma opção válida."
 
-            return """
-Bem vindo ao atendimento
-
-1 - Floricultura
-2 - Funerária
-3 - Falar com atendente
-"""
-
-    # REDIRECIONA PARA O FLUXO ATUAL
-
-    if session["fluxo"] == "floricultura":
-        return fluxo_floricultura(session, mensagem)
+    # ---------------------------
+    # REDIRECIONAMENTO DE FLUXO
+    # ---------------------------
 
     if session["fluxo"] == "funeraria":
         return fluxo_funeraria(session, mensagem)
 
+    if session["fluxo"] == "floricultura":
+        return fluxo_floricultura(session, mensagem)
+
     if session["fluxo"] == "atendente":
         return fluxo_atendente(session, mensagem)
+
+    if session["fluxo"] == "planos_familiares":
+        return fluxo_planos_familiares(session, mensagem)
+
+    if session["fluxo"] == "planos_empresariais":
+        return fluxo_planos_empresariais(session, mensagem)

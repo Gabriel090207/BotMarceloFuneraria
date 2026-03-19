@@ -129,3 +129,41 @@
   color:#a31717;
 
 }
+
+
+@media (max-width:768px){
+
+  .dashboard{
+    gap:20px;
+  }
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:16px;
+  }
+
+  .card-value{
+    font-size:22px;
+  }
+
+  /* tabela vira scroll horizontal */
+  .pedidos{
+    overflow-x:auto;
+  }
+
+  .pedidos table{
+    min-width:600px;
+  }
+
+  .pedidos th{
+    font-size:13px;
+  }
+
+  .pedidos td{
+    font-size:13px;
+  }
+
+}

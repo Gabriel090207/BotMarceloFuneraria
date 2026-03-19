@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { FiBell, FiChevronDown, FiLogOut } from "react-icons/fi"
+import { FiBell, FiChevronDown, FiLogOut, FiMenu } from "react-icons/fi"
 
 import { auth, db } from "../services/firebase"
 import { doc, getDoc } from "firebase/firestore"
@@ -48,9 +48,20 @@ export default function Header(){
 
     <header className="header">
 
-      <div className="header-title">
-        Painel Administrativo
-      </div>
+  <div className="header-left">
+
+    <button
+      className="menu-btn"
+      onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
+    >
+      <FiMenu size={22} />
+    </button>
+
+    <div className="header-title">
+      Painel Administrativo
+    </div>
+
+  </div>
 
       <div className="header-actions">
 

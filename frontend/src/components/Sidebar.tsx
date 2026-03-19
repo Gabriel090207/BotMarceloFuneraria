@@ -9,74 +9,86 @@ import "../styles/sidebar.css"
 export default function Sidebar(){
 
   const [role,setRole] = useState("")
-
+  const [open,setOpen] = useState(false)
 
   useEffect(()=>{
 
-  async function carregar(){
+    async function carregar(){
 
-    if(!auth.currentUser) return
+      if(!auth.currentUser) return
 
-    const ref = doc(db,"users",auth.currentUser.uid)
+      const ref = doc(db,"users",auth.currentUser.uid)
 
-    const snap = await getDoc(ref)
+      const snap = await getDoc(ref)
 
-    if(snap.exists()){
-
-      setRole(snap.data().role)
+      if(snap.exists()){
+        setRole(snap.data().role)
+      }
 
     }
 
-  }
+    function handleToggle(){
+      setOpen(prev => !prev)
+    }
 
-  carregar()
+    window.addEventListener("toggleSidebar", handleToggle)
 
-},[])
+    carregar()
+
+    return () => {
+      window.removeEventListener("toggleSidebar", handleToggle)
+    }
+
+  },[])
 
   return(
 
-    <aside className="sidebar">
+    <>
+      <div
+        className={`sidebar-overlay ${open ? "active" : ""}`}
+        onClick={() => setOpen(false)}
+      />
 
-      <nav>
+      <aside className={`sidebar ${open ? "open" : ""}`}>
 
-        <Link to="/">
-          <FiHome />
-          Dashboard
-        </Link>
+        <nav>
 
-        <Link to="/pedidos">
-          <FiShoppingCart />
-          Pedidos
-        </Link>
+          <Link to="/" onClick={()=>setOpen(false)}>
+            <FiHome />
+            Dashboard
+          </Link>
 
-        <Link to="/urnas">
-          <FiBox />
-          Urnas
-        </Link>
+          <Link to="/pedidos" onClick={()=>setOpen(false)}>
+            <FiShoppingCart />
+            Pedidos
+          </Link>
 
-        <Link to="/planos-familiares">
-          <FiUsers />
-          Planos Familiares
-        </Link>
+          <Link to="/urnas" onClick={()=>setOpen(false)}>
+            <FiBox />
+            Urnas
+          </Link>
 
-        <Link to="/planos-empresariais">
-          <FiBriefcase />
-          Planos Empresariais
-        </Link>
+          <Link to="/planos-familiares" onClick={()=>setOpen(false)}>
+            <FiUsers />
+            Planos Familiares
+          </Link>
 
-       {role === "admin" && (
+          <Link to="/planos-empresariais" onClick={()=>setOpen(false)}>
+            <FiBriefcase />
+            Planos Empresariais
+          </Link>
 
-  <Link to="/configuracoes">
-    <FiSettings />
-    Configurações
-  </Link>
+          {role === "admin" && (
+            <Link to="/configuracoes" onClick={()=>setOpen(false)}>
+              <FiSettings />
+              Configurações
+            </Link>
+          )}
 
-)}
+        </nav>
 
-      </nav>
-
-    </aside>
-
+      </aside>
+    </>
   )
 
 }
