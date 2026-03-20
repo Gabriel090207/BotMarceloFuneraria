@@ -1,132 +1,195 @@
 import "../styles/dashboard.css"
-import { useEffect, useState } from "react"
-import { collection, getDocs, query, where} from "firebase/firestore"
+import { useEffect, useState, useMemo } from "react"
+import { collection, getDocs, query, where } from "firebase/firestore"
 import { db } from "../services/firebase"
+
+type Pedido = {
+  id: string
+  nome: string
+  telefone?: string
+  tipo: string
+  status: string
+  tipo_servico?: string
+  criado_em?: string
+}
 
 export default function Dashboard(){
 
-const [pedidos, setPedidos] = useState<any[]>([])
+  const [pedidos, setPedidos] = useState<Pedido[]>([])
+  const [loading, setLoading] = useState(true)
+  const [erro, setErro] = useState("")
 
-useEffect(() => {
+  useEffect(() => {
 
-  async function carregarPedidos(){
+    async function carregarPedidos(){
 
-  
-  const q = query(
-  collection(db,"pedidos"),
-  where("tipo","in",["funeraria","plano"])
-)
-const snapshot = await getDocs(q)
+      try{
 
-    const lista:any[] = []
+        const q = query(
+          collection(db,"pedidos"),
+          where("tipo","in",["funeraria","plano"])
+        )
 
-    snapshot.forEach((doc)=>{
+        const snapshot = await getDocs(q)
 
-      lista.push({
-        id:doc.id,
-        ...doc.data()
-      })
+        const lista:Pedido[] = []
 
-    })
+        snapshot.forEach((doc)=>{
+          lista.push({
+            id:doc.id,
+            ...doc.data()
+          } as Pedido)
+        })
 
-    setPedidos(lista)
+        setPedidos(lista)
 
-  }
+      }catch(err){
+        console.error(err)
+        setErro("Erro ao carregar pedidos")
+      }finally{
+        setLoading(false)
+      }
 
-  carregarPedidos()
+    }
 
-},[])
+    carregarPedidos()
 
-function renderStatus(status:string){
+  },[])
 
-  if(status === "aberto"){
-    return <span className="status status-open">Em Aberto </span>
-  }
+  // 📊 FILTROS
 
-  if(status === "pago"){
-    return <span className="status status-paid">Pago</span>
-  }
+  const hoje = new Date().toISOString().slice(0,10)
 
-  if(status === "cancelado"){
-    return <span className="status status-cancelado">Cancelado</span>
-  }
+  const pedidosHoje = useMemo(() => {
+    return pedidos.filter(p =>
+      p.criado_em?.startsWith(hoje)
+    )
+  }, [pedidos])
 
-  return <span>{status}</span>
+  const mesAtual = new Date().toISOString().slice(0,7)
+
+  const pedidosMes = useMemo(() => {
+    return pedidos.filter(p =>
+      p.criado_em?.startsWith(mesAtual)
+    )
+  }, [pedidos])
+
+  const sepultamentos = useMemo(() => {
+    return pedidos.filter(p => p.tipo_servico === "Sepultamento").length
+  }, [pedidos])
+
+  const cremacao = useMemo(() => {
+    return pedidos.filter(p => p.tipo_servico === "Cremação").length
+  }, [pedidos])
+
+  function renderStatus(status:string){
+
+    if(status === "novo" || status === "aberto"){
+  return <span className="status status-open">Em Aberto</span>
 }
 
-return(
+    if(status === "pago"){
+      return <span className="status status-paid">Pago</span>
+    }
 
-<div className="dashboard">
+    if(status === "cancelado"){
+      return <span className="status status-cancelado">Cancelado</span>
+    }
 
-<h1>Dashboard</h1>
+    return <span>{status}</span>
+  }
 
-<div className="cards">
+  return(
 
-<div className="card">
-<div className="card-title">Pedidos hoje</div>
-<div className="card-value">{pedidos.length}</div>
-</div>
+    <div className="dashboard">
 
-<div className="card">
-<div className="card-title">Pedidos no mês</div>
-<div className="card-value">{pedidos.length}</div>
-</div>
+      <h1>Dashboard</h1>
 
-<div className="card">
-<div className="card-title">Sepultamentos</div>
-<div className="card-value">0</div>
-</div>
+      {/* CARDS */}
 
-<div className="card">
-<div className="card-title">Cremações</div>
-<div className="card-value">0</div>
-</div>
+      <div className="cards">
 
-</div>
+        <div className="card">
+          <div className="card-title">Pedidos hoje</div>
+          <div className="card-value">{pedidosHoje.length}</div>
+        </div>
 
-<div className="pedidos">
+        <div className="card">
+          <div className="card-title">Pedidos no mês</div>
+          <div className="card-value">{pedidosMes.length}</div>
+        </div>
 
-<h2>Últimos pedidos</h2>
+        <div className="card">
+          <div className="card-title">Sepultamentos</div>
+          <div className="card-value">{sepultamentos}</div>
+        </div>
 
-<table>
+        <div className="card">
+          <div className="card-title">Cremações</div>
+          <div className="card-value">{cremacao}</div>
+        </div>
 
-<thead>
+      </div>
 
-<tr>
-<th>Cliente</th>
-<th>Telefone</th>
-<th>Serviço</th>
-<th>Status</th>
-</tr>
+      {/* ERRO */}
 
-</thead>
+      {erro && <div className="erro">{erro}</div>}
 
-<tbody>
+      {/* TABELA */}
 
-{pedidos.map((pedido)=>(
+      <div className="pedidos">
 
-<tr key={pedido.id}>
+        <h2>Últimos pedidos</h2>
 
-<td>{pedido.nome}</td>
+        {loading ? (
+          <div className="loading">Carregando...</div>
+        ) : pedidos.length === 0 ? (
+          <div className="vazio">Nenhum pedido encontrado</div>
+        ) : (
 
-<td>{pedido.telefone || "-"}</td>
+          <table>
 
-<td>{pedido.tipo}</td>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Telefone</th>
+                <th>Serviço</th>
+                <th>Status</th>
+              </tr>
+            </thead>
 
-<td>{renderStatus(pedido.status)}</td>
+            <tbody>
 
-</tr>
+              {pedidos.slice(0,10).map((pedido)=>(
 
-))}
+                <tr key={pedido.id}>
 
-</tbody>
+                  <td>{pedido.nome}</td>
 
-</table>
+                  <td>{pedido.telefone || "-"}</td>
 
-</div>
+                  <td>
+                    {pedido.tipo === "plano"
+                      ? "Plano"
+                      : pedido.tipo_servico || "Funerário"}
+                  </td>
 
-</div>
+                  <td>{renderStatus(pedido.status)}</td>
 
-)
+                </tr>
+
+              ))}
+
+            </tbody>
+
+          </table>
+
+        )}
+
+      </div>
+
+    </div>
+
+  )
 
 }

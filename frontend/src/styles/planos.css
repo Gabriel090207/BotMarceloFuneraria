@@ -1,117 +1,260 @@
 .planos-page{
-
   display:flex;
   flex-direction:column;
   gap:30px;
-
 }
 
-.planos-header{
+/* HEADER */
 
+.planos-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-
 }
+
+.planos-subtitle{
+  font-size:14px;
+  opacity:0.7;
+  margin-top:4px;
+}
+
+/* BOTÕES */
 
 .btn-adicionar{
-
   background:#15803D;
   color:white;
-
   border:none;
-
   padding:10px 16px;
-
   border-radius:6px;
-
   cursor:pointer;
-
+  transition:0.2s;
 }
 
+.btn-adicionar:hover{
+  background:#166534;
+}
+
+.btn-editar{
+  background:#e8f5e9;
+  color:#15803D;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.btn-remover{
+  background:#fde8e8;
+  color:#a31717;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.btn-status{
+  background:#e0f2fe;
+  color:#0369a1;
+  border:none;
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* TOOLBAR */
+
+.planos-toolbar{
+  display:flex;
+  gap:16px;
+}
+
+.planos-busca{
+  flex:1;
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+
+/* ALERTA */
+
+.planos-alerta-erro{
+  background:#fde8e8;
+  color:#a31717;
+  padding:10px;
+  border-radius:6px;
+}
+
+/* TABELA */
+
 .planos-table{
-
   background:white;
-
   border-radius:8px;
-
   padding:20px;
-
   box-shadow:0 2px 8px rgba(0,0,0,0.05);
-
 }
 
 .planos-table table{
-
   width:100%;
-
   border-collapse:collapse;
-
 }
 
 .planos-table th{
-
   text-align:left;
-
   padding-bottom:12px;
-
   font-size:14px;
-
   opacity:0.7;
-
 }
 
-.planos-table th:last-child{
-  text-align:center;
+.planos-table td{
+  padding:14px 8px;
+  border-top:1px solid #eee;
 }
 
 .planos-table td:last-child{
   text-align:right;
-  width:200px;
+  width:180px;
 }
 
-.planos-table td{
-
-  padding:12px 0;
-
-  border-top:1px solid #eee;
-
-}
+/* AÇÕES */
 
 .plano-acoes{
-
   display:flex;
-  gap:12px;
+  gap:8px;
   justify-content:flex-end;
-
+  align-items:center;
+  flex-wrap:wrap;
 }
 
-.btn-editar{
-
-  background:#e8f5e9;
-  color:#15803D;
-
-  border:none;
-
-  padding:6px 12px;
-
-  border-radius:6px;
-
-  cursor:pointer;
-
+.plano-acoes button{
+  font-size:13px;
+  white-space:nowrap;
 }
 
-.btn-remover{
+/* STATUS */
 
-  background:#fde8e8;
-  color:#a31717;
-
-  border:none;
-
+.status-ativo{
+  background:#dcfce7;
+  color:#166534;
   padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:500;
+}
 
+.status-inativo{
+  background:#fee2e2;
+  color:#991b1b;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+  font-weight:500;
+}
+
+/* LOADING / EMPTY */
+
+.planos-loading,
+.planos-vazio{
+  padding:20px;
+  text-align:center;
+  opacity:0.7;
+}
+
+/* MODAL */
+
+.modal-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+}
+
+.modal-plano{
+  background:white;
+  padding:24px;
+  border-radius:12px;
+  width:100%;
+  max-width:500px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* FORM */
+
+.modal-form{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.modal-form input,
+.modal-form textarea{
+  padding:10px;
+  border:1px solid #ddd;
   border-radius:6px;
+  font-size:14px;
+}
 
+.modal-form input:focus,
+.modal-form textarea:focus{
+  outline:none;
+  border-color:#15803D;
+}
+
+/* CHECKBOX */
+
+.modal-form label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+}
+
+/* AÇÕES MODAL */
+
+.modal-acoes{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+.modal-acoes button{
+  padding:8px 14px;
+  border-radius:6px;
+  border:none;
   cursor:pointer;
+}
+
+.modal-acoes button[type="button"]{
+  background:#f3f4f6;
+}
+
+.modal-acoes button[type="submit"]{
+  background:#15803D;
+  color:white;
+}
+
+.modal-acoes button[type="submit"]:hover{
+  background:#166534;
+}
+
+/* RESPONSIVO */
+
+@media (max-width:768px){
+
+  .planos-table{
+    overflow-x:auto;
+  }
+
+  .planos-table table{
+    min-width:600px;
+  }
 
 }

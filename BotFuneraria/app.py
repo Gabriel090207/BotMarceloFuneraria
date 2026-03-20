@@ -14,9 +14,10 @@ async def webhook(request: Request):
 
     data = await request.json()
 
-    print("Recebido:", data)  # debug
+    print("Recebido:", data)
 
-    mensagem = data.get("text", {}).get("message")
+    # FORMATO Z-API
+    mensagem = data.get("message")
     numero = data.get("phone")
 
     if not mensagem or not numero:
