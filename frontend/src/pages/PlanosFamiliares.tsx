@@ -3,6 +3,7 @@ import "../styles/planos.css"
 
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { db } from "../services/firebase"
+import { FiMoreVertical } from "react-icons/fi"
 
 type PlanoFamiliar = {
   id: string
@@ -47,13 +48,15 @@ export default function PlanosFamiliares() {
 
   const [formData, setFormData] = useState<PlanoFormData>(formInicial)
 
+  const [planoSelecionado, setPlanoSelecionado] = useState<PlanoFamiliar | null>(null)
+  const [modalAcoesAberto, setModalAcoesAberto] = useState(false)
+
   useEffect(() => {
     carregarPlanos()
   }, [])
 
   async function carregarPlanos() {
     try {
-
       const snapshot = await getDocs(collection(db, "planos_familiares"))
 
       const lista: PlanoFamiliar[] = []
@@ -101,6 +104,16 @@ export default function PlanosFamiliares() {
     setFormData(formInicial)
   }
 
+  function abrirModalAcoes(plano: PlanoFamiliar) {
+    setPlanoSelecionado(plano)
+    setModalAcoesAberto((prev) => planoSelecionado?.id !== plano.id || !prev)
+  }
+
+  function fecharModalAcoes() {
+    setPlanoSelecionado(null)
+    setModalAcoesAberto(false)
+  }
+
   function atualizarCampo<K extends keyof PlanoFormData>(campo: K, valor: PlanoFormData[K]) {
     setFormData((prev) => ({ ...prev, [campo]: valor }))
   }
@@ -118,7 +131,6 @@ export default function PlanosFamiliares() {
     }
 
     try {
-
       if (modoFormulario === "novo") {
 
         const docRef = await addDoc(collection(db, "planos_familiares"), payload)
@@ -137,7 +149,6 @@ export default function PlanosFamiliares() {
             p.id === planoEditandoId ? { id: p.id, ...payload } : p
           )
         )
-
       }
 
       fecharModal()
@@ -154,11 +165,8 @@ export default function PlanosFamiliares() {
     if (!confirm("Remover plano?")) return
 
     try {
-
       await deleteDoc(doc(db, "planos_familiares", id))
-
       setPlanos((prev) => prev.filter((p) => p.id !== id))
-
     } catch (err) {
       console.error(err)
       alert("Erro ao remover plano")
@@ -166,11 +174,9 @@ export default function PlanosFamiliares() {
   }
 
   async function alternarStatus(plano: PlanoFamiliar) {
-
     const novoStatus = !plano.ativo
 
     try {
-
       await updateDoc(doc(db, "planos_familiares", plano.id), {
         ativo: novoStatus
       })
@@ -180,7 +186,6 @@ export default function PlanosFamiliares() {
           p.id === plano.id ? { ...p, ativo: novoStatus } : p
         )
       )
-
     } catch (err) {
       console.error(err)
       alert("Erro ao atualizar status")
@@ -257,17 +262,43 @@ export default function PlanosFamiliares() {
                   <td>
                     <div className="plano-acoes">
 
-                      <button className="btn-editar" onClick={() => abrirModalEditar(plano)}>
-                        Editar
-                      </button>
+                      <div className="acoes-wrapper">
 
-                      <button className="btn-status" onClick={() => alternarStatus(plano)}>
-                        {plano.ativo ? "Desativar" : "Ativar"}
-                      </button>
+                        <button
+                          className="btn-acoes"
+                          onClick={() => abrirModalAcoes(plano)}
+                        >
+                          <FiMoreVertical size={18} />
+                        </button>
 
-                      <button className="btn-remover" onClick={() => removerPlano(plano.id)}>
-                        Remover
-                      </button>
+                        {modalAcoesAberto && planoSelecionado?.id === plano.id && (
+                          <div className="dropdown-acoes">
+
+                            <button onClick={() => {
+                              fecharModalAcoes()
+                              abrirModalEditar(planoSelecionado)
+                            }}>
+                              Editar
+                            </button>
+
+                            <button onClick={() => {
+                              alternarStatus(planoSelecionado)
+                              fecharModalAcoes()
+                            }}>
+                              {planoSelecionado.ativo ? "Desativar" : "Ativar"}
+                            </button>
+
+                            <button onClick={() => {
+                              removerPlano(planoSelecionado.id)
+                              fecharModalAcoes()
+                            }}>
+                              Remover
+                            </button>
+
+                          </div>
+                        )}
+
+                      </div>
 
                     </div>
                   </td>
@@ -283,6 +314,7 @@ export default function PlanosFamiliares() {
 
       </div>
 
+      {/* MODAL FORM */}
       {modalAberto && (
         <div className="modal-overlay" onClick={fecharModal}>
           <div className="modal-plano" onClick={(e) => e.stopPropagation()}>

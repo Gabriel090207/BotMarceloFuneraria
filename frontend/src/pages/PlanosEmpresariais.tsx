@@ -3,6 +3,7 @@ import "../styles/planos.css"
 
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc } from "firebase/firestore"
 import { db } from "../services/firebase"
+import { FiMoreVertical } from "react-icons/fi"
 
 const COLLECTION = "planos_empresariais"
 
@@ -47,6 +48,10 @@ export default function PlanosEmpresariais() {
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState<FormData>(formInicial)
 
+  // 🔥 NOVO (dropdown)
+  const [planoSelecionado, setPlanoSelecionado] = useState<Plano | null>(null)
+  const [acoesAberto, setAcoesAberto] = useState(false)
+
   useEffect(() => {
     carregar()
   }, [])
@@ -90,6 +95,16 @@ export default function PlanosEmpresariais() {
       ativo: plano.ativo,
     })
     setModal(true)
+  }
+
+  function abrirAcoes(plano: Plano) {
+    setPlanoSelecionado(plano)
+    setAcoesAberto((prev) => planoSelecionado?.id !== plano.id || !prev)
+  }
+
+  function fecharAcoes() {
+    setPlanoSelecionado(null)
+    setAcoesAberto(false)
   }
 
   async function salvar(e: React.FormEvent) {
@@ -137,11 +152,8 @@ export default function PlanosEmpresariais() {
     if (!confirm("Remover plano?")) return
 
     try {
-
       await deleteDoc(doc(db, COLLECTION, id))
-
       setPlanos((prev) => prev.filter((p) => p.id !== id))
-
     } catch (err) {
       console.error(err)
       alert("Erro ao remover plano")
@@ -149,11 +161,9 @@ export default function PlanosEmpresariais() {
   }
 
   async function toggle(plano: Plano) {
-
     const novoStatus = !plano.ativo
 
     try {
-
       await updateDoc(doc(db, COLLECTION, plano.id), {
         ativo: novoStatus
       })
@@ -163,7 +173,6 @@ export default function PlanosEmpresariais() {
           p.id === plano.id ? { ...p, ativo: novoStatus } : p
         )
       )
-
     } catch (err) {
       console.error(err)
       alert("Erro ao atualizar status")
@@ -240,17 +249,43 @@ export default function PlanosEmpresariais() {
                   <td>
                     <div className="plano-acoes">
 
-                      <button className="btn-editar" onClick={() => abrirEditar(plano)}>
-                        Editar
-                      </button>
+                      <div className="acoes-wrapper">
 
-                      <button className="btn-status" onClick={() => toggle(plano)}>
-                        {plano.ativo ? "Desativar" : "Ativar"}
-                      </button>
+                        <button
+                          className="btn-acoes"
+                          onClick={() => abrirAcoes(plano)}
+                        >
+                          <FiMoreVertical size={18} />
+                        </button>
 
-                      <button className="btn-remover" onClick={() => remover(plano.id)}>
-                        Remover
-                      </button>
+                        {acoesAberto && planoSelecionado?.id === plano.id && (
+                          <div className="dropdown-acoes">
+
+                            <button onClick={() => {
+                              fecharAcoes()
+                              abrirEditar(planoSelecionado)
+                            }}>
+                              Editar
+                            </button>
+
+                            <button onClick={() => {
+                              toggle(planoSelecionado)
+                              fecharAcoes()
+                            }}>
+                              {planoSelecionado.ativo ? "Desativar" : "Ativar"}
+                            </button>
+
+                            <button onClick={() => {
+                              remover(planoSelecionado.id)
+                              fecharAcoes()
+                            }}>
+                              Remover
+                            </button>
+
+                          </div>
+                        )}
+
+                      </div>
 
                     </div>
                   </td>
