@@ -1,5 +1,8 @@
 import { Routes, Route } from "react-router-dom"
 
+
+import ScrollToTop from "./components/ScrollToTop"
+
 import AdminLayout from "./layout/AdminLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
 
@@ -21,6 +24,10 @@ import Configuracoes from "./pages/Configuracoes"
 export default function App(){
 
   return(
+
+
+      <>
+    <ScrollToTop/>
 
     <Routes>
 
@@ -59,6 +66,7 @@ export default function App(){
       </Route>
 
     </Routes>
+</>
 
   )
 

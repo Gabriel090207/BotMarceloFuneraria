@@ -1,6 +1,3 @@
-from core.menus import criar_menu
-
-
 def fluxo_floricultura(session, mensagem):
 
     if "etapa" not in session:
@@ -16,15 +13,18 @@ def fluxo_floricultura(session, mensagem):
 
         session["etapa"] = "menu"
 
-        return criar_menu(
-            f"🌸 Floricultura\n\n{nome}, nosso atendimento de flores é realizado separadamente.",
-            [
-                ("1", "Acessar site da floricultura"),
-                ("2", "Falar com a floricultura"),
-                ("3", "Falar com atendente"),
-                ("0", "Voltar ao menu principal"),
-            ],
-        )
+        return {
+            "tipo": "botoes",
+            "mensagem": f"""🌸 Floricultura
+
+{nome}, nosso atendimento de flores é realizado separadamente.""",
+            "botoes": [
+                {"id": "1", "label": "Acessar site"},
+                {"id": "2", "label": "Falar com floricultura"},
+                {"id": "3", "label": "Falar com atendente"},
+                {"id": "0", "label": "Voltar ao menu"},
+            ]
+        }
 
     # -------------------------
     # MENU
@@ -34,21 +34,23 @@ def fluxo_floricultura(session, mensagem):
 
         if mensagem == "1":
 
-            return """
-🌐 Acesse nosso site:
+            return {
+                "tipo": "texto",
+                "mensagem": """🌐 Acesse nosso site:
 
-https://floriculturavalledasflores.com.br
-"""
+https://floriculturavalledasflores.com.br"""
+            }
 
         elif mensagem == "2":
 
-            return """
-📱 Fale diretamente com a floricultura:
+            return {
+                "tipo": "texto",
+                "mensagem": """📱 Fale diretamente com a floricultura:
 
 (INSIRA AQUI O NÚMERO)
 
-Ex: https://wa.me/5511999999999
-"""
+Ex: https://wa.me/5511999999999"""
+            }
 
         elif mensagem == "3":
 
@@ -62,8 +64,14 @@ Ex: https://wa.me/5511999999999
             session["fluxo"] = None
             session["etapa"] = "inicio"
 
-            return "Voltando ao menu principal..."
+            return {
+                "tipo": "texto",
+                "mensagem": "Voltando ao menu principal..."
+            }
 
         else:
 
-            return "Escolha uma opção válida."
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }

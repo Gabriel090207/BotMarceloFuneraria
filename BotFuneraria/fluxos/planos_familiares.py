@@ -1,4 +1,9 @@
-from core.menus import criar_menu
+def _menu(titulo, opcoes):
+    return {
+        "tipo": "botoes",
+        "mensagem": titulo,
+        "botoes": [{"id": op[0], "label": op[1]} for op in opcoes]
+    }
 
 
 def fluxo_planos_familiares(session, mensagem):
@@ -6,10 +11,13 @@ def fluxo_planos_familiares(session, mensagem):
     if "etapa" not in session:
         session["etapa"] = "inicio"
 
+    if "dados" not in session:
+        session["dados"] = {}
+
     nome = session.get("nome", "")
 
     # -------------------------
-    # ATENDENTE GLOBAL
+    # ATALHOS GLOBAIS
     # -------------------------
 
     if mensagem == "9":
@@ -20,7 +28,10 @@ def fluxo_planos_familiares(session, mensagem):
     if mensagem == "00":
         session["fluxo"] = None
         session["etapa"] = "inicio"
-        return "Voltando ao menu principal..."
+        return {
+            "tipo": "texto",
+            "mensagem": "Voltando ao menu principal..."
+        }
 
     # -------------------------
     # INICIO
@@ -30,14 +41,16 @@ def fluxo_planos_familiares(session, mensagem):
 
         session["etapa"] = "menu"
 
-        return criar_menu(
-            f"🏠 Planos Familiares\n\n{nome}, escolha uma opção:",
+        return _menu(
+            f"""🏠 Planos Familiares
+
+{nome}, escolha uma opção:""",
             [
                 ("1", "Plano Básico"),
                 ("2", "Plano Intermediário"),
                 ("3", "Plano Premium"),
                 ("9", "Falar com atendente"),
-                ("00", "Voltar ao menu principal"),
+                ("00", "Voltar ao menu"),
             ]
         )
 
@@ -63,25 +76,29 @@ def fluxo_planos_familiares(session, mensagem):
         }
 
         if mensagem not in planos:
-            return "Escolha uma opção válida."
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }
 
         plano = planos[mensagem]
 
         session["dados"]["plano"] = plano["nome"]
         session["etapa"] = "confirmar"
 
-        return f"""
-📋 {plano["nome"]}
+        return _menu(
+            f"""📋 {plano["nome"]}
 
 {plano["desc"]}
 
-Deseja contratar este plano?
-
-1 - Sim
-2 - Escolher outro plano
-9 - Falar com atendente
-00 - Voltar ao menu principal
-"""
+Deseja contratar este plano?""",
+            [
+                ("1", "Sim"),
+                ("2", "Escolher outro plano"),
+                ("9", "Falar com atendente"),
+                ("00", "Menu principal"),
+            ]
+        )
 
     # -------------------------
     # CONFIRMAÇÃO
@@ -93,18 +110,20 @@ Deseja contratar este plano?
 
             session["fluxo"] = "atendente"
 
-            from fluxos.atendente import fluxo_atendente
-            return f"""
-✅ Plano selecionado: {session["dados"]["plano"]}
+            return {
+                "tipo": "texto",
+                "mensagem": f"""✅ Plano selecionado: {session["dados"]["plano"]}
 
-Um consultor irá entrar em contato para finalizar a contratação.
-"""
+Um consultor irá entrar em contato para finalizar a contratação."""
+            }
 
         elif mensagem == "2":
 
             session["etapa"] = "menu"
-
-            return fluxo_planos_familiares(session, mensagem)
+            return fluxo_planos_familiares(session, "menu")
 
         else:
-            return "Escolha 1 ou 2."
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha 1 ou 2."
+            }

@@ -1,30 +1,95 @@
-from fastapi import FastAPI, Request
+from flask import Flask, request, jsonify
+from dotenv import load_dotenv
+import os
+
 from core.bot import responder
+from core.zapi import enviar_texto, enviar_botoes
 
-app = FastAPI()
+load_dotenv()
+
+app = Flask(__name__)
 
 
-@app.get("/")
+@app.route("/")
 def home():
-    return {"status": "Bot online 🚀"}
+    return "Bot online 🚀"
 
 
-@app.post("/webhook")
-async def webhook(request: Request):
+@app.route("/webhook", methods=["POST"])
+def webhook():
 
-    data = await request.json()
+    data = request.json
 
-    print("Recebido:", data)
+    try:
+        print("📩 JSON recebido:", data)
 
-    # FORMATO Z-API
-    mensagem = data.get("message")
-    numero = data.get("phone")
+        # ---------------------------
+        # CAPTURA DADOS DA Z-API
+        # ---------------------------
 
-    if not mensagem or not numero:
-        return {"status": "erro"}
+        numero = data.get("phone")
 
-    resposta = responder(numero, mensagem)
+        mensagem = None
 
-    return {
-        "reply": resposta
-    }
+        if "text" in data and data["text"]:
+            mensagem = data["text"].get("message")
+
+        if not mensagem:
+            mensagem = data.get("message")
+
+        # ---------------------------
+        # VALIDAÇÃO
+        # ---------------------------
+
+        if not numero or not mensagem:
+            return jsonify({"status": "ignorado"})
+
+        print(f"📲 {numero}: {mensagem}")
+
+        # ---------------------------
+        # PROCESSA BOT
+        # ---------------------------
+
+        resposta = responder(numero, mensagem)
+
+        if not resposta:
+            return jsonify({"status": "ok"})
+
+        # ---------------------------
+        # ENVIO INTELIGENTE
+        # ---------------------------
+
+        if resposta.get("tipo") == "texto":
+            enviar_texto(numero, resposta["mensagem"])
+
+        elif resposta.get("tipo") == "botoes":
+
+            # 🔹 converte para formato da Z-API
+            botoes_formatados = [
+                {
+                    "id": b["id"],
+                    "label": b["label"]
+                }
+                for b in resposta["botoes"]
+            ]
+
+            enviar_botoes(
+                numero,
+                resposta["mensagem"],
+                botoes_formatados
+            )
+
+        else:
+            # fallback (caso venha string ainda de algum fluxo)
+            enviar_texto(numero, str(resposta))
+
+        return jsonify({"status": "ok"})
+
+    except Exception as e:
+        print("❌ ERRO:", str(e))
+        return jsonify({"erro": str(e)})
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)

@@ -24,7 +24,9 @@ export default function Usuarios(){
 
 
   const [loading,setLoading] = useState(false)
-const [sucesso,setSucesso] = useState(false)
+
+  const [sucesso,setSucesso] = useState(false)
+const [mensagemSucesso,setMensagemSucesso] = useState("")
 
 const [usuarios,setUsuarios] = useState<any[]>([])
 
@@ -72,7 +74,8 @@ async function criarUsuario(){
 
     carregarUsuarios()
 
-    setSucesso(true)
+   setMensagemSucesso("Usuário criado com sucesso")
+setSucesso(true)
 
   }catch(e){
 
@@ -125,9 +128,19 @@ async function salvarEdicao(){
 
     carregarUsuarios()
 
+   
+
     setEditar(false)
 
-    setSucesso(true)
+
+     setNome("")
+setSobrenome("")
+setEmail("")
+setSenha("")
+setRole("funcionario")
+
+    setMensagemSucesso("Usuário atualizado com sucesso")
+setSucesso(true)
 
   }catch(e){
 
@@ -250,7 +263,7 @@ useEffect(()=>{
 
       <FiCheck className="modal-icon"/>
 
-      <h2>Usuário criado com sucesso</h2>
+     <h2>{mensagemSucesso}</h2>
 
       <button onClick={()=>setSucesso(false)}>
         OK

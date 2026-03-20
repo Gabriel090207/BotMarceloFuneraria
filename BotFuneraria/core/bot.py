@@ -52,11 +52,14 @@ def responder(numero, mensagem):
 
         session["etapa_global"] = "nome"
 
-        return f"""
+        return {
+            "tipo": "texto",
+            "mensagem": f"""
 {saudacao}, seja bem-vindo à nossa funerária 🙏
 
 Antes de iniciar o atendimento, poderia me informar seu nome?
 """
+        }
 
     # ---------------------------
     # CAPTURA NOME
@@ -69,17 +72,21 @@ Antes de iniciar o atendimento, poderia me informar seu nome?
 
         nome = session["nome"]
 
-        return f"""
+        return {
+            "tipo": "botoes",
+            "mensagem": f"""
 Prazer, {nome} 🙏
 
 Como podemos te ajudar hoje?
-
-1 - Serviços funerários
-2 - Planos familiares
-3 - Planos empresariais
-4 - Floricultura
-5 - Falar com atendente
-"""
+""",
+            "botoes": [
+                {"id": "1", "label": "Serviços funerários"},
+                {"id": "2", "label": "Planos familiares"},
+                {"id": "3", "label": "Planos empresariais"},
+                {"id": "4", "label": "Floricultura"},
+                {"id": "5", "label": "Falar com atendente"},
+            ]
+        }
 
     # ---------------------------
     # MENU PRINCIPAL
@@ -108,7 +115,10 @@ Como podemos te ajudar hoje?
             return fluxo_atendente(session, mensagem)
 
         else:
-            return "Escolha uma opção válida."
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }
 
     # ---------------------------
     # REDIRECIONAMENTO DE FLUXO

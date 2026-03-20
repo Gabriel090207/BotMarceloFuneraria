@@ -2,6 +2,7 @@ import { useState } from "react"
 import { FiUsers, FiSettings, FiTool } from "react-icons/fi"
 
 import Usuarios from "../components/config/Usuarios"
+import Empresa from "../components/config/Empresa"
 
 import "../styles/configuracoes.css"
 
@@ -86,11 +87,7 @@ export default function Configuracoes(){
 
           {secao === "usuarios" && <Usuarios/>}
 
-          {secao === "empresa" && (
-            <div className="config-placeholder">
-              Em breve: dados da empresa
-            </div>
-          )}
+          {secao === "empresa" && <Empresa/>}
 
           {secao === "integracoes" && (
             <div className="config-placeholder">
