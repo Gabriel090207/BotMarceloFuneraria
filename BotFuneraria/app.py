@@ -1,38 +1,27 @@
-import sys
-import os
-
-# 🔹 garante que a raiz do projeto está no path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+import os
 
 from core.bot import responder
-from integracoes.zapi import enviar_texto, enviar_botoes
+from core.zapi import enviar_texto, enviar_botoes
 
 load_dotenv()
 
 app = FastAPI()
 
 
-# ---------------------------
-# ROTA HOME
-# ---------------------------
 @app.get("/")
-async def home():
+def home():
     return {"status": "Bot online 🚀"}
 
 
-# ---------------------------
-# WEBHOOK Z-API
-# ---------------------------
 @app.post("/webhook")
 async def webhook(request: Request):
 
-    try:
-        data = await request.json()
+    data = await request.json()
 
+    try:
         print("📩 JSON recebido:", data)
 
         # ---------------------------
@@ -54,7 +43,7 @@ async def webhook(request: Request):
         # ---------------------------
 
         if not numero or not mensagem:
-            return JSONResponse(content={"status": "ignorado"})
+            return jsonify({"status": "ignorado"})
 
         print(f"📲 {numero}: {mensagem}")
 
@@ -71,11 +60,12 @@ async def webhook(request: Request):
         # ENVIO INTELIGENTE
         # ---------------------------
 
-        if isinstance(resposta, dict) and resposta.get("tipo") == "texto":
+        if resposta.get("tipo") == "texto":
             enviar_texto(numero, resposta["mensagem"])
 
-        elif isinstance(resposta, dict) and resposta.get("tipo") == "botoes":
+        elif resposta.get("tipo") == "botoes":
 
+            # 🔹 converte para formato da Z-API
             botoes_formatados = [
                 {
                     "id": b["id"],
@@ -91,20 +81,15 @@ async def webhook(request: Request):
             )
 
         else:
+            # fallback (caso venha string ainda de algum fluxo)
             enviar_texto(numero, str(resposta))
 
-        return JSONResponse(content={"status": "ok"})
+        return jsonify({"status": "ok"})
 
     except Exception as e:
         print("❌ ERRO:", str(e))
-        return JSONResponse(content={"erro": str(e)})
+        return jsonify({"erro": str(e)})
 
 
-# ---------------------------
-# START SERVIDOR
-# ---------------------------
-if __name__ == "__main__":
-    import uvicorn
-
-    port = int(os.environ.get("PORT", 10000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+# Rodar com:
+# uvicorn main:app --reload --host 0.0.0.0 --port 10000
