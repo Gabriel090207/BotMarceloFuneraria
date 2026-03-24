@@ -10,7 +10,7 @@ ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
 
 
 def enviar_texto(phone, mensagem):
-    url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-text"
+    url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-text-message"
 
     payload = {
         "phone": phone,
