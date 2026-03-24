@@ -2,11 +2,7 @@ from datetime import datetime
 
 from core.firebase import salvar_pedido
 from core.urnas import listar_urnas
-from core.pagamentos import (
-    gerar_link_pagamento_sinal,
-    gerar_referencia_externa,
-    formatar_reais,
-)
+from core.pagamentos import formatar_reais
 
 
 PRECO_TIPO_SERVICO = {
@@ -306,15 +302,46 @@ def fluxo_funeraria(session, mensagem):
         )
 
     # ---------------------------
-    # CONFIRMAÇÃO
+    # CONFIRMAÇÃO (🔥 AQUI ESTÁ A MÁGICA)
     # ---------------------------
 
     if session["etapa"] == "confirmacao":
 
         if mensagem == "1":
+
+            dados = session["dados"]
+            valor_total = _calcular_valor_total(dados)
+
+            payload = {
+                "tipo": "funeraria",
+                "telefone": session.get("numero"),  # 🔥 vem automático do WhatsApp
+                "nome": session.get("nome"),
+                "endereco": dados.get("endereco"),
+                "tipo_servico": dados.get("tipo_servico"),
+                "porte_corpo": dados.get("porte_corpo"),
+                "tipo_urna": dados.get("tipo_urna"),
+                "modelo_urna": dados.get("modelo_urna"),
+                "valor_urna_modelo": dados.get("valor_urna_modelo"),
+                "velorio": dados.get("velorio"),
+                "translado": dados.get("translado"),
+                "local_entrega": dados.get("local_entrega"),
+                "valor_total": valor_total,
+                "status": "novo",
+                "criado_em": datetime.now().isoformat(),
+            }
+
+            salvar_pedido(payload)
+
+            session["etapa"] = "finalizado"
+            session["encerrar_bot"] = True
+
             return {
                 "tipo": "texto",
-                "mensagem": "Pedido confirmado! (simulação pagamento)"
+                "mensagem": f"""✅ Pedido confirmado com sucesso!
+
+📞 Telefone: {session.get("numero")}
+
+Em breve nossa equipe entrará em contato."""
             }
 
         if mensagem == "2":
