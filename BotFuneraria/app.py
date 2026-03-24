@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 from core.bot import responder
-from integracoes.zapi import enviar_texto, enviar_botoes
+from integracoesx.zapi import enviar_texto, enviar_botoes
 
 load_dotenv()
 
