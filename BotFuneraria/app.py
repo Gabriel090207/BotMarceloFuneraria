@@ -19,9 +19,9 @@ def home():
 @app.post("/webhook")
 async def webhook(request: Request):
 
-    data = await request.json()
-
     try:
+        data = await request.json()
+
         print("📩 JSON recebido:", data)
 
         # ---------------------------
@@ -43,7 +43,7 @@ async def webhook(request: Request):
         # ---------------------------
 
         if not numero or not mensagem:
-            return jsonify({"status": "ignorado"})
+            return JSONResponse(content={"status": "ignorado"})
 
         print(f"📲 {numero}: {mensagem}")
 
@@ -60,36 +60,32 @@ async def webhook(request: Request):
         # ENVIO INTELIGENTE
         # ---------------------------
 
-        if resposta.get("tipo") == "texto":
-            enviar_texto(numero, resposta["mensagem"])
+        if isinstance(resposta, dict):
 
-        elif resposta.get("tipo") == "botoes":
+            if resposta.get("tipo") == "texto":
+                enviar_texto(numero, resposta["mensagem"])
 
-            # 🔹 converte para formato da Z-API
-            botoes_formatados = [
-                {
-                    "id": b["id"],
-                    "label": b["label"]
-                }
-                for b in resposta["botoes"]
-            ]
+            elif resposta.get("tipo") == "botoes":
 
-            enviar_botoes(
-                numero,
-                resposta["mensagem"],
-                botoes_formatados
-            )
+                botoes_formatados = [
+                    {
+                        "id": b["id"],
+                        "label": b["label"]
+                    }
+                    for b in resposta["botoes"]
+                ]
+
+                enviar_botoes(
+                    numero,
+                    resposta["mensagem"],
+                    botoes_formatados
+                )
 
         else:
-            # fallback (caso venha string ainda de algum fluxo)
             enviar_texto(numero, str(resposta))
 
-        return jsonify({"status": "ok"})
+        return JSONResponse(content={"status": "ok"})
 
     except Exception as e:
         print("❌ ERRO:", str(e))
-        return jsonify({"erro": str(e)})
-
-
-# Rodar com:
-# uvicorn main:app --reload --host 0.0.0.0 --port 10000
+        return JSONResponse(content={"erro": str(e)})
