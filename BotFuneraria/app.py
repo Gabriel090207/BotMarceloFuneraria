@@ -1,15 +1,15 @@
 import sys
 import os
 
+# 🔹 garante que a raiz do projeto está no path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-import os
 
-from BotFuneraria.core.bot import responder
-from BotFuneraria.integracoes.zapi import enviar_texto, enviar_botoes
+from core.bot import responder
+from integracoes.zapi import enviar_texto, enviar_botoes
 
 load_dotenv()
 
@@ -76,7 +76,6 @@ async def webhook(request: Request):
 
         elif isinstance(resposta, dict) and resposta.get("tipo") == "botoes":
 
-            # 🔹 converte para formato da Z-API
             botoes_formatados = [
                 {
                     "id": b["id"],
@@ -92,7 +91,6 @@ async def webhook(request: Request):
             )
 
         else:
-            # fallback (caso venha string ainda de algum fluxo)
             enviar_texto(numero, str(resposta))
 
         return JSONResponse(content={"status": "ok"})
