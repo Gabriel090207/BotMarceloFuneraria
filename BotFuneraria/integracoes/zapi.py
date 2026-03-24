@@ -17,7 +17,12 @@ def enviar_texto(phone, mensagem):
         "message": mensagem
     }
 
+    print("📤 Enviando TEXTO:", payload)
+
     response = requests.post(url, json=payload)
+
+    print("📥 Z-API STATUS:", response.status_code)
+    print("📥 Z-API RESPOSTA:", response.text)
 
     return response.json()
 
@@ -33,6 +38,11 @@ def enviar_botoes(phone, mensagem, botoes):
         }
     }
 
+    print("📤 Enviando BOTÕES:", payload)
+
     response = requests.post(url, json=payload)
+
+    print("📥 Z-API STATUS:", response.status_code)
+    print("📥 Z-API RESPOSTA:", response.text)
 
     return response.json()

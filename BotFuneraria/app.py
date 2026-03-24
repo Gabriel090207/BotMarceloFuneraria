@@ -19,13 +19,13 @@ def home():
 @app.post("/webhook")
 async def webhook(request: Request):
 
-    try:
-        data = await request.json()
+    data = await request.json()
 
+    try:
         print("📩 JSON recebido:", data)
 
         # ---------------------------
-        # CAPTURA DADOS DA Z-API
+        # CAPTURA DADOS
         # ---------------------------
 
         numero = data.get("phone")
@@ -53,12 +53,16 @@ async def webhook(request: Request):
 
         resposta = responder(numero, mensagem)
 
+        print("👉 resposta do bot:", resposta)
+
         if not resposta:
             return JSONResponse(content={"status": "ok"})
 
         # ---------------------------
-        # ENVIO INTELIGENTE
+        # ENVIO PARA Z-API
         # ---------------------------
+
+        print("📤 enviando para Z-API...")
 
         if isinstance(resposta, dict):
 
@@ -82,6 +86,7 @@ async def webhook(request: Request):
                 )
 
         else:
+            # fallback
             enviar_texto(numero, str(resposta))
 
         return JSONResponse(content={"status": "ok"})
