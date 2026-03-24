@@ -8,8 +8,8 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import os
 
-from core.bot import responder
-from integracoes.zapi import enviar_texto, enviar_botoes
+from BotFuneraria.core.bot import responder
+from BotFuneraria.integracoes.zapi import enviar_texto, enviar_botoes
 
 load_dotenv()
 
