@@ -30,6 +30,15 @@ def fluxo_funeraria(session, mensagem):
         mensagem = "00"
 
     # -------------------------
+    # VOLTAR GLOBAL (ANTES DE TUDO)
+    # -------------------------
+    if mensagem == "0":
+        return voltar(session)
+
+    if mensagem == "00":
+        return menu_principal()
+
+    # -------------------------
     # FUNÇÃO MUDAR ETAPA
     # -------------------------
 
@@ -135,8 +144,7 @@ Escolha uma opção:""",
         if mensagem == "00":
             return menu_principal()
 
-        if mensagem == "0":
-            return voltar(session)
+       
 
         # ENDEREÇO
         if session["etapa"] == "endereco":
@@ -158,8 +166,7 @@ Escolha uma opção:""",
         # TIPO URNA
         if session["etapa"] == "tipo_urna":
 
-            if mensagem == "0":
-                return voltar(session)
+          
 
             tipos = {
                 "1": "simples",
@@ -201,8 +208,7 @@ Escolha uma opção:""",
         # LISTA URNAS
         if session["etapa"] == "lista_urnas":
 
-            if mensagem == "0":
-                return voltar(session)
+         
 
             try:
                 urna = session["urnas"][int(mensagem)-1]
@@ -236,8 +242,7 @@ Escolha uma opção:""",
         # CONFIRMAR
         if session["etapa"] == "confirmar":
 
-            if mensagem == "0":
-                return voltar(session)
+         
 
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
