@@ -1,34 +1,7 @@
 from datetime import datetime
-import unicodedata
-
 from core.firebase import salvar_pedido
 from core.urnas import listar_urnas
 from core.pagamentos import formatar_reais
-
-
-def normalizar(txt):
-    txt = str(txt).lower().strip()
-    txt = unicodedata.normalize("NFD", txt)
-    return "".join(c for c in txt if unicodedata.category(c) != "Mn")
-
-
-def menu(txt, op):
-    return {
-        "tipo": "botoes",
-        "mensagem": txt,
-        "botoes": [{"id": i, "label": l} for i, l in op]
-    }
-
-
-def voltar_menu_principal(session):
-    session["fluxo"] = None
-    session["etapa"] = "inicio"
-    session["subfluxo"] = None
-
-    return {
-        "tipo": "texto",
-        "mensagem": "🔙 Voltamos ao menu principal"
-    }
 
 
 def fluxo_funeraria(session, mensagem):
@@ -44,41 +17,69 @@ def fluxo_funeraria(session, mensagem):
 
     nome = session.get("nome", "Cliente")
 
-    # -------------------
-    # 🔙 GLOBAL
-    # -------------------
+    # -------------------------
+    # NORMALIZA BOTÕES
+    # -------------------------
 
-    if mensagem == "00":
-        return voltar_menu_principal(session)
+    if mensagem == "Voltar":
+        mensagem = "0"
+    elif mensagem == "Menu principal":
+        mensagem = "00"
 
-    if mensagem == "0" and session["etapa"] != "inicio":
+    # -------------------------
+    # MENU PRINCIPAL
+    # -------------------------
+
+    def menu_principal():
+        session["fluxo"] = None
         session["etapa"] = "inicio"
-        return fluxo_funeraria(session, "restart")
+        session["subfluxo"] = None
 
-    # -------------------
-    # MENU SERVIÇOS
-    # -------------------
+        return {
+            "tipo": "botoes",
+            "mensagem": """🔙 Voltamos ao menu principal
+
+Escolha uma opção:""",
+            "botoes": [
+                {"id": "1", "label": "Serviços funerários"},
+                {"id": "2", "label": "Planos familiares"},
+                {"id": "3", "label": "Planos empresariais"},
+                {"id": "4", "label": "Floricultura"},
+                {"id": "5", "label": "Falar com atendente"},
+            ]
+        }
+
+    # -------------------------
+    # INICIO
+    # -------------------------
 
     if session["etapa"] == "inicio":
 
         session["etapa"] = "menu"
 
-        return menu(
-            f"⚰️ Serviços Funerários\n\n{nome}, como podemos ajudar?",
-            [
-                ("1", "Sepultamento"),
-                ("2", "Cremação"),
-                ("3", "Translado"),
-                ("4", "Salas de velório"),
-                ("5", "Atendente"),
-            ]
-        )
+        return {
+            "tipo": "botoes",
+            "mensagem": f"""⚰️ Serviços Funerários
 
-    # -------------------
-    # ESCOLHA
-    # -------------------
+{nome}, como podemos ajudar?""",
+            "botoes": [
+                {"id": "1", "label": "Sepultamento"},
+                {"id": "2", "label": "Cremação"},
+                {"id": "3", "label": "Translado"},
+                {"id": "4", "label": "Salas de velório"},
+                {"id": "5", "label": "Atendente"},
+                {"id": "00", "label": "Menu principal"},
+            ]
+        }
+
+    # -------------------------
+    # MENU
+    # -------------------------
 
     if session["etapa"] == "menu":
+
+        if mensagem == "00":
+            return menu_principal()
 
         if mensagem == "1":
             session["subfluxo"] = "sepultamento"
@@ -98,12 +99,18 @@ def fluxo_funeraria(session, mensagem):
         if mensagem == "4":
             session["subfluxo"] = "velorio"
             session["etapa"] = "tipo_sala"
-            return menu("Escolha o tipo de sala:", [
-                ("1", "Pequena"),
-                ("2", "Média"),
-                ("3", "Grande"),
-                ("0", "Voltar"),
-            ])
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "Escolha o tipo de sala:",
+                "botoes": [
+                    {"id": "1", "label": "Pequena"},
+                    {"id": "2", "label": "Média"},
+                    {"id": "3", "label": "Grande"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
 
         if mensagem == "5":
             from fluxos.atendente import fluxo_atendente
@@ -115,20 +122,41 @@ def fluxo_funeraria(session, mensagem):
 
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
 
+        # -------------------------
+        # VOLTAR GLOBAL
+        # -------------------------
+
+        if mensagem == "00":
+            return menu_principal()
+
+        if mensagem == "0":
+            session["etapa"] = "menu"
+            return fluxo_funeraria(session, "restart")
+
+        # -------------------------
         # ENDEREÇO
+        # -------------------------
+
         if session["etapa"] == "endereco":
             session["dados"]["endereco"] = mensagem
             session["etapa"] = "tipo_urna"
 
-            return menu("Escolha o tipo de urna:", [
-                ("1", "Simples"),
-                ("2", "Intermediária"),
-                ("3", "Premium"),
-                ("0", "Voltar"),
-                ("00", "Menu"),
-            ])
+            return {
+                "tipo": "botoes",
+                "mensagem": "Escolha o tipo de urna:",
+                "botoes": [
+                    {"id": "1", "label": "Simples"},
+                    {"id": "2", "label": "Intermediária"},
+                    {"id": "3", "label": "Premium"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
 
+        # -------------------------
         # TIPO URNA
+        # -------------------------
+
         if session["etapa"] == "tipo_urna":
 
             tipos = {
@@ -152,56 +180,71 @@ def fluxo_funeraria(session, mensagem):
 
             botoes = []
             for i, u in enumerate(urnas):
-                botoes.append((str(i+1), f"{u['nome']} - {formatar_reais(u['preco'])}"))
+                botoes.append({
+                    "id": str(i+1),
+                    "label": f"{u['nome']} - {formatar_reais(u['preco'])}"
+                })
 
-            botoes += [("0", "Voltar"), ("00", "Menu")]
+            botoes += [
+                {"id": "0", "label": "Voltar"},
+                {"id": "00", "label": "Menu principal"},
+            ]
 
-            return menu("Escolha a urna:", botoes)
+            return {
+                "tipo": "botoes",
+                "mensagem": "Escolha a urna:",
+                "botoes": botoes
+            }
 
-        # LISTA URNAS
+        # -------------------------
+        # LISTA URNAS (COM IMAGENS)
+        # -------------------------
+
         if session["etapa"] == "lista_urnas":
 
             try:
                 urna = session["urnas"][int(mensagem)-1]
-
-                imagens = urna.get("imagens", [])
-
-                primeira_imagem = imagens[0] if imagens else None
             except:
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             session["urna"] = urna
             session["etapa"] = "confirmar"
 
-            img = urna.get("imagens", [])
-            img = img[0] if img else "Sem imagem"
+            imagens = urna.get("imagens", [])
 
             respostas = []
 
-            if primeira_imagem:
+            # ENVIA TODAS AS IMAGENS
+            for img in imagens:
                 respostas.append({
                     "tipo": "imagem",
-                    "url": primeira_imagem
+                    "url": img
                 })
 
-            respostas.append(menu(
-                f"🪦 {urna['nome']}\n💰 {formatar_reais(urna['preco'])}",
-                [
-                    ("1", "Confirmar"),
-                    ("2", "Trocar"),
-                    ("0", "Voltar"),
-                    ("00", "Menu"),
+            # ENVIA BOTÕES DEPOIS
+            respostas.append({
+                "tipo": "botoes",
+                "mensagem": f"""🪦 {urna['nome']}
+💰 {formatar_reais(urna['preco'])}""",
+                "botoes": [
+                    {"id": "1", "label": "Confirmar"},
+                    {"id": "2", "label": "Trocar"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
                 ]
-            ))
+            })
 
             return respostas
 
+        # -------------------------
         # CONFIRMAR
+        # -------------------------
+
         if session["etapa"] == "confirmar":
 
-            if mensagem in ["2", "0"]:
+            if mensagem == "2":
                 session["etapa"] = "lista_urnas"
-                return fluxo_funeraria(session, "reload")
+                return fluxo_funeraria(session, "restart")
 
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
@@ -209,21 +252,31 @@ def fluxo_funeraria(session, mensagem):
             total = float(session["urna"]["preco"])
             session["etapa"] = "final"
 
-            return menu(
-                f"Resumo\n\nUrna: {session['urna']['nome']}\nValor: {formatar_reais(total)}",
-                [
-                    ("1", "Confirmar pedido"),
-                    ("2", "Refazer"),
-                    ("00", "Menu"),
-                ]
-            )
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""Resumo
 
+Urna: {session['urna']['nome']}
+Valor: {formatar_reais(total)}""",
+                "botoes": [
+                    {"id": "1", "label": "Confirmar pedido"},
+                    {"id": "2", "label": "Refazer"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        # -------------------------
         # FINAL
+        # -------------------------
+
         if session["etapa"] == "final":
 
             if mensagem == "2":
                 session["etapa"] = "inicio"
                 return {"tipo": "texto", "mensagem": "Reiniciando atendimento..."}
+
+            if mensagem == "00":
+                return menu_principal()
 
             if mensagem == "1":
 
@@ -243,8 +296,8 @@ def fluxo_funeraria(session, mensagem):
                     "mensagem": "✅ Pedido registrado! Em breve entraremos em contato."
                 }
 
-    # =========================================
+    # -------------------------
     # FALLBACK
-    # =========================================
+    # -------------------------
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
