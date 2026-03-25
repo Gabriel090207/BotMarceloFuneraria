@@ -58,18 +58,57 @@ def enviar_botoes(phone, mensagem, botoes):
 
     return response.json()
 
-def enviar_imagem(phone, image_url, legenda=None):
+
+def enviar_imagem(phone, url_imagem):
     url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-image"
 
     payload = {
         "phone": phone,
-        "image": image_url,
-        "caption": legenda or ""
+        "image": url_imagem
     }
 
-    response = requests.post(url, json=payload)
+    headers = {
+        "Client-Token": ZAPI_CLIENT_TOKEN
+    }
 
     print("📤 Enviando IMAGEM:", payload)
-    print("📥 Z-API:", response.text)
+    print("🌐 URL FINAL:", url)
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    print("📥 Z-API STATUS:", response.status_code)
+    print("📥 Z-API RESPOSTA:", response.text)
 
     return response.json()
+
+
+
+def enviar_mensagem(msg, numero):
+
+    print("📤 Enviando:", msg)
+
+    if not isinstance(msg, dict):
+        print("❌ ERRO: mensagem inválida:", msg)
+        return
+
+    tipo = msg.get("tipo")
+
+    if tipo == "texto":
+        return enviar_texto(numero, msg.get("mensagem"))
+
+    elif tipo == "botoes":
+        return enviar_botoes(numero, msg.get("mensagem"), msg.get("botoes"))
+
+    elif tipo == "imagem":
+        return enviar_imagem(numero, msg.get("url"))
+
+    else:
+        print("❌ Tipo desconhecido:", tipo)
+
+def enviar_resposta(resposta, numero):
+
+    if isinstance(resposta, list):
+        for r in resposta:
+            enviar_mensagem(r, numero)
+    else:
+        enviar_mensagem(resposta, numero)
