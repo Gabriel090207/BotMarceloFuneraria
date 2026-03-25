@@ -7,6 +7,7 @@ load_dotenv()
 ZAPI_BASE_URL = os.getenv("ZAPI_BASE_URL")
 ZAPI_INSTANCE_ID = os.getenv("ZAPI_INSTANCE_ID")
 ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
+ZAPI_CLIENT_TOKEN = os.getenv("ZAPI_CLIENT_TOKEN")
 
 
 def enviar_texto(phone, mensagem):
@@ -17,10 +18,14 @@ def enviar_texto(phone, mensagem):
         "message": mensagem
     }
 
+    headers = {
+        "Client-Token": ZAPI_CLIENT_TOKEN
+    }
+
     print("📤 Enviando TEXTO:", payload)
     print("🌐 URL FINAL:", url)
 
-    response = requests.post(url, json=payload)
+    response = requests.post(url, json=payload, headers=headers)
 
     print("📥 Z-API STATUS:", response.status_code)
     print("📥 Z-API RESPOSTA:", response.text)
@@ -39,10 +44,14 @@ def enviar_botoes(phone, mensagem, botoes):
         }
     }
 
+    headers = {
+        "Client-Token": ZAPI_CLIENT_TOKEN
+    }
+
     print("📤 Enviando BOTÕES:", payload)
     print("🌐 URL FINAL:", url)
 
-    response = requests.post(url, json=payload)
+    response = requests.post(url, json=payload, headers=headers)
 
     print("📥 Z-API STATUS:", response.status_code)
     print("📥 Z-API RESPOSTA:", response.text)
