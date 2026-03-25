@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
 from core.bot import responder
-from integracoes.zapi import enviar_texto, enviar_botoes, enviar_imagem
+from integracoes.zapi import enviar_resposta
 
 load_dotenv()
 
@@ -28,26 +28,26 @@ async def webhook(request: Request):
         # ---------------------------
 
         numero = data.get("phone")
-
         mensagem = None
 
+        # 🔹 clique em botão (PRIORIDADE)
+        if "buttonsResponseMessage" in data:
+            mensagem = data["buttonsResponseMessage"].get("buttonId")
+
         # 🔹 texto normal
-        if "text" in data and data["text"]:
+        elif "text" in data and data["text"]:
             mensagem = data["text"].get("message")
 
         # 🔹 fallback
-        if not mensagem:
+        elif "message" in data:
             mensagem = data.get("message")
-
-        # 🔹 clique em botão
-        if "buttonsResponseMessage" in data:
-            mensagem = data["buttonsResponseMessage"].get("buttonId")
 
         # ---------------------------
         # VALIDAÇÃO
         # ---------------------------
 
         if not numero or not mensagem:
+            print("⚠️ Ignorado: sem número ou mensagem")
             return JSONResponse(content={"status": "ignorado"})
 
         print(f"📲 {numero}: {mensagem}")
@@ -64,75 +64,12 @@ async def webhook(request: Request):
             return JSONResponse(content={"status": "ok"})
 
         # ---------------------------
-        # ENVIO INTELIGENTE
+        # ENVIO INTELIGENTE (CORRIGIDO)
         # ---------------------------
 
         print("📤 enviando para Z-API...")
 
-        # ---------------------------
-        # TEXTO
-        # ---------------------------
-
-        if resposta.get("tipo") == "texto":
-
-            enviar_texto(numero, resposta["mensagem"])
-
-        # ---------------------------
-        # BOTÕES
-        # ---------------------------
-
-        elif resposta.get("tipo") == "botoes":
-
-            botoes_formatados = [
-                {
-                    "id": b["id"],
-                    "label": b["label"]
-                }
-                for b in resposta["botoes"]
-            ]
-
-            enviar_botoes(
-                numero,
-                resposta["mensagem"],
-                botoes_formatados
-            )
-
-        # ---------------------------
-        # IMAGEM + BOTÕES
-        # ---------------------------
-
-        elif resposta.get("tipo") == "imagem":
-
-            # 🔥 envia imagem primeiro
-            enviar_imagem(
-                numero,
-                resposta["imagem"],
-                resposta.get("mensagem", "")
-            )
-
-            # 🔥 depois envia botões (se tiver)
-            if "botoes" in resposta:
-
-                botoes_formatados = [
-                    {
-                        "id": b["id"],
-                        "label": b["label"]
-                    }
-                    for b in resposta["botoes"]
-                ]
-
-                enviar_botoes(
-                    numero,
-                    "Escolha uma opção:",
-                    botoes_formatados
-                )
-
-        # ---------------------------
-        # FALLBACK
-        # ---------------------------
-
-        else:
-            enviar_texto(numero, str(resposta))
+        enviar_resposta(resposta, numero)
 
         return JSONResponse(content={"status": "ok"})
 
