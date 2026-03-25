@@ -29,6 +29,10 @@ def fluxo_funeraria(session, mensagem):
     elif mensagem == "Menu principal":
         mensagem = "00"
 
+    # -------------------------
+    # FUNÇÃO MUDAR ETAPA
+    # -------------------------
+
     def mudar_etapa(session, nova_etapa):
         etapa_atual = session.get("etapa")
 
@@ -38,6 +42,25 @@ def fluxo_funeraria(session, mensagem):
         session["etapa"] = nova_etapa
 
     # -------------------------
+    # VOLTAR INTELIGENTE
+    # -------------------------
+
+    def voltar(session):
+        if session.get("historico"):
+            etapa_anterior = session["historico"].pop()
+        else:
+            etapa_anterior = "menu"
+
+        # regra especial
+        if etapa_anterior == "endereco":
+            session["subfluxo"] = None
+            session["etapa"] = "menu"
+            return fluxo_funeraria(session, "")
+
+        session["etapa"] = etapa_anterior
+        return fluxo_funeraria(session, "")
+
+    # -------------------------
     # MENU PRINCIPAL
     # -------------------------
 
@@ -45,6 +68,7 @@ def fluxo_funeraria(session, mensagem):
         session["fluxo"] = None
         session["etapa"] = "inicio"
         session["subfluxo"] = None
+        session["historico"] = []
 
         return {
             "tipo": "botoes",
@@ -112,19 +136,7 @@ Escolha uma opção:""",
             return menu_principal()
 
         if mensagem == "0":
-
-            if session.get("historico"):
-                etapa_anterior = session["historico"].pop()
-            else:
-                etapa_anterior = "menu"
-
-            # REGRA ESPECIAL
-            if etapa_anterior == "endereco":
-                session["subfluxo"] = None
-                return fluxo_funeraria(session, "")
-
-            session["etapa"] = etapa_anterior
-            return fluxo_funeraria(session, "")
+            return voltar(session)
 
         # ENDEREÇO
         if session["etapa"] == "endereco":
@@ -145,6 +157,9 @@ Escolha uma opção:""",
 
         # TIPO URNA
         if session["etapa"] == "tipo_urna":
+
+            if mensagem == "0":
+                return voltar(session)
 
             tipos = {
                 "1": "simples",
@@ -183,8 +198,11 @@ Escolha uma opção:""",
                 "botoes": botoes
             }
 
-        # LISTA URNAS COM IMAGEM
+        # LISTA URNAS
         if session["etapa"] == "lista_urnas":
+
+            if mensagem == "0":
+                return voltar(session)
 
             try:
                 urna = session["urnas"][int(mensagem)-1]
@@ -218,9 +236,8 @@ Escolha uma opção:""",
         # CONFIRMAR
         if session["etapa"] == "confirmar":
 
-            if mensagem == "2":
-                session["etapa"] = "lista_urnas"
-                return fluxo_funeraria(session, "1")
+            if mensagem == "0":
+                return voltar(session)
 
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
@@ -246,6 +263,7 @@ Valor: {formatar_reais(total)}""",
 
             if mensagem == "2":
                 session["etapa"] = "inicio"
+                session["historico"] = []
                 return {"tipo": "texto", "mensagem": "Reiniciando atendimento..."}
 
             if mensagem == "00":
@@ -270,3 +288,4 @@ Valor: {formatar_reais(total)}""",
                 }
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
+
