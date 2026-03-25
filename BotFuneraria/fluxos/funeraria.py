@@ -9,6 +9,9 @@ def fluxo_funeraria(session, mensagem):
     if "etapa" not in session:
         session["etapa"] = "inicio"
 
+    if "historico" not in session:
+        session["historico"] = []
+
     if "dados" not in session:
         session["dados"] = {}
 
@@ -25,6 +28,14 @@ def fluxo_funeraria(session, mensagem):
         mensagem = "0"
     elif mensagem == "Menu principal":
         mensagem = "00"
+
+    def mudar_etapa(session, nova_etapa):
+        etapa_atual = session.get("etapa")
+
+        if etapa_atual:
+            session["historico"].append(etapa_atual)
+
+        session["etapa"] = nova_etapa
 
     # -------------------------
     # MENU PRINCIPAL
@@ -55,7 +66,7 @@ Escolha uma opção:""",
 
     if session["etapa"] == "inicio":
 
-        session["etapa"] = "menu"
+        mudar_etapa(session, "menu")
 
         return {
             "tipo": "botoes",
@@ -83,12 +94,12 @@ Escolha uma opção:""",
 
         if mensagem == "1":
             session["subfluxo"] = "sepultamento"
-            session["etapa"] = "endereco"
+            mudar_etapa(session, "endereco")
             return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
         if mensagem == "2":
             session["subfluxo"] = "cremacao"
-            session["etapa"] = "endereco"
+            mudar_etapa(session, "endereco")
             return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
     # -------------------------
@@ -101,13 +112,24 @@ Escolha uma opção:""",
             return menu_principal()
 
         if mensagem == "0":
-            session["etapa"] = "menu"
-            return fluxo_funeraria(session, "1")
+
+            if session.get("historico"):
+                etapa_anterior = session["historico"].pop()
+            else:
+                etapa_anterior = "menu"
+
+            # REGRA ESPECIAL
+            if etapa_anterior == "endereco":
+                session["subfluxo"] = None
+                return fluxo_funeraria(session, "")
+
+            session["etapa"] = etapa_anterior
+            return fluxo_funeraria(session, "")
 
         # ENDEREÇO
         if session["etapa"] == "endereco":
             session["dados"]["endereco"] = mensagem
-            session["etapa"] = "tipo_urna"
+            mudar_etapa(session, "tipo_urna")
 
             return {
                 "tipo": "botoes",
@@ -134,7 +156,7 @@ Escolha uma opção:""",
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             session["tipo_urna"] = tipos[mensagem]
-            session["etapa"] = "lista_urnas"
+            mudar_etapa(session, "lista_urnas")
 
             urnas = listar_urnas(tipos[mensagem])
 
@@ -170,7 +192,7 @@ Escolha uma opção:""",
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             session["urna"] = urna
-            session["etapa"] = "confirmar"
+            mudar_etapa(session, "confirmar")
 
             respostas = []
 
@@ -186,7 +208,6 @@ Escolha uma opção:""",
 💰 {formatar_reais(urna['preco'])}""",
                 "botoes": [
                     {"id": "1", "label": "Confirmar"},
-                    {"id": "2", "label": "Trocar"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
@@ -205,7 +226,7 @@ Escolha uma opção:""",
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             total = float(session["urna"]["preco"])
-            session["etapa"] = "final"
+            mudar_etapa(session, "final")
 
             return {
                 "tipo": "botoes",
