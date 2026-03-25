@@ -27,27 +27,34 @@ async def webhook(request: Request):
 
         mensagem = None
 
+        # ---------------------------
+        # CAPTURA MENSAGEM (🔥 CORRETO)
+        # ---------------------------
+
+        # texto normal
         if "text" in data and data["text"]:
             mensagem = data["text"].get("message")
 
+        # botão clicado (🔥 ESSENCIAL)
+        elif "buttonsResponseMessage" in data:
+            mensagem = data["buttonsResponseMessage"].get("buttonId")
+
+        # fallback
         if not mensagem:
             mensagem = data.get("message")
 
-        # 🔥 MAPEAMENTO BOTÕES → ID
-        mapa_botoes = {
-            "Serviços funerários": "1",
-            "Planos familiares": "2",
-            "Planos empresariais": "3",
-            "Floricultura": "4",
-            "Falar com atendente": "5",
-        }
-
-        mensagem = mapa_botoes.get(mensagem, mensagem)
+        # ---------------------------
+        # VALIDAÇÃO
+        # ---------------------------
 
         if not numero or not mensagem:
             return JSONResponse(content={"status": "ignorado"})
 
         print(f"📲 {numero}: {mensagem}")
+
+        # ---------------------------
+        # PROCESSA BOT
+        # ---------------------------
 
         resposta = responder(numero, mensagem)
 
@@ -55,6 +62,10 @@ async def webhook(request: Request):
 
         if not resposta:
             return JSONResponse(content={"status": "ok"})
+
+        # ---------------------------
+        # ENVIO PARA Z-API
+        # ---------------------------
 
         print("📤 enviando para Z-API...")
 
@@ -73,7 +84,11 @@ async def webhook(request: Request):
                     for b in resposta["botoes"]
                 ]
 
-                enviar_botoes(numero, resposta["mensagem"], botoes_formatados)
+                enviar_botoes(
+                    numero,
+                    resposta["mensagem"],
+                    botoes_formatados
+                )
 
         else:
             enviar_texto(numero, str(resposta))
