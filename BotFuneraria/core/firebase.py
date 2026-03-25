@@ -23,15 +23,16 @@ def iniciar_firebase():
             caminho_arquivo = "firebase_credentials.json"
 
             if not os.path.exists(caminho_arquivo):
-                raise Exception("Arquivo firebase_key.json não encontrado")
+                raise Exception("Arquivo firebase_credentials.json não encontrado")
 
             cred = credentials.Certificate(caminho_arquivo)
 
         firebase_admin.initialize_app(cred)
-        db = firestore.client()
+
+    # 🔥 ISSO TEM QUE FICAR FORA DO IF
+    db = firestore.client()
 
 
 def salvar_pedido(dados):
     iniciar_firebase()
-
     db.collection("pedidos").add(dados)

@@ -26,15 +26,8 @@ def voltar_menu_principal(session):
     session["subfluxo"] = None
 
     return {
-        "tipo": "botoes",
-        "mensagem": "🔙 Voltamos ao menu principal",
-        "botoes": [
-            {"id": "1", "label": "Serviços funerários"},
-            {"id": "2", "label": "Planos familiares"},
-            {"id": "3", "label": "Planos empresariais"},
-            {"id": "4", "label": "Floricultura"},
-            {"id": "5", "label": "Atendente"},
-        ]
+        "tipo": "texto",
+        "mensagem": "🔙 Voltamos ao menu principal"
     }
 
 
@@ -52,11 +45,15 @@ def fluxo_funeraria(session, mensagem):
     nome = session.get("nome", "Cliente")
 
     # -------------------
-    # GLOBAL
+    # 🔙 GLOBAL
     # -------------------
 
     if mensagem == "00":
         return voltar_menu_principal(session)
+
+    if mensagem == "0" and session["etapa"] != "inicio":
+        session["etapa"] = "inicio"
+        return fluxo_funeraria(session, "restart")
 
     # -------------------
     # MENU SERVIÇOS
@@ -105,6 +102,7 @@ def fluxo_funeraria(session, mensagem):
                 ("1", "Pequena"),
                 ("2", "Média"),
                 ("3", "Grande"),
+                ("0", "Voltar"),
             ])
 
         if mensagem == "5":
@@ -112,7 +110,7 @@ def fluxo_funeraria(session, mensagem):
             return fluxo_atendente(session, mensagem)
 
     # =========================================
-    # SEPULTAMENTO + CREMAÇÃO (MESMO FLUXO BASE)
+    # SEPULTAMENTO / CREMAÇÃO
     # =========================================
 
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
@@ -127,14 +125,11 @@ def fluxo_funeraria(session, mensagem):
                 ("2", "Intermediária"),
                 ("3", "Premium"),
                 ("0", "Voltar"),
+                ("00", "Menu"),
             ])
 
         # TIPO URNA
         if session["etapa"] == "tipo_urna":
-
-            if mensagem == "0":
-                session["etapa"] = "endereco"
-                return {"tipo": "texto", "mensagem": "Informe o endereço novamente"}
 
             tipos = {
                 "1": "simples",
@@ -148,29 +143,23 @@ def fluxo_funeraria(session, mensagem):
             session["tipo_urna"] = tipos[mensagem]
             session["etapa"] = "lista_urnas"
 
-            urnas = listar_urnas()
+            urnas = listar_urnas(tipos[mensagem])
 
-            filtradas = [
-                u for u in urnas
-                if normalizar(u.get("tipo")) == tipos[mensagem]
-            ]
+            if not urnas:
+                return {"tipo": "texto", "mensagem": "Nenhuma urna disponível"}
 
-            session["urnas"] = filtradas
+            session["urnas"] = urnas
 
             botoes = []
-            for i, u in enumerate(filtradas):
-                botoes.append((str(i+1), f"{u['nome']} - {formatar_reais(float(u['preco']))}"))
+            for i, u in enumerate(urnas):
+                botoes.append((str(i+1), f"{u['nome']} - {formatar_reais(u['preco'])}"))
 
-            botoes.append(("0", "Voltar"))
+            botoes += [("0", "Voltar"), ("00", "Menu")]
 
             return menu("Escolha a urna:", botoes)
 
         # LISTA URNAS
         if session["etapa"] == "lista_urnas":
-
-            if mensagem == "0":
-                session["etapa"] = "tipo_urna"
-                return fluxo_funeraria(session, "reload")
 
             try:
                 urna = session["urnas"][int(mensagem)-1]
@@ -181,36 +170,37 @@ def fluxo_funeraria(session, mensagem):
             session["etapa"] = "confirmar"
 
             img = urna.get("imagens", [])
-            img = img[0] if img else ""
+            img = img[0] if img else "Sem imagem"
 
             return menu(
-                f"{urna['nome']}\n{formatar_reais(float(urna['preco']))}\n📷 {img}",
+                f"🪦 {urna['nome']}\n💰 {formatar_reais(urna['preco'])}\n📷 {img}",
                 [
                     ("1", "Confirmar"),
                     ("2", "Trocar"),
                     ("0", "Voltar"),
+                    ("00", "Menu"),
                 ]
             )
 
         # CONFIRMAR
         if session["etapa"] == "confirmar":
 
-            if mensagem == "2" or mensagem == "0":
+            if mensagem in ["2", "0"]:
                 session["etapa"] = "lista_urnas"
                 return fluxo_funeraria(session, "reload")
 
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
-            session["etapa"] = "final"
-
             total = float(session["urna"]["preco"])
+            session["etapa"] = "final"
 
             return menu(
                 f"Resumo\n\nUrna: {session['urna']['nome']}\nValor: {formatar_reais(total)}",
                 [
                     ("1", "Confirmar pedido"),
                     ("2", "Refazer"),
+                    ("00", "Menu"),
                 ]
             )
 
@@ -219,7 +209,7 @@ def fluxo_funeraria(session, mensagem):
 
             if mensagem == "2":
                 session["etapa"] = "inicio"
-                return {"tipo": "texto", "mensagem": "Reiniciando..."}
+                return {"tipo": "texto", "mensagem": "Reiniciando atendimento..."}
 
             if mensagem == "1":
 
@@ -240,100 +230,7 @@ def fluxo_funeraria(session, mensagem):
                 }
 
     # =========================================
-    # TRANSLADO
+    # FALLBACK
     # =========================================
-
-    if session["subfluxo"] == "translado":
-
-        if session["etapa"] == "origem":
-            session["dados"]["origem"] = mensagem
-            session["etapa"] = "destino"
-            return {"tipo": "texto", "mensagem": "📍 Local de destino:"}
-
-        if session["etapa"] == "destino":
-            session["dados"]["destino"] = mensagem
-            session["etapa"] = "confirmar"
-
-            return menu(
-                "Confirmar translado?",
-                [
-                    ("1", "Confirmar"),
-                    ("2", "Refazer"),
-                ]
-            )
-
-        if session["etapa"] == "confirmar":
-
-            if mensagem == "1":
-
-                salvar_pedido({
-                    "tipo": "translado",
-                    "telefone": session.get("numero"),
-                    "dados": session["dados"],
-                    "status": "novo",
-                    "criado_em": datetime.now().isoformat()
-                })
-
-                session["encerrar_bot"] = True
-
-                return {"tipo": "texto", "mensagem": "✅ Solicitação registrada"}
-
-            if mensagem == "2":
-                session["etapa"] = "inicio"
-                return {"tipo": "texto", "mensagem": "Reiniciando..."}
-
-    # =========================================
-    # VELÓRIO
-    # =========================================
-
-    if session["subfluxo"] == "velorio":
-
-        if session["etapa"] == "tipo_sala":
-
-            salas = {
-                "1": "Pequena",
-                "2": "Média",
-                "3": "Grande"
-            }
-
-            if mensagem not in salas:
-                return {"tipo": "texto", "mensagem": "Escolha válida"}
-
-            session["dados"]["sala"] = salas[mensagem]
-            session["etapa"] = "data"
-
-            return {"tipo": "texto", "mensagem": "📅 Informe a data desejada:"}
-
-        if session["etapa"] == "data":
-            session["dados"]["data"] = mensagem
-            session["etapa"] = "confirmar"
-
-            return menu(
-                "Confirmar reserva?",
-                [
-                    ("1", "Confirmar"),
-                    ("2", "Refazer"),
-                ]
-            )
-
-        if session["etapa"] == "confirmar":
-
-            if mensagem == "1":
-
-                salvar_pedido({
-                    "tipo": "velorio",
-                    "telefone": session.get("numero"),
-                    "dados": session["dados"],
-                    "status": "novo",
-                    "criado_em": datetime.now().isoformat()
-                })
-
-                session["encerrar_bot"] = True
-
-                return {"tipo": "texto", "mensagem": "✅ Reserva registrada"}
-
-            if mensagem == "2":
-                session["etapa"] = "inicio"
-                return {"tipo": "texto", "mensagem": "Reiniciando..."}
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
