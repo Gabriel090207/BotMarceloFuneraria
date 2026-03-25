@@ -1,9 +1,12 @@
-from core.firebase import iniciar_firebase, db
+from core.firebase import iniciar_firebase
+import core.firebase as fb
 
 
 def listar_urnas(tipo=None):
 
     iniciar_firebase()  # 🔥 garante conexão
+
+    db = fb.db  # 🔥 pega o db atualizado
 
     urnas_ref = db.collection("urnas").where("ativo", "==", True).stream()
 
@@ -12,8 +15,7 @@ def listar_urnas(tipo=None):
     for urna in urnas_ref:
         dados = urna.to_dict()
 
-        # 🔥 filtro por tipo (Simples, Intermediária, Premium)
-        if tipo and dados.get("tipo") != tipo.lower():
+        if tipo and dados.get("tipo") != tipo:
             continue
 
         urnas.append({
