@@ -6,6 +6,31 @@ def fluxo_floricultura(session, mensagem):
     nome = session.get("nome", "")
 
     # -------------------------
+    # MENU PRINCIPAL (FUNÇÃO)
+    # -------------------------
+
+    def menu_principal():
+        session["fluxo"] = None
+        session["etapa"] = "inicio"
+        session["etapa_global"] = "menu"
+
+        return {
+            "tipo": "botoes",
+            "mensagem": f"""
+Prazer, {nome} 🙏
+
+Como podemos te ajudar hoje?
+""",
+            "botoes": [
+                {"id": "1", "label": "Serviços funerários"},
+                {"id": "2", "label": "Planos familiares"},
+                {"id": "3", "label": "Planos empresariais"},
+                {"id": "4", "label": "Floricultura"},
+                {"id": "5", "label": "Falar com atendente"},
+            ]
+        }
+
+    # -------------------------
     # INICIO
     # -------------------------
 
@@ -22,7 +47,7 @@ def fluxo_floricultura(session, mensagem):
                 {"id": "1", "label": "Acessar site"},
                 {"id": "2", "label": "Falar com floricultura"},
                 {"id": "3", "label": "Falar com atendente"},
-                {"id": "0", "label": "Voltar ao menu"},
+                {"id": "00", "label": "Voltar ao menu"},
             ]
         }
 
@@ -32,25 +57,51 @@ def fluxo_floricultura(session, mensagem):
 
     if session["etapa"] == "menu":
 
-        if mensagem == "1":
+        # 🔥 VOLTAR MENU PRINCIPAL
+        if mensagem == "00":
+            return menu_principal()
+
+        # -------------------------
+        # SITE
+        # -------------------------
+
+        elif mensagem == "1":
+
+            session["etapa"] = "site"
 
             return {
-                "tipo": "texto",
+                "tipo": "botoes",
                 "mensagem": """🌐 Acesse nosso site:
 
-https://floriculturavalledasflores.com.br"""
+https://floriculturavalledasflores.com.br""",
+                "botoes": [
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
+
+        # -------------------------
+        # WHATSAPP FLORICULTURA
+        # -------------------------
 
         elif mensagem == "2":
 
+            session["etapa"] = "contato"
+
             return {
-                "tipo": "texto",
+                "tipo": "botoes",
                 "mensagem": """📱 Fale diretamente com a floricultura:
 
-(INSIRA AQUI O NÚMERO)
-
-Ex: https://wa.me/5511999999999"""
+https://wa.me/559281230907""",
+                "botoes": [
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
+
+        # -------------------------
+        # ATENDENTE
+        # -------------------------
 
         elif mensagem == "3":
 
@@ -59,18 +110,27 @@ Ex: https://wa.me/5511999999999"""
             from fluxos.atendente import fluxo_atendente
             return fluxo_atendente(session, mensagem)
 
-        elif mensagem == "0":
-
-            session["fluxo"] = None
-            session["etapa"] = "inicio"
+        else:
 
             return {
                 "tipo": "texto",
-                "mensagem": "Voltando ao menu principal..."
+                "mensagem": "Escolha uma opção válida."
             }
 
-        else:
+    # -------------------------
+    # VOLTAR DO SITE / CONTATO
+    # -------------------------
 
+    if session["etapa"] in ["site", "contato"]:
+
+        if mensagem == "0":
+            session["etapa"] = "menu"
+            return fluxo_floricultura(session, "restart")
+
+        elif mensagem == "00":
+            return menu_principal()
+
+        else:
             return {
                 "tipo": "texto",
                 "mensagem": "Escolha uma opção válida."
