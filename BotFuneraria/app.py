@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-import os
 
 from core.bot import responder
 from integracoes.zapi import enviar_texto, enviar_botoes
@@ -24,10 +23,6 @@ async def webhook(request: Request):
     try:
         print("📩 JSON recebido:", data)
 
-        # ---------------------------
-        # CAPTURA DADOS
-        # ---------------------------
-
         numero = data.get("phone")
 
         mensagem = None
@@ -38,18 +33,21 @@ async def webhook(request: Request):
         if not mensagem:
             mensagem = data.get("message")
 
-        # ---------------------------
-        # VALIDAÇÃO
-        # ---------------------------
+        # 🔥 MAPEAMENTO BOTÕES → ID
+        mapa_botoes = {
+            "Serviços funerários": "1",
+            "Planos familiares": "2",
+            "Planos empresariais": "3",
+            "Floricultura": "4",
+            "Falar com atendente": "5",
+        }
+
+        mensagem = mapa_botoes.get(mensagem, mensagem)
 
         if not numero or not mensagem:
             return JSONResponse(content={"status": "ignorado"})
 
         print(f"📲 {numero}: {mensagem}")
-
-        # ---------------------------
-        # PROCESSA BOT
-        # ---------------------------
 
         resposta = responder(numero, mensagem)
 
@@ -57,10 +55,6 @@ async def webhook(request: Request):
 
         if not resposta:
             return JSONResponse(content={"status": "ok"})
-
-        # ---------------------------
-        # ENVIO PARA Z-API
-        # ---------------------------
 
         print("📤 enviando para Z-API...")
 
@@ -79,14 +73,9 @@ async def webhook(request: Request):
                     for b in resposta["botoes"]
                 ]
 
-                enviar_botoes(
-                    numero,
-                    resposta["mensagem"],
-                    botoes_formatados
-                )
+                enviar_botoes(numero, resposta["mensagem"], botoes_formatados)
 
         else:
-            # fallback
             enviar_texto(numero, str(resposta))
 
         return JSONResponse(content={"status": "ok"})

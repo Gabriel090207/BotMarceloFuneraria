@@ -11,20 +11,10 @@ from fluxos.planos_empresariais import fluxo_planos_empresariais
 def responder(numero, mensagem):
 
     session = get_session(numero)
-
-    # garante telefone na sessão
     session["numero"] = numero
-
-    # ---------------------------
-    # ENCERRAR BOT (ATENDENTE)
-    # ---------------------------
 
     if session.get("encerrar_bot") is True:
         return None
-
-    # ---------------------------
-    # CONTROLE GLOBAL
-    # ---------------------------
 
     if "etapa_global" not in session:
         session["etapa_global"] = "inicio"
@@ -36,7 +26,7 @@ def responder(numero, mensagem):
         session["fluxo"] = None
 
     # ---------------------------
-    # INICIO (SAUDAÇÃO)
+    # INICIO
     # ---------------------------
 
     if session["etapa_global"] == "inicio":
@@ -62,7 +52,7 @@ Antes de iniciar o atendimento, poderia me informar seu nome?
         }
 
     # ---------------------------
-    # CAPTURA NOME
+    # NOME
     # ---------------------------
 
     if session["etapa_global"] == "nome":
@@ -96,22 +86,27 @@ Como podemos te ajudar hoje?
 
         if mensagem == "1":
             session["fluxo"] = "funeraria"
+            session["etapa"] = "inicio"  # 🔥 ESSENCIAL
             return fluxo_funeraria(session, mensagem)
 
         elif mensagem == "2":
             session["fluxo"] = "planos_familiares"
+            session["etapa"] = "inicio"
             return fluxo_planos_familiares(session, mensagem)
 
         elif mensagem == "3":
             session["fluxo"] = "planos_empresariais"
+            session["etapa"] = "inicio"
             return fluxo_planos_empresariais(session, mensagem)
 
         elif mensagem == "4":
             session["fluxo"] = "floricultura"
+            session["etapa"] = "inicio"
             return fluxo_floricultura(session, mensagem)
 
         elif mensagem == "5":
             session["fluxo"] = "atendente"
+            session["etapa"] = "inicio"
             return fluxo_atendente(session, mensagem)
 
         else:
@@ -121,7 +116,7 @@ Como podemos te ajudar hoje?
             }
 
     # ---------------------------
-    # REDIRECIONAMENTO DE FLUXO
+    # REDIRECIONAMENTO
     # ---------------------------
 
     if session["fluxo"] == "funeraria":
