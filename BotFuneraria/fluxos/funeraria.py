@@ -91,52 +91,20 @@ Escolha uma opção:""",
             session["etapa"] = "endereco"
             return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
-        if mensagem == "3":
-            session["subfluxo"] = "translado"
-            session["etapa"] = "origem"
-            return {"tipo": "texto", "mensagem": "📍 Local de retirada:"}
-
-        if mensagem == "4":
-            session["subfluxo"] = "velorio"
-            session["etapa"] = "tipo_sala"
-
-            return {
-                "tipo": "botoes",
-                "mensagem": "Escolha o tipo de sala:",
-                "botoes": [
-                    {"id": "1", "label": "Pequena"},
-                    {"id": "2", "label": "Média"},
-                    {"id": "3", "label": "Grande"},
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
-
-        if mensagem == "5":
-            from fluxos.atendente import fluxo_atendente
-            return fluxo_atendente(session, mensagem)
-
-    # =========================================
-    # SEPULTAMENTO / CREMAÇÃO
-    # =========================================
+    # -------------------------
+    # SUBFLUXO
+    # -------------------------
 
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
-
-        # -------------------------
-        # VOLTAR GLOBAL
-        # -------------------------
 
         if mensagem == "00":
             return menu_principal()
 
         if mensagem == "0":
             session["etapa"] = "menu"
-            return fluxo_funeraria(session, "restart")
+            return fluxo_funeraria(session, "1")
 
-        # -------------------------
         # ENDEREÇO
-        # -------------------------
-
         if session["etapa"] == "endereco":
             session["dados"]["endereco"] = mensagem
             session["etapa"] = "tipo_urna"
@@ -153,10 +121,7 @@ Escolha uma opção:""",
                 ]
             }
 
-        # -------------------------
         # TIPO URNA
-        # -------------------------
-
         if session["etapa"] == "tipo_urna":
 
             tipos = {
@@ -196,10 +161,7 @@ Escolha uma opção:""",
                 "botoes": botoes
             }
 
-        # -------------------------
-        # LISTA URNAS (COM IMAGENS)
-        # -------------------------
-
+        # LISTA URNAS COM IMAGEM
         if session["etapa"] == "lista_urnas":
 
             try:
@@ -210,18 +172,14 @@ Escolha uma opção:""",
             session["urna"] = urna
             session["etapa"] = "confirmar"
 
-            imagens = urna.get("imagens", [])
-
             respostas = []
 
-            # ENVIA TODAS AS IMAGENS
-            for img in imagens:
+            for img in urna.get("imagens", []):
                 respostas.append({
                     "tipo": "imagem",
                     "url": img
                 })
 
-            # ENVIA BOTÕES DEPOIS
             respostas.append({
                 "tipo": "botoes",
                 "mensagem": f"""🪦 {urna['nome']}
@@ -236,15 +194,12 @@ Escolha uma opção:""",
 
             return respostas
 
-        # -------------------------
         # CONFIRMAR
-        # -------------------------
-
         if session["etapa"] == "confirmar":
 
             if mensagem == "2":
                 session["etapa"] = "lista_urnas"
-                return fluxo_funeraria(session, "restart")
+                return fluxo_funeraria(session, "1")
 
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
@@ -265,10 +220,7 @@ Valor: {formatar_reais(total)}""",
                 ]
             }
 
-        # -------------------------
         # FINAL
-        # -------------------------
-
         if session["etapa"] == "final":
 
             if mensagem == "2":
@@ -295,9 +247,5 @@ Valor: {formatar_reais(total)}""",
                     "tipo": "texto",
                     "mensagem": "✅ Pedido registrado! Em breve entraremos em contato."
                 }
-
-    # -------------------------
-    # FALLBACK
-    # -------------------------
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
