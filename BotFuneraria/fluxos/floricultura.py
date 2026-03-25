@@ -5,7 +5,10 @@ def fluxo_floricultura(session, mensagem):
 
     nome = session.get("nome", "")
 
-    # 🔥 NORMALIZA BOTÕES (ESSENCIAL)
+    # -------------------------
+    # NORMALIZA BOTÕES
+    # -------------------------
+
     if mensagem == "Voltar":
         mensagem = "0"
     elif mensagem == "Menu principal":
@@ -35,6 +38,32 @@ Como podemos te ajudar hoje?
                 {"id": "5", "label": "Falar com atendente"},
             ]
         }
+
+    # 🔥🔥🔥 CORREÇÃO AQUI (ANTES DE TUDO)
+    # -------------------------
+    # VOLTAR DO SITE / CONTATO
+    # -------------------------
+
+    if session["etapa"] in ["site", "contato"]:
+
+        if mensagem == "0":
+            session["etapa"] = "menu"
+
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""🌸 Floricultura
+
+{nome}, nosso atendimento de flores é realizado separadamente.""",
+                "botoes": [
+                    {"id": "1", "label": "Acessar site"},
+                    {"id": "2", "label": "Falar com floricultura"},
+                    {"id": "3", "label": "Falar com atendente"},
+                    {"id": "00", "label": "Voltar ao menu"},
+                ]
+            }
+
+        elif mensagem == "00":
+            return menu_principal()
 
     # -------------------------
     # INICIO
@@ -102,27 +131,6 @@ https://wa.me/559281230907""",
 
             from fluxos.atendente import fluxo_atendente
             return fluxo_atendente(session, mensagem)
-
-        else:
-            return {
-                "tipo": "texto",
-                "mensagem": "Escolha uma opção válida."
-            }
-
-    # -------------------------
-    # VOLTAR DO SITE / CONTATO
-    # -------------------------
-
-    if session["etapa"] in ["site", "contato"]:
-
-        if mensagem == "0":
-            session["etapa"] = "menu"
-
-            # 🔥 volta pro menu corretamente
-            return fluxo_floricultura(session, "menu")
-
-        elif mensagem == "00":
-            return menu_principal()
 
         else:
             return {
