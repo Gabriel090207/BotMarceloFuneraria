@@ -25,11 +25,9 @@ def fluxo_floricultura(session, mensagem):
 
         return {
             "tipo": "botoes",
-            "mensagem": f"""
-Prazer, {nome} 🙏
+            "mensagem": """🔙 Voltamos ao menu principal
 
-Como podemos te ajudar hoje?
-""",
+Escolha uma opção para continuar:""",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos familiares"},
@@ -39,7 +37,6 @@ Como podemos te ajudar hoje?
             ]
         }
 
-    # 🔥🔥🔥 CORREÇÃO AQUI (ANTES DE TUDO)
     # -------------------------
     # VOLTAR DO SITE / CONTATO
     # -------------------------
@@ -51,14 +48,13 @@ Como podemos te ajudar hoje?
 
             return {
                 "tipo": "botoes",
-                "mensagem": f"""🌸 Floricultura
+                "mensagem": """🔙 Voltamos para Floricultura
 
-{nome}, nosso atendimento de flores é realizado separadamente.""",
+Escolha uma opção:""",
                 "botoes": [
                     {"id": "1", "label": "Acessar site"},
                     {"id": "2", "label": "Falar com floricultura"},
-                    {"id": "3", "label": "Falar com atendente"},
-                    {"id": "00", "label": "Voltar ao menu"},
+                    {"id": "00", "label": "Menu principal"},
                 ]
             }
 
@@ -81,7 +77,6 @@ Como podemos te ajudar hoje?
             "botoes": [
                 {"id": "1", "label": "Acessar site"},
                 {"id": "2", "label": "Falar com floricultura"},
-                {"id": "3", "label": "Falar com atendente"},
                 {"id": "00", "label": "Voltar ao menu"},
             ]
         }
@@ -124,13 +119,6 @@ https://wa.me/559281230907""",
                     {"id": "00", "label": "Menu principal"},
                 ]
             }
-
-        elif mensagem == "3":
-
-            session["fluxo"] = "atendente"
-
-            from fluxos.atendente import fluxo_atendente
-            return fluxo_atendente(session, mensagem)
 
         else:
             return {
