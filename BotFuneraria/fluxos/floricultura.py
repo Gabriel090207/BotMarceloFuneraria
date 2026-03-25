@@ -5,8 +5,14 @@ def fluxo_floricultura(session, mensagem):
 
     nome = session.get("nome", "")
 
+    # 🔥 NORMALIZA BOTÕES (ESSENCIAL)
+    if mensagem == "Voltar":
+        mensagem = "0"
+    elif mensagem == "Menu principal":
+        mensagem = "00"
+
     # -------------------------
-    # MENU PRINCIPAL (FUNÇÃO)
+    # MENU PRINCIPAL
     # -------------------------
 
     def menu_principal():
@@ -57,13 +63,8 @@ Como podemos te ajudar hoje?
 
     if session["etapa"] == "menu":
 
-        # 🔥 VOLTAR MENU PRINCIPAL
         if mensagem == "00":
             return menu_principal()
-
-        # -------------------------
-        # SITE
-        # -------------------------
 
         elif mensagem == "1":
 
@@ -80,10 +81,6 @@ https://floriculturavalledasflores.com.br""",
                 ]
             }
 
-        # -------------------------
-        # WHATSAPP FLORICULTURA
-        # -------------------------
-
         elif mensagem == "2":
 
             session["etapa"] = "contato"
@@ -99,10 +96,6 @@ https://wa.me/559281230907""",
                 ]
             }
 
-        # -------------------------
-        # ATENDENTE
-        # -------------------------
-
         elif mensagem == "3":
 
             session["fluxo"] = "atendente"
@@ -111,7 +104,6 @@ https://wa.me/559281230907""",
             return fluxo_atendente(session, mensagem)
 
         else:
-
             return {
                 "tipo": "texto",
                 "mensagem": "Escolha uma opção válida."
@@ -125,7 +117,9 @@ https://wa.me/559281230907""",
 
         if mensagem == "0":
             session["etapa"] = "menu"
-            return fluxo_floricultura(session, "restart")
+
+            # 🔥 volta pro menu corretamente
+            return fluxo_floricultura(session, "menu")
 
         elif mensagem == "00":
             return menu_principal()
