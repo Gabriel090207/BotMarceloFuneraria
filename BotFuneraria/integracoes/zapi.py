@@ -57,3 +57,19 @@ def enviar_botoes(phone, mensagem, botoes):
     print("📥 Z-API RESPOSTA:", response.text)
 
     return response.json()
+
+def enviar_imagem(phone, image_url, legenda=None):
+    url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-image"
+
+    payload = {
+        "phone": phone,
+        "image": image_url,
+        "caption": legenda or ""
+    }
+
+    response = requests.post(url, json=payload)
+
+    print("📤 Enviando IMAGEM:", payload)
+    print("📥 Z-API:", response.text)
+
+    return response.json()

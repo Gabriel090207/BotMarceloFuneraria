@@ -163,6 +163,10 @@ def fluxo_funeraria(session, mensagem):
 
             try:
                 urna = session["urnas"][int(mensagem)-1]
+
+                imagens = urna.get("imagens", [])
+
+                primeira_imagem = imagens[0] if imagens else None
             except:
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
@@ -172,15 +176,25 @@ def fluxo_funeraria(session, mensagem):
             img = urna.get("imagens", [])
             img = img[0] if img else "Sem imagem"
 
-            return menu(
-                f"🪦 {urna['nome']}\n💰 {formatar_reais(urna['preco'])}\n📷 {img}",
+            respostas = []
+
+            if primeira_imagem:
+                respostas.append({
+                    "tipo": "imagem",
+                    "url": primeira_imagem
+                })
+
+            respostas.append(menu(
+                f"🪦 {urna['nome']}\n💰 {formatar_reais(urna['preco'])}",
                 [
                     ("1", "Confirmar"),
                     ("2", "Trocar"),
                     ("0", "Voltar"),
                     ("00", "Menu"),
                 ]
-            )
+            ))
+
+            return respostas
 
         # CONFIRMAR
         if session["etapa"] == "confirmar":

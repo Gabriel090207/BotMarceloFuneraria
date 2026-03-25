@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 
 from core.bot import responder
-from integracoes.zapi import enviar_texto, enviar_botoes
+from integracoes.zapi import enviar_texto, enviar_botoes, enviar_imagem
 
 load_dotenv()
 
@@ -23,25 +23,25 @@ async def webhook(request: Request):
     try:
         print("📩 JSON recebido:", data)
 
+        # ---------------------------
+        # CAPTURA DADOS
+        # ---------------------------
+
         numero = data.get("phone")
 
         mensagem = None
 
-        # ---------------------------
-        # CAPTURA MENSAGEM (🔥 CORRETO)
-        # ---------------------------
-
-        # texto normal
+        # 🔹 texto normal
         if "text" in data and data["text"]:
             mensagem = data["text"].get("message")
 
-        # botão clicado (🔥 ESSENCIAL)
-        elif "buttonsResponseMessage" in data:
-            mensagem = data["buttonsResponseMessage"].get("buttonId")
-
-        # fallback
+        # 🔹 fallback
         if not mensagem:
             mensagem = data.get("message")
+
+        # 🔹 clique em botão
+        if "buttonsResponseMessage" in data:
+            mensagem = data["buttonsResponseMessage"].get("buttonId")
 
         # ---------------------------
         # VALIDAÇÃO
@@ -64,17 +64,54 @@ async def webhook(request: Request):
             return JSONResponse(content={"status": "ok"})
 
         # ---------------------------
-        # ENVIO PARA Z-API
+        # ENVIO INTELIGENTE
         # ---------------------------
 
         print("📤 enviando para Z-API...")
 
-        if isinstance(resposta, dict):
+        # ---------------------------
+        # TEXTO
+        # ---------------------------
 
-            if resposta.get("tipo") == "texto":
-                enviar_texto(numero, resposta["mensagem"])
+        if resposta.get("tipo") == "texto":
 
-            elif resposta.get("tipo") == "botoes":
+            enviar_texto(numero, resposta["mensagem"])
+
+        # ---------------------------
+        # BOTÕES
+        # ---------------------------
+
+        elif resposta.get("tipo") == "botoes":
+
+            botoes_formatados = [
+                {
+                    "id": b["id"],
+                    "label": b["label"]
+                }
+                for b in resposta["botoes"]
+            ]
+
+            enviar_botoes(
+                numero,
+                resposta["mensagem"],
+                botoes_formatados
+            )
+
+        # ---------------------------
+        # IMAGEM + BOTÕES
+        # ---------------------------
+
+        elif resposta.get("tipo") == "imagem":
+
+            # 🔥 envia imagem primeiro
+            enviar_imagem(
+                numero,
+                resposta["imagem"],
+                resposta.get("mensagem", "")
+            )
+
+            # 🔥 depois envia botões (se tiver)
+            if "botoes" in resposta:
 
                 botoes_formatados = [
                     {
@@ -86,9 +123,13 @@ async def webhook(request: Request):
 
                 enviar_botoes(
                     numero,
-                    resposta["mensagem"],
+                    "Escolha uma opção:",
                     botoes_formatados
                 )
+
+        # ---------------------------
+        # FALLBACK
+        # ---------------------------
 
         else:
             enviar_texto(numero, str(resposta))
