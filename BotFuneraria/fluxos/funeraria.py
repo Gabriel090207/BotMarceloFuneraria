@@ -344,37 +344,34 @@ Após pagar, clique em *Já paguei* 👇""",
     if session["etapa"] == "pagamento":
 
         if mensagem == "1":
-            mudar_etapa(session, "comprovante")
+
+            salvar_pedido({
+                "tipo": session["subfluxo"],
+                "urna": session.get("urna"),
+                "pagamento": session.get("pagamento"),
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "aguardando_comprovante",
+                "criado_em": datetime.now().isoformat()
+            })
+
+            session["encerrar_bot"] = True
 
             return {
                 "tipo": "texto",
-                "mensagem": "📎 Envie o comprovante do pagamento para confirmação."
+                "mensagem": """📎 *Envio do comprovante*
+
+Recebemos sua confirmação de pagamento.
+
+Agora, por favor, envie o comprovante aqui no WhatsApp para a equipe da funerária.
+
+A partir deste momento, o atendimento seguirá diretamente com nossa equipe."""
             }
 
-        return {
-            "tipo": "texto",
-            "mensagem": "Clique em 'Já paguei' após realizar o pagamento."
-        }
+    return {
+        "tipo": "texto",
+        "mensagem": "Clique em 'Já paguei' após realizar o pagamento."
+    }
 
-
-    # -------------------------
-    # COMPROVANTE
-    # -------------------------
-
-    if session["etapa"] == "comprovante":
-
-        salvar_pedido({
-            "tipo": session["subfluxo"],
-            "urna": session.get("urna"),
-            "pagamento": session.get("pagamento"),
-            "telefone": session.get("numero"),
-            "nome": session.get("nome"),
-            "status": "pago"
-        })
-
-        return {
-            "tipo": "texto",
-            "mensagem": "✅ Pedido confirmado! A funerária entrará em contato com você."
-        }
-
+    
     return {"tipo": "texto", "mensagem": "Escolha válida."}
