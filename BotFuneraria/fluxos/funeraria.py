@@ -209,6 +209,7 @@ Escolha uma opção:""",
                     {"id": "1", "label": "Pequeno (até 60kg)"},
                     {"id": "2", "label": "Médio (60kg a 90kg)"},
                     {"id": "3", "label": "Grande (acima de 90kg)"},
+                    {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
             }
@@ -322,6 +323,15 @@ Escolha uma opção:""",
 
         if session["etapa"] == "destino_translado":
             session["dados"]["destino_translado"] = mensagem
+            mudar_etapa(session, "horario_translado")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "⏰ Informe o horário do translado:"
+            }
+
+        if session["etapa"] == "horario_translado":
+            session["dados"]["horario_translado"] = mensagem
             mudar_etapa(session, "tipo_urna")
 
             return {
@@ -411,6 +421,53 @@ Escolha uma opção:""",
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
+            dados = session.get("dados", {})
+            urna = session.get("urna", {})
+
+            resumo = f"""📋 *Resumo do pedido*
+
+📍 Endereço: {dados.get("endereco", "-")}
+⚖️ Porte: {dados.get("porte_corpo", "-")}
+🕯️ Velório: {dados.get("velorio", "-")}
+📅 Data: {dados.get("data", "-")}
+⏰ Horário: {dados.get("horario", "-")}
+🚐 Translado: {dados.get("tera_translado", "-")}
+"""
+
+            if dados.get("tera_translado") == "sim":
+                resumo += f"""
+📍 Origem: {dados.get("origem_translado", "-")}
+📍 Destino: {dados.get("destino_translado", "-")}
+⏰ Horário translado: {dados.get("horario_translado", "-")}
+"""
+
+            resumo += f"""
+
+🪦 Urna: {urna.get("nome", "-")}
+💰 Valor: {formatar_reais(urna.get("preco", 0))}
+"""
+
+            mudar_etapa(session, "resumo")
+
+            return {
+                "tipo": "botoes",
+                "mensagem": resumo,
+                "botoes": [
+                    {"id": "1", "label": "Confirmar pedido"},
+                    {"id": "2", "label": "Editar"},
+                    {"id": "0", "label": "Voltar"},
+                ]
+            }
+
+        if session["etapa"] == "resumo":
+
+            if mensagem == "2":
+                mudar_etapa(session, "endereco")
+                return {"tipo": "texto", "mensagem": "📍 Informe o endereço novamente:"}
+
+            if mensagem != "1":
+                return {"tipo": "texto", "mensagem": "Escolha válida"}
+
             total = float(session["urna"]["preco"])
             sinal = round(total * 0.1, 2)
 
@@ -434,10 +491,9 @@ Para concluir o pedido, solicitamos o pagamento de 10% do valor.
 07559544000137
 
 Após pagar, clique em *Já paguei* 👇""",
-                "botoes": [
-                    {"id": "1", "label": "Já paguei"},
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
+            "botoes": [
+                {"id": "1", "label": "Já paguei"},
+                {"id": "0", "label": "Voltar"},
                 ]
             }
 
@@ -484,11 +540,20 @@ Após pagar, clique em *Já paguei* 👇""",
 
         if session["etapa"] == "translado_destino":
             session["dados"]["destino"] = mensagem
+            mudar_etapa(session, "translado_data")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Informe a data do translado (ex: 10/02/2026):"
+            }
+
+        if session["etapa"] == "translado_data":
+            session["dados"]["data"] = mensagem
             mudar_etapa(session, "translado_horario")
 
             return {
                 "tipo": "texto",
-                "mensagem": "⏰ Informe o horário do translado (ex: 11:00, 16:30, 20:45):"
+                "mensagem": "⏰ Informe o horário do translado (ex: 11:00):"
             }
 
         if session["etapa"] == "translado_horario":
