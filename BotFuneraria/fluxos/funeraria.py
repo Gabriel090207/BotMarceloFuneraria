@@ -185,6 +185,13 @@ Escolha uma opção:""",
             mudar_etapa(session, "endereco")
             return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
+
+        if mensagem == "3":
+            session["subfluxo"] = "translado"
+            mudar_etapa(session, "translado_origem")
+            return {"tipo": "texto", "mensagem": "📍 Informe o endereço de origem:"}
+
+            
     # -------------------------
     # SUBFLUXO
     # -------------------------
@@ -193,6 +200,116 @@ Escolha uma opção:""",
 
         if session["etapa"] == "endereco":
             session["dados"]["endereco"] = mensagem
+            mudar_etapa(session, "porte_corpo")
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "⚖️ Qual o porte do corpo?",
+                "botoes": [
+                    {"id": "1", "label": "Pequeno"},
+                    {"id": "2", "label": "Médio"},
+                    {"id": "3", "label": "Grande"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        if session["etapa"] == "porte_corpo":
+
+            portes = {
+                "1": "pequeno",
+                "2": "medio",
+                "3": "grande"
+            }
+
+            if mensagem not in portes:
+                return {"tipo": "texto", "mensagem": "Escolha válida"}
+
+            session["dados"]["porte_corpo"] = portes[mensagem]
+            mudar_etapa(session, "velorio")
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "🕯️ Haverá velório?",
+                "botoes": [
+                    {"id": "1", "label": "Sim"},
+                    {"id": "2", "label": "Não"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        if session["etapa"] == "velorio":
+
+            if mensagem == "1":
+                session["dados"]["velorio"] = "sim"
+            elif mensagem == "2":
+                session["dados"]["velorio"] = "nao"
+            else:
+                return {"tipo": "texto", "mensagem": "Escolha válida"}
+
+            mudar_etapa(session, "horario")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "⏰ Informe o horário:"
+            }
+
+        if session["etapa"] == "horario":
+            session["dados"]["horario"] = mensagem
+            mudar_etapa(session, "pergunta_translado")
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "🚐 Haverá translado?",
+                "botoes": [
+                    {"id": "1", "label": "Sim"},
+                    {"id": "2", "label": "Não"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        if session["etapa"] == "pergunta_translado":
+
+            if mensagem == "1":
+                session["dados"]["tera_translado"] = "sim"
+                mudar_etapa(session, "origem_translado")
+
+                return {
+                    "tipo": "texto",
+                    "mensagem": "📍 Informe a origem do translado:"
+                }
+
+            elif mensagem == "2":
+                session["dados"]["tera_translado"] = "nao"
+                mudar_etapa(session, "tipo_urna")
+
+                return {
+                    "tipo": "botoes",
+                    "mensagem": "Escolha o tipo de urna:",
+                    "botoes": [
+                        {"id": "1", "label": "Simples"},
+                        {"id": "2", "label": "Intermediária"},
+                        {"id": "3", "label": "Premium"},
+                        {"id": "0", "label": "Voltar"},
+                        {"id": "00", "label": "Menu principal"},
+                    ]
+                }   
+
+            return {"tipo": "texto", "mensagem": "Escolha válida"}
+
+        if session["etapa"] == "origem_translado":
+            session["dados"]["origem_translado"] = mensagem
+            mudar_etapa(session, "destino_translado")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📍 Informe o destino do translado:"
+            }
+
+        if session["etapa"] == "destino_translado":
+            session["dados"]["destino_translado"] = mensagem
             mudar_etapa(session, "tipo_urna")
 
             return {
@@ -296,7 +413,7 @@ Escolha uma opção:""",
                 "tipo": "botoes",
                 "mensagem": f"""💳 *Pagamento da entrada (sinal)*
 
-Para dar continuidade ao atendimento, solicitamos o pagamento de 10% do valor.
+Para concluir o pedido, solicitamos o pagamento de 10% do valor.
 
 💰 Valor total: {formatar_reais(total)}
 💵 Entrada (10%): {formatar_reais(sinal)}
@@ -337,6 +454,72 @@ Após pagar, clique em *Já paguei* 👇""",
                     "mensagem": "✅ Pedido registrado! Em breve entraremos em contato."
                 }
 
+    
+    # -------------------------
+    # TRANSLADO
+    # -------------------------
+
+    if session["subfluxo"] == "translado":
+
+        if session["etapa"] == "translado_origem":
+            session["dados"]["origem"] = mensagem
+            mudar_etapa(session, "translado_destino")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📍 Informe o destino do translado:"
+            }
+
+        if session["etapa"] == "translado_destino":
+            session["dados"]["destino"] = mensagem
+            mudar_etapa(session, "translado_horario")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "⏰ Informe o horário do translado:"
+            }
+
+        if session["etapa"] == "translado_horario":
+            session["dados"]["horario"] = mensagem
+            mudar_etapa(session, "confirmar_translado")
+
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""🚐 *Confirmação do translado*
+
+Origem: {session['dados']['origem']}
+Destino: {session['dados']['destino']}
+Horário: {session['dados']['horario']}""",
+            "botoes": [
+                {"id": "1", "label": "Confirmar"},
+                {"id": "0", "label": "Voltar"},
+                {"id": "00", "label": "Menu principal"},
+            ]
+        }
+
+        if session["etapa"] == "confirmar_translado":
+
+            if mensagem != "1":
+                return {"tipo": "texto", "mensagem": "Escolha válida"}
+
+            salvar_pedido({
+                "tipo": "translado",
+                "dados": session.get("dados"),
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "novo",
+                "criado_em": datetime.now().isoformat()
+            })
+
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": """✅ Pedido de translado registrado!
+
+Nossa equipe continuará o atendimento diretamente com você pelo WhatsApp."""
+            }
+
     # -------------------------
     # PAGAMENTO
     # -------------------------
@@ -347,6 +530,7 @@ Após pagar, clique em *Já paguei* 👇""",
 
             salvar_pedido({
                 "tipo": session["subfluxo"],
+                "dados": session.get("dados"),
                 "urna": session.get("urna"),
                 "pagamento": session.get("pagamento"),
                 "telefone": session.get("numero"),
@@ -368,10 +552,7 @@ Agora, por favor, envie o comprovante aqui no WhatsApp para a equipe da funerár
 A partir deste momento, o atendimento seguirá diretamente com nossa equipe."""
             }
 
-    return {
-        "tipo": "texto",
-        "mensagem": "Clique em 'Já paguei' após realizar o pagamento."
-    }
+
 
     
     return {"tipo": "texto", "mensagem": "Escolha válida."}
