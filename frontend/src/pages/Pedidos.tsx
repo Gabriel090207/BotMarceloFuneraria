@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { FiSearch } from "react-icons/fi"
 
-import { collection, getDocs, query, where } from "firebase/firestore"
+import { collection, getDocs, query} from "firebase/firestore"
 import { db } from "../services/firebase"
 
 import "../styles/pedidos.css"
@@ -18,9 +18,8 @@ export default function Pedidos(){
     async function carregarPedidos(){
 
       const q = query(
-        collection(db,"pedidos"),
-        where("tipo","in",["funeraria","plano"])
-      )
+  collection(db,"pedidos")
+)
 
       const snapshot = await getDocs(q)
 
@@ -41,22 +40,22 @@ export default function Pedidos(){
 
   },[])
 
-  function renderStatus(status:string){
+function renderStatus(status:string){
 
-    if(status === "aberto"){
-      return <span className="status status-open">Aberto</span>
-    }
-
-    if(status === "finalizado"){
-      return <span className="status status-paid">Finalizado</span>
-    }
-
-    if(status === "cancelado"){
-      return <span className="status status-cancelado">Cancelado</span>
-    }
-
-    return <span>{status}</span>
+  if(status === "aberto"){
+    return <span className="status status-open">Aberto</span>
   }
+
+  if(status === "finalizado"){
+    return <span className="status status-paid">Finalizado</span>
+  }
+
+  if(status === "cancelado"){
+    return <span className="status status-cancelado">Cancelado</span>
+  }
+
+  return <span>{status}</span>
+}
 
   const pedidosFiltrados = pedidos.filter((pedido:any)=>{
 
@@ -139,9 +138,9 @@ export default function Pedidos(){
 
                 <td>{pedido.telefone || "-"}</td>
 
-                <td>{pedido.tipo_servico}</td>
+                <td>{pedido.tipo}</td>
 
-                <td>{pedido.tipo_urna}</td>
+               <td>{pedido.urna?.nome || "-"}</td>
 
                 <td>{renderStatus(pedido.status)}</td>
 

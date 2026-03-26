@@ -54,6 +54,43 @@ Escolha uma opção:""",
 
     def voltar(session):
 
+
+        if etapa_anterior == "pagamento":
+
+            dados = session.get("dados", {})
+            urna = session.get("urna", {})
+
+            resumo = f"""📋 *Resumo do pedido*
+
+📍 Endereço: {dados.get("endereco", "-")}
+⚖️ Porte: {dados.get("porte_corpo", "-")}
+🕯️ Velório: {dados.get("velorio", "-")}
+📅 Data: {dados.get("data", "-")}
+⏰ Horário: {dados.get("horario", "-")}
+🚐 Translado: {dados.get("tera_translado", "-")}
+"""
+
+            if dados.get("tera_translado") == "sim":
+                resumo += f"""📍 Origem: {dados.get("origem_translado", "-")}
+📍 Destino: {dados.get("destino_translado", "-")}
+⏰ Horário translado: {dados.get("horario_translado", "-")}"""
+
+            resumo += f"""
+
+🪦 Urna: {urna.get("nome", "-")}
+💰 Valor: {formatar_reais(urna.get("preco", 0))}
+"""
+
+            return {
+                "tipo": "botoes",
+                "mensagem": resumo,
+                "botoes": [
+                    {"id": "1", "label": "Confirmar pedido"},
+                    {"id": "2", "label": "Editar"},
+                    {"id": "0", "label": "Voltar"},
+                ]
+            }
+
         if not session.get("historico"):
             session["etapa"] = "menu"
             session["subfluxo"] = None
@@ -512,7 +549,7 @@ Após pagar, clique em *Já paguei* 👇""",
                     "telefone": session.get("numero"),
                     "nome": session.get("nome"),
                     "urna": session["urna"],
-                    "status": "novo",
+                    "status": "aberto",
                     "criado_em": datetime.now().isoformat()
                 })
 
@@ -586,7 +623,7 @@ Após pagar, clique em *Já paguei* 👇""",
                 "dados": session.get("dados"),
                 "telefone": session.get("numero"),
                 "nome": session.get("nome"),
-                "status": "novo",
+                "status": "aberto",
                 "criado_em": datetime.now().isoformat()
             })
 
@@ -614,7 +651,7 @@ Nossa equipe continuará o atendimento diretamente com você pelo WhatsApp."""
                 "pagamento": session.get("pagamento"),
                 "telefone": session.get("numero"),
                 "nome": session.get("nome"),
-                "status": "aguardando_comprovante",
+                "status": "aberto",
                 "criado_em": datetime.now().isoformat()
             })
 

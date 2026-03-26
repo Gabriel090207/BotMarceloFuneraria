@@ -54,6 +54,12 @@ export default function NovaUrna(){
 
   async function salvarUrna(){
 
+
+    if(!nome || !tipo || !categoria || !preco){
+  alert("Preencha todos os campos")
+  return
+}
+
     if(loading) return
 
     setLoading(true)
@@ -160,7 +166,7 @@ export default function NovaUrna(){
     onChange={(e)=>setCategoria(e.target.value)}
   >
 
-    <option value="">Selecione</option>
+   <option value="" disabled>Selecione</option>
     <option value="sepultamento">Sepultamento</option>
     <option value="cremacao">Cremação</option>
 

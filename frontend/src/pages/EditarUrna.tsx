@@ -101,6 +101,11 @@ export default function EditarUrna(){
 
   async function salvar(){
 
+    if(!nome || !tipo || !categoria || !preco){
+  alert("Preencha todos os campos")
+  return
+}
+
     if(!id) return
 
     if(salvando) return
@@ -202,8 +207,9 @@ export default function EditarUrna(){
     onChange={(e)=>setCategoria(e.target.value)}
   >
 
-    <option value="sepultamento">Sepultamento</option>
-    <option value="cremacao">Cremação</option>
+   <option value="">Selecione</option>
+<option value="sepultamento">Sepultamento</option>
+<option value="cremacao">Cremação</option>
 
   </select>
 
