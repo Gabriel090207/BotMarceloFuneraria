@@ -21,25 +21,7 @@ def fluxo_funeraria(session, mensagem):
     nome = session.get("nome", "Cliente")
 
     # -------------------------
-    # NORMALIZA BOTÕES
-    # -------------------------
-
-    if mensagem == "Voltar":
-        mensagem = "0"
-    elif mensagem == "Menu principal":
-        mensagem = "00"
-
-    # -------------------------
-    # VOLTAR GLOBAL (ANTES DE TUDO)
-    # -------------------------
-    if mensagem == "0":
-        return voltar(session)
-
-    if mensagem == "00":
-        return menu_principal()
-
-    # -------------------------
-    # FUNÇÃO MUDAR ETAPA
+    # FUNÇÕES PRIMEIRO
     # -------------------------
 
     def mudar_etapa(session, nova_etapa):
@@ -50,17 +32,12 @@ def fluxo_funeraria(session, mensagem):
 
         session["etapa"] = nova_etapa
 
-    # -------------------------
-    # VOLTAR INTELIGENTE
-    # -------------------------
-
     def voltar(session):
         if session.get("historico"):
             etapa_anterior = session["historico"].pop()
         else:
             etapa_anterior = "menu"
 
-        # regra especial
         if etapa_anterior == "endereco":
             session["subfluxo"] = None
             session["etapa"] = "menu"
@@ -68,10 +45,6 @@ def fluxo_funeraria(session, mensagem):
 
         session["etapa"] = etapa_anterior
         return fluxo_funeraria(session, "")
-
-    # -------------------------
-    # MENU PRINCIPAL
-    # -------------------------
 
     def menu_principal():
         session["fluxo"] = None
@@ -92,6 +65,25 @@ Escolha uma opção:""",
                 {"id": "5", "label": "Falar com atendente"},
             ]
         }
+
+    # -------------------------
+    # NORMALIZA BOTÕES
+    # -------------------------
+
+    if mensagem == "Voltar":
+        mensagem = "0"
+    elif mensagem == "Menu principal":
+        mensagem = "00"
+
+    # -------------------------
+    # VOLTAR GLOBAL
+    # -------------------------
+
+    if mensagem == "0":
+        return voltar(session)
+
+    if mensagem == "00":
+        return menu_principal()
 
     # -------------------------
     # INICIO
@@ -122,9 +114,6 @@ Escolha uma opção:""",
 
     if session["etapa"] == "menu":
 
-        if mensagem == "00":
-            return menu_principal()
-
         if mensagem == "1":
             session["subfluxo"] = "sepultamento"
             mudar_etapa(session, "endereco")
@@ -140,11 +129,6 @@ Escolha uma opção:""",
     # -------------------------
 
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
-
-        if mensagem == "00":
-            return menu_principal()
-
-       
 
         # ENDEREÇO
         if session["etapa"] == "endereco":
@@ -165,8 +149,6 @@ Escolha uma opção:""",
 
         # TIPO URNA
         if session["etapa"] == "tipo_urna":
-
-          
 
             tipos = {
                 "1": "simples",
@@ -208,8 +190,6 @@ Escolha uma opção:""",
         # LISTA URNAS
         if session["etapa"] == "lista_urnas":
 
-         
-
             try:
                 urna = session["urnas"][int(mensagem)-1]
             except:
@@ -242,8 +222,6 @@ Escolha uma opção:""",
         # CONFIRMAR
         if session["etapa"] == "confirmar":
 
-         
-
             if mensagem != "1":
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
@@ -271,9 +249,6 @@ Valor: {formatar_reais(total)}""",
                 session["historico"] = []
                 return {"tipo": "texto", "mensagem": "Reiniciando atendimento..."}
 
-            if mensagem == "00":
-                return menu_principal()
-
             if mensagem == "1":
 
                 salvar_pedido({
@@ -293,4 +268,3 @@ Valor: {formatar_reais(total)}""",
                 }
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
-
