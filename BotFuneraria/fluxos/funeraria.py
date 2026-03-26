@@ -71,60 +71,8 @@ Escolha uma opção:""",
         etapa_anterior = session["historico"].pop()
         session["etapa"] = etapa_anterior
 
-        if etapa_anterior == "pagamento":
-            dados = session.get("dados", {})
-            urna = session.get("urna", {})
-
-            resumo = f"""📋 *Resumo do pedido*
-
-📍 Endereço: {dados.get("endereco", "-")}
-⚖️ Porte: {dados.get("porte_corpo", "-")}
-🕯️ Velório: {dados.get("velorio", "-")}
-📅 Data: {dados.get("data", "-")}
-⏰ Horário: {dados.get("horario", "-")}
-🚐 Translado: {dados.get("tera_translado", "-")}
-"""
-
-            if dados.get("tera_translado") == "sim":
-                resumo += f"""📍 Origem: {dados.get("origem_translado", "-")}
-📍 Destino: {dados.get("destino_translado", "-")}
-⏰ Horário translado: {dados.get("horario_translado", "-")}"""
-
-            resumo += f"""
-
-🪦 Urna: {urna.get("nome", "-")}
-💰 Valor: {formatar_reais(urna.get("preco", 0))}
-"""
-
-            return {
-                "tipo": "botoes",
-                "mensagem": resumo,
-                "botoes": [
-                    {"id": "1", "label": "Confirmar pedido"},
-                    {"id": "2", "label": "Editar"},
-                    {"id": "0", "label": "Voltar"},
-                ]
-            }
-
-        if not session.get("historico"):
-            session["etapa"] = "menu"
-            session["subfluxo"] = None
-
-            return {
-                "tipo": "botoes",
-                "mensagem": "Voltando ao menu...",
-                "botoes": [
-                    {"id": "1", "label": "Sepultamento"},
-                    {"id": "2", "label": "Cremação"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
-
-        etapa_anterior = session["historico"].pop()
-        session["etapa"] = etapa_anterior
-
         if etapa_anterior == "endereco":
-            return {"tipo": "texto", "mensagem": "📍 Onde será o velório?"}
+            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
         if etapa_anterior == "tipo_urna":
             return {
@@ -177,7 +125,43 @@ Escolha uma opção:""",
                 ]
             }
 
-        return {"tipo": "texto", "mensagem": "Voltando..."}
+
+            if etapa_anterior == "resumo":
+                dados = session.get("dados", {})
+                urna = session.get("urna", {})
+
+                resumo = f"""📋 *Resumo do pedido*
+
+📍 Endereço: {dados.get("endereco", "-")}
+⚖️ Porte: {dados.get("porte_corpo", "-")}
+🕯️ Velório: {dados.get("velorio", "-")}
+📅 Data: {dados.get("data", "-")}
+⏰ Horário: {dados.get("horario", "-")}
+🚐 Translado: {dados.get("tera_translado", "-")}
+"""
+
+                if dados.get("tera_translado") == "sim":
+                    resumo += f"""📍 Origem: {dados.get("origem_translado", "-")}
+📍 Destino: {dados.get("destino_translado", "-")}
+⏰ Horário translado: {dados.get("horario_translado", "-")}"""
+
+                resumo += f"""
+
+🪦 Urna: {urna.get("nome", "-")}
+💰 Valor: {formatar_reais(urna.get("preco", 0))}
+"""
+
+                return {
+                    "tipo": "botoes",
+                    "mensagem": resumo,
+                    "botoes": [
+                        {"id": "1", "label": "Confirmar pedido"},
+                        {"id": "2", "label": "Editar"},
+                        {"id": "0", "label": "Voltar"},
+                    ]
+                }
+
+    return {"tipo": "texto", "mensagem": "Voltando..."}
 
     # -------------------------
     # NORMALIZA BOTÕES
@@ -230,12 +214,12 @@ Escolha uma opção:""",
         if mensagem == "1":
             session["subfluxo"] = "sepultamento"
             mudar_etapa(session, "endereco")
-            return {"tipo": "texto", "mensagem": "📍 Onde será o velório?"}
+            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
         if mensagem == "2":
             session["subfluxo"] = "cremacao"
             mudar_etapa(session, "endereco")
-            return {"tipo": "texto", "mensagem": "📍 Onde será o velório?"}
+            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
 
         if mensagem == "3":
@@ -251,7 +235,7 @@ Escolha uma opção:""",
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
 
         if session["etapa"] == "endereco":
-            session["dados"]["local_velorio"] = mensagem
+            session["dados"]["endereco"] = mensagem
             mudar_etapa(session, "porte_corpo")
 
             return {
@@ -278,7 +262,7 @@ Escolha uma opção:""",
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             session["dados"]["porte_corpo"] = portes[mensagem]
-            mudar_etapa(session, "data")
+            mudar_etapa(session, "velorio")
 
             return {
                 "tipo": "botoes",
@@ -291,7 +275,25 @@ Escolha uma opção:""",
                 ]
             }
 
+        if session["etapa"] == "velorio":
+
+            if mensagem == "1":
+                session["dados"]["velorio"] = "sim"
+            elif mensagem == "2":
+                session["dados"]["velorio"] = "nao"
+            else:
+                return {"tipo": "texto", "mensagem": "Escolha válida"}
+
         
+
+
+            mudar_etapa(session, "data")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Informe a data do atendimento (ex: 10/02/2026):"
+            }
+
 
         if session["etapa"] == "data":
             session["dados"]["data"] = mensagem
@@ -304,17 +306,24 @@ Escolha uma opção:""",
 
         if session["etapa"] == "horario":
             session["dados"]["horario"] = mensagem
+            mudar_etapa(session, "pergunta_translado")
 
-            if session["subfluxo"] == "cremacao":
-                mudar_etapa(session, "tipo_urna")
-            else:
-                mudar_etapa(session, "pergunta_translado")
+            return {
+                "tipo": "botoes",
+                "mensagem": "🚐 Haverá translado?",
+                "botoes": [
+                    {"id": "1", "label": "Sim"},
+                    {"id": "2", "label": "Não"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
 
         if session["etapa"] == "pergunta_translado":
 
             if mensagem == "1":
                 session["dados"]["tera_translado"] = "sim"
-                mudar_etapa(session, "destino_translado")
+                mudar_etapa(session, "origem_translado")
 
                 return {
                     "tipo": "texto",
@@ -339,7 +348,14 @@ Escolha uma opção:""",
 
             return {"tipo": "texto", "mensagem": "Escolha válida"}
 
-      
+        if session["etapa"] == "origem_translado":
+            session["dados"]["origem_translado"] = mensagem
+            mudar_etapa(session, "destino_translado")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📍 Informe o destino do translado:"
+            }
 
         if session["etapa"] == "destino_translado":
             session["dados"]["destino_translado"] = mensagem
@@ -449,7 +465,7 @@ Escolha uma opção:""",
 
             resumo = f"""📋 *Resumo do pedido*
 
-📍 Local do velório: {dados.get("local_velorio", "-")}
+📍 Endereço: {dados.get("endereco", "-")}
 ⚖️ Porte: {dados.get("porte_corpo", "-")}
 🕯️ Velório: {dados.get("velorio", "-")}
 📅 Data: {dados.get("data", "-")}
@@ -532,7 +548,7 @@ Após pagar, clique em *Já paguei* 👇""",
                     "telefone": session.get("numero"),
                     "nome": session.get("nome"),
                     "urna": session["urna"],
-                    "status": "aberto",
+                    "status": "novo",
                     "criado_em": datetime.now().isoformat()
                 })
 
@@ -606,7 +622,7 @@ Após pagar, clique em *Já paguei* 👇""",
                 "dados": session.get("dados"),
                 "telefone": session.get("numero"),
                 "nome": session.get("nome"),
-                "status": "aberto",
+                "status": "novo",
                 "criado_em": datetime.now().isoformat()
             })
 
@@ -634,7 +650,7 @@ Nossa equipe continuará o atendimento diretamente com você pelo WhatsApp."""
                 "pagamento": session.get("pagamento"),
                 "telefone": session.get("numero"),
                 "nome": session.get("nome"),
-                "status": "aberto",
+                "status": "aguardando_comprovante",
                 "criado_em": datetime.now().isoformat()
             })
 
