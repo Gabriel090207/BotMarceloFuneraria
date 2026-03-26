@@ -163,7 +163,7 @@ Escolha uma opção:""",
                 {"id": "1", "label": "Sepultamento"},
                 {"id": "2", "label": "Cremação"},
                 {"id": "3", "label": "Translado"},
-                {"id": "4", "label": "Salas de velório"},
+                {"id": "4", "label": "Salas de Homenagens"},
                 {"id": "5", "label": "Atendente"},
                 {"id": "00", "label": "Menu principal"},
             ]
@@ -206,10 +206,9 @@ Escolha uma opção:""",
                 "tipo": "botoes",
                 "mensagem": "⚖️ Qual o porte do corpo?",
                 "botoes": [
-                    {"id": "1", "label": "Pequeno"},
-                    {"id": "2", "label": "Médio"},
-                    {"id": "3", "label": "Grande"},
-                    {"id": "0", "label": "Voltar"},
+                    {"id": "1", "label": "Pequeno (até 60kg)"},
+                    {"id": "2", "label": "Médio (60kg a 90kg)"},
+                    {"id": "3", "label": "Grande (acima de 90kg)"},
                     {"id": "00", "label": "Menu principal"},
                 ]
             }
@@ -248,11 +247,24 @@ Escolha uma opção:""",
             else:
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
+        
+
+
+            mudar_etapa(session, "data")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Informe a data do atendimento (ex: 10/02/2026):"
+            }
+
+
+        if session["etapa"] == "data":
+            session["dados"]["data"] = mensagem
             mudar_etapa(session, "horario")
 
             return {
                 "tipo": "texto",
-                "mensagem": "⏰ Informe o horário:"
+                "mensagem": "⏰ Informe o horário (ex: 11:00, 16:30, 20:45):"
             }
 
         if session["etapa"] == "horario":
@@ -476,7 +488,7 @@ Após pagar, clique em *Já paguei* 👇""",
 
             return {
                 "tipo": "texto",
-                "mensagem": "⏰ Informe o horário do translado:"
+                "mensagem": "⏰ Informe o horário do translado (ex: 11:00, 16:30, 20:45):"
             }
 
         if session["etapa"] == "translado_horario":
