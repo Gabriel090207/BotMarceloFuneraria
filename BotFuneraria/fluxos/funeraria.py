@@ -21,30 +21,16 @@ def fluxo_funeraria(session, mensagem):
     nome = session.get("nome", "Cliente")
 
     # -------------------------
-    # FUNÇÕES PRIMEIRO
+    # FUNÇÕES
     # -------------------------
 
     def mudar_etapa(session, nova_etapa):
         etapa_atual = session.get("etapa")
 
-        if etapa_atual:
+        if etapa_atual and (not session["historico"] or session["historico"][-1] != etapa_atual):
             session["historico"].append(etapa_atual)
 
         session["etapa"] = nova_etapa
-
-    def voltar(session):
-        if session.get("historico"):
-            etapa_anterior = session["historico"].pop()
-        else:
-            etapa_anterior = "menu"
-
-        if etapa_anterior == "endereco":
-            session["subfluxo"] = None
-            session["etapa"] = "menu"
-            return fluxo_funeraria(session, "")
-
-        session["etapa"] = etapa_anterior
-        return fluxo_funeraria(session, "")
 
     def menu_principal():
         session["fluxo"] = None
@@ -65,6 +51,81 @@ Escolha uma opção:""",
                 {"id": "5", "label": "Falar com atendente"},
             ]
         }
+
+    def voltar(session):
+
+        if not session.get("historico"):
+            session["etapa"] = "menu"
+            session["subfluxo"] = None
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "Voltando ao menu...",
+                "botoes": [
+                    {"id": "1", "label": "Sepultamento"},
+                    {"id": "2", "label": "Cremação"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        etapa_anterior = session["historico"].pop()
+        session["etapa"] = etapa_anterior
+
+        if etapa_anterior == "endereco":
+            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
+
+        if etapa_anterior == "tipo_urna":
+            return {
+                "tipo": "botoes",
+                "mensagem": "Escolha o tipo de urna:",
+                "botoes": [
+                    {"id": "1", "label": "Simples"},
+                    {"id": "2", "label": "Intermediária"},
+                    {"id": "3", "label": "Premium"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        if etapa_anterior == "lista_urnas":
+            urnas = session.get("urnas", [])
+
+            botoes = []
+            for i, u in enumerate(urnas):
+                botoes.append({
+                    "id": str(i+1),
+                    "label": f"{u['nome']} - {formatar_reais(u['preco'])}"
+                })
+
+            botoes += [
+                {"id": "0", "label": "Voltar"},
+                {"id": "00", "label": "Menu principal"},
+            ]
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "Escolha a urna:",
+                "botoes": botoes
+            }
+
+        if etapa_anterior == "confirmar":
+            urna = session.get("urna")
+
+            if not urna:
+                return {"tipo": "texto", "mensagem": "Erro ao voltar."}
+
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""🪦 {urna['nome']}
+💰 {formatar_reais(urna['preco'])}""",
+                "botoes": [
+                    {"id": "1", "label": "Confirmar"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        return {"tipo": "texto", "mensagem": "Voltando..."}
 
     # -------------------------
     # NORMALIZA BOTÕES
@@ -130,7 +191,6 @@ Escolha uma opção:""",
 
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
 
-        # ENDEREÇO
         if session["etapa"] == "endereco":
             session["dados"]["endereco"] = mensagem
             mudar_etapa(session, "tipo_urna")
@@ -147,7 +207,6 @@ Escolha uma opção:""",
                 ]
             }
 
-        # TIPO URNA
         if session["etapa"] == "tipo_urna":
 
             tipos = {
@@ -187,7 +246,6 @@ Escolha uma opção:""",
                 "botoes": botoes
             }
 
-        # LISTA URNAS
         if session["etapa"] == "lista_urnas":
 
             try:
@@ -219,7 +277,6 @@ Escolha uma opção:""",
 
             return respostas
 
-        # CONFIRMAR
         if session["etapa"] == "confirmar":
 
             if mensagem != "1":
@@ -241,7 +298,6 @@ Valor: {formatar_reais(total)}""",
                 ]
             }
 
-        # FINAL
         if session["etapa"] == "final":
 
             if mensagem == "2":
