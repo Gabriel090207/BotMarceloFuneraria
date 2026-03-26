@@ -360,7 +360,10 @@ Escolha uma opção:""",
             session["tipo_urna"] = tipos[mensagem]
             mudar_etapa(session, "lista_urnas")
 
-            urnas = listar_urnas(tipos[mensagem])
+            urnas = listar_urnas(
+                tipos[mensagem],
+                session["subfluxo"]
+            )
 
             if not urnas:
                 return {"tipo": "texto", "mensagem": "Nenhuma urna disponível"}
@@ -431,15 +434,13 @@ Escolha uma opção:""",
 🕯️ Velório: {dados.get("velorio", "-")}
 📅 Data: {dados.get("data", "-")}
 ⏰ Horário: {dados.get("horario", "-")}
-🚐 Translado: {dados.get("tera_translado", "-")}
+\n🚐 Translado: {dados.get("tera_translado", "-")}
 """
 
             if dados.get("tera_translado") == "sim":
-                resumo += f"""
-📍 Origem: {dados.get("origem_translado", "-")}
+                resumo += f"""📍 Origem: {dados.get("origem_translado", "-")}
 📍 Destino: {dados.get("destino_translado", "-")}
-⏰ Horário translado: {dados.get("horario_translado", "-")}
-"""
+⏰ Horário translado: {dados.get("horario_translado", "-")}"""
 
             resumo += f"""
 

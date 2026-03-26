@@ -13,6 +13,7 @@ export default function NovaUrna(){
 
   const [nome,setNome] = useState("")
   const [tipo,setTipo] = useState("")
+  const [categoria,setCategoria] = useState("")
   const [preco,setPreco] = useState("")
 
   const [imagens,setImagens] = useState<File[]>([])
@@ -61,13 +62,14 @@ export default function NovaUrna(){
 
       const docRef = await addDoc(collection(db,"urnas"),{
 
-        nome,
-        tipo,
-        preco,
-        ativo:true,
-        criado_em: new Date()
+  nome,
+  tipo,
+  categoria, // 🔥 NOVO
+  preco,
+  ativo:true,
+  criado_em: new Date()
 
-      })
+})
 
       const urnaId = docRef.id
 
@@ -89,6 +91,7 @@ export default function NovaUrna(){
 
       setNome("")
       setTipo("")
+      setCategoria("")
       setPreco("")
       setImagens([])
 
@@ -146,6 +149,24 @@ export default function NovaUrna(){
             </select>
 
           </div>
+
+
+          <div className="nova-urna-field">
+
+  <label>Categoria</label>
+
+  <select
+    value={categoria}
+    onChange={(e)=>setCategoria(e.target.value)}
+  >
+
+    <option value="">Selecione</option>
+    <option value="sepultamento">Sepultamento</option>
+    <option value="cremacao">Cremação</option>
+
+  </select>
+
+</div>
 
           <div className="nova-urna-field">
 

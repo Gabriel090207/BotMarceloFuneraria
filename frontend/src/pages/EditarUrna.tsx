@@ -23,6 +23,7 @@ export default function EditarUrna(){
 
   const [nome,setNome] = useState("")
   const [tipo,setTipo] = useState("")
+  const [categoria,setCategoria] = useState("")
   const [preco,setPreco] = useState("")
 
   const [imagens,setImagens] = useState<string[]>([])
@@ -40,6 +41,7 @@ export default function EditarUrna(){
 
     setNome(data.nome)
     setTipo(data.tipo)
+    setCategoria(data.categoria || "")
     setPreco(data.preco)
 
     setImagens(data.imagens || [])
@@ -121,6 +123,7 @@ export default function EditarUrna(){
 
         nome,
         tipo,
+        categoria,
         preco,
         imagens: urls
 
@@ -189,6 +192,22 @@ export default function EditarUrna(){
             </select>
 
           </div>
+
+          <div className="nova-urna-field">
+
+  <label>Categoria</label>
+
+  <select
+    value={categoria}
+    onChange={(e)=>setCategoria(e.target.value)}
+  >
+
+    <option value="sepultamento">Sepultamento</option>
+    <option value="cremacao">Cremação</option>
+
+  </select>
+
+</div>
 
           <div className="nova-urna-field">
 
