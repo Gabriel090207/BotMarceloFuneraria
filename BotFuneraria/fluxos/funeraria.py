@@ -564,9 +564,10 @@ Após pagar, clique em *Já paguei* 👇""",
                 "tipo": "botoes",
                 "mensagem": f"""🚐 *Confirmação do translado*
 
-Origem: {session['dados']['origem']}
-Destino: {session['dados']['destino']}
-Horário: {session['dados']['horario']}""",
+📍 Origem: {session['dados']['origem']}
+📍 Destino: {session['dados']['destino']}
+📅 Data: {session['dados'].get('data', '-')}
+⏰ Horário: {session['dados']['horario']}""",
             "botoes": [
                 {"id": "1", "label": "Confirmar"},
                 {"id": "0", "label": "Voltar"},
