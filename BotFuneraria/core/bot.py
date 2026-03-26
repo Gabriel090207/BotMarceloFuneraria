@@ -7,6 +7,8 @@ from fluxos.atendente import fluxo_atendente
 from fluxos.planos_familiares import fluxo_planos_familiares
 from fluxos.planos_empresariais import fluxo_planos_empresariais
 
+from datetime import datetime
+import pytz
 
 def responder(numero, mensagem):
 
@@ -31,7 +33,8 @@ def responder(numero, mensagem):
 
     if session["etapa_global"] == "inicio":
 
-        hora = datetime.now().hour
+        fuso = pytz.timezone("America/Sao_Paulo")
+        hora = datetime.now(fuso).hour
 
         if hora < 12:
             saudacao = "Bom dia"
