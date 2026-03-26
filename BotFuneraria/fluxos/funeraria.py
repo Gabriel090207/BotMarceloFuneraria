@@ -338,43 +338,43 @@ Escolha uma opção:""",
                 }
 
     # -------------------------
-# PAGAMENTO
-# -------------------------
+    # PAGAMENTO
+    # -------------------------
 
-if session["etapa"] == "pagamento":
+    if session["etapa"] == "pagamento":
 
-    if mensagem == "1":
-        mudar_etapa(session, "comprovante")
+        if mensagem == "1":
+            mudar_etapa(session, "comprovante")
+
+            return {
+                "tipo": "texto",
+                "mensagem": "📎 Envie o comprovante do pagamento para confirmação."
+            }
 
         return {
             "tipo": "texto",
-            "mensagem": "📎 Envie o comprovante do pagamento para confirmação."
+            "mensagem": "Clique em 'Já paguei' após realizar o pagamento."
         }
 
-    return {
-        "tipo": "texto",
-        "mensagem": "Clique em 'Já paguei' após realizar o pagamento."
-    }
 
+    # -------------------------
+    # COMPROVANTE
+    # -------------------------
 
-# -------------------------
-# COMPROVANTE
-# -------------------------
+    if session["etapa"] == "comprovante":
 
-if session["etapa"] == "comprovante":
+        salvar_pedido({
+            "tipo": session["subfluxo"],
+            "urna": session.get("urna"),
+            "pagamento": session.get("pagamento"),
+            "telefone": session.get("numero"),
+            "nome": session.get("nome"),
+            "status": "pago"
+        })
 
-    salvar_pedido({
-        "tipo": session["subfluxo"],
-        "urna": session.get("urna"),
-        "pagamento": session.get("pagamento"),
-        "telefone": session.get("numero"),
-        "nome": session.get("nome"),
-        "status": "pago"
-    })
-
-    return {
-        "tipo": "texto",
-        "mensagem": "✅ Pedido confirmado! A funerária entrará em contato com você."
-    }
+        return {
+            "tipo": "texto",
+            "mensagem": "✅ Pedido confirmado! A funerária entrará em contato com você."
+        }
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
