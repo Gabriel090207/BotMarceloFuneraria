@@ -296,15 +296,15 @@ Escolha uma opção:""",
                 "tipo": "botoes",
                 "mensagem": f"""💳 *Pagamento da entrada (sinal)*
 
-            Para dar continuidade ao atendimento, solicitamos o pagamento de 10% do valor.
+Para dar continuidade ao atendimento, solicitamos o pagamento de 10% do valor.
 
-            💰 Valor total: {formatar_reais(total)}
-            💵 Entrada (10%): {formatar_reais(sinal)}
+💰 Valor total: {formatar_reais(total)}
+💵 Entrada (10%): {formatar_reais(sinal)}
 
-            🔑 Chave PIX:
-            07559544000137
+🔑 Chave PIX:
+07559544000137
 
-            Após pagar, clique em *Já paguei* 👇""",
+Após pagar, clique em *Já paguei* 👇""",
                 "botoes": [
                     {"id": "1", "label": "Já paguei"},
                     {"id": "0", "label": "Voltar"},
