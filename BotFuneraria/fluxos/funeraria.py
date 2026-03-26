@@ -40,9 +40,7 @@ def fluxo_funeraria(session, mensagem):
 
         return {
             "tipo": "botoes",
-            "mensagem": """🔙 Voltamos ao menu principal
-
-Escolha uma opção:""",
+            "mensagem": "🔙 Voltamos ao menu principal\n\nEscolha uma opção:",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos familiares"},
@@ -64,6 +62,7 @@ Escolha uma opção:""",
                 "botoes": [
                     {"id": "1", "label": "Sepultamento"},
                     {"id": "2", "label": "Cremação"},
+                    {"id": "3", "label": "Salas de velório"},
                     {"id": "00", "label": "Menu principal"},
                 ]
             }
@@ -111,13 +110,9 @@ Escolha uma opção:""",
         if etapa_anterior == "confirmar":
             urna = session.get("urna")
 
-            if not urna:
-                return {"tipo": "texto", "mensagem": "Erro ao voltar."}
-
             return {
                 "tipo": "botoes",
-                "mensagem": f"""🪦 {urna['nome']}
-💰 {formatar_reais(urna['preco'])}""",
+                "mensagem": f"🪦 {urna['nome']}\n💰 {formatar_reais(urna['preco'])}",
                 "botoes": [
                     {"id": "1", "label": "Confirmar"},
                     {"id": "0", "label": "Voltar"},
@@ -136,10 +131,6 @@ Escolha uma opção:""",
     elif mensagem == "Menu principal":
         mensagem = "00"
 
-    # -------------------------
-    # VOLTAR GLOBAL
-    # -------------------------
-
     if mensagem == "0":
         return voltar(session)
 
@@ -156,15 +147,11 @@ Escolha uma opção:""",
 
         return {
             "tipo": "botoes",
-            "mensagem": f"""⚰️ Serviços Funerários
-
-{nome}, como podemos ajudar?""",
+            "mensagem": f"⚰️ Serviços Funerários\n\n{nome}, como podemos ajudar?",
             "botoes": [
                 {"id": "1", "label": "Sepultamento"},
                 {"id": "2", "label": "Cremação"},
-                {"id": "3", "label": "Translado"},
-                {"id": "4", "label": "Salas de velório"},
-                {"id": "5", "label": "Atendente"},
+                {"id": "3", "label": "Salas de velório"},
                 {"id": "00", "label": "Menu principal"},
             ]
         }
@@ -185,8 +172,57 @@ Escolha uma opção:""",
             mudar_etapa(session, "endereco")
             return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
 
+        if mensagem == "3":
+            session["subfluxo"] = "sala"
+            mudar_etapa(session, "data_velorio")
+            return {"tipo": "texto", "mensagem": "📅 Informe a data do velório:"}
+
     # -------------------------
-    # SUBFLUXO
+    # SALAS DE VELÓRIO
+    # -------------------------
+
+    if session["subfluxo"] == "sala":
+
+        if session["etapa"] == "data_velorio":
+            session["dados"]["data"] = mensagem
+            mudar_etapa(session, "hora_velorio")
+            return {"tipo": "texto", "mensagem": "⏰ Informe o horário:"}
+
+        if session["etapa"] == "hora_velorio":
+            session["dados"]["hora"] = mensagem
+            mudar_etapa(session, "confirmar_sala")
+
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""🏢 Reserva de sala
+
+Data: {session['dados']['data']}
+Hora: {session['dados']['hora']}""",
+                "botoes": [
+                    {"id": "1", "label": "Confirmar"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        if session["etapa"] == "confirmar_sala":
+
+            if mensagem != "1":
+                return {"tipo": "texto", "mensagem": "Escolha válida"}
+
+            salvar_pedido({
+                "tipo": "sala_velorio",
+                "dados": session["dados"],
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "novo",
+                "criado_em": datetime.now().isoformat()
+            })
+
+            return {"tipo": "texto", "mensagem": "✅ Sala reservada! Entraremos em contato."}
+
+    # -------------------------
+    # URNAS
     # -------------------------
 
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
@@ -209,11 +245,7 @@ Escolha uma opção:""",
 
         if session["etapa"] == "tipo_urna":
 
-            tipos = {
-                "1": "simples",
-                "2": "intermediaria",
-                "3": "premium"
-            }
+            tipos = {"1": "simples", "2": "intermediaria", "3": "premium"}
 
             if mensagem not in tipos:
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
@@ -222,29 +254,16 @@ Escolha uma opção:""",
             mudar_etapa(session, "lista_urnas")
 
             urnas = listar_urnas(tipos[mensagem])
-
-            if not urnas:
-                return {"tipo": "texto", "mensagem": "Nenhuma urna disponível"}
-
             session["urnas"] = urnas
 
-            botoes = []
-            for i, u in enumerate(urnas):
-                botoes.append({
-                    "id": str(i+1),
-                    "label": f"{u['nome']} - {formatar_reais(u['preco'])}"
-                })
-
-            botoes += [
-                {"id": "0", "label": "Voltar"},
-                {"id": "00", "label": "Menu principal"},
+            botoes = [
+                {"id": str(i+1), "label": f"{u['nome']} - {formatar_reais(u['preco'])}"}
+                for i, u in enumerate(urnas)
             ]
 
-            return {
-                "tipo": "botoes",
-                "mensagem": "Escolha a urna:",
-                "botoes": botoes
-            }
+            botoes += [{"id": "0", "label": "Voltar"}, {"id": "00", "label": "Menu principal"}]
+
+            return {"tipo": "botoes", "mensagem": "Escolha a urna:", "botoes": botoes}
 
         if session["etapa"] == "lista_urnas":
 
@@ -256,26 +275,15 @@ Escolha uma opção:""",
             session["urna"] = urna
             mudar_etapa(session, "confirmar")
 
-            respostas = []
-
-            for img in urna.get("imagens", []):
-                respostas.append({
-                    "tipo": "imagem",
-                    "url": img
-                })
-
-            respostas.append({
+            return {
                 "tipo": "botoes",
-                "mensagem": f"""🪦 {urna['nome']}
-💰 {formatar_reais(urna['preco'])}""",
+                "mensagem": f"🪦 {urna['nome']}\n💰 {formatar_reais(urna['preco'])}",
                 "botoes": [
                     {"id": "1", "label": "Confirmar"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
-            })
-
-            return respostas
+            }
 
         if session["etapa"] == "confirmar":
 
@@ -283,44 +291,45 @@ Escolha uma opção:""",
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             total = float(session["urna"]["preco"])
-            mudar_etapa(session, "final")
+            sinal = round(total * 0.1, 2)
+
+            session["pagamento"] = {"total": total, "sinal": sinal}
+
+            mudar_etapa(session, "pagamento")
 
             return {
                 "tipo": "botoes",
-                "mensagem": f"""Resumo
+                "mensagem": f"""💳 Pagamento via PIX
 
-Urna: {session['urna']['nome']}
-Valor: {formatar_reais(total)}""",
+Total: {formatar_reais(total)}
+Entrada (10%): {formatar_reais(sinal)}
+
+PIX:
+chavepix@email.com""",
                 "botoes": [
-                    {"id": "1", "label": "Confirmar pedido"},
-                    {"id": "2", "label": "Refazer"},
-                    {"id": "00", "label": "Menu principal"},
+                    {"id": "1", "label": "Já paguei"},
+                    {"id": "0", "label": "Voltar"},
                 ]
             }
 
-        if session["etapa"] == "final":
-
-            if mensagem == "2":
-                session["etapa"] = "inicio"
-                session["historico"] = []
-                return {"tipo": "texto", "mensagem": "Reiniciando atendimento..."}
+        if session["etapa"] == "pagamento":
 
             if mensagem == "1":
+                mudar_etapa(session, "comprovante")
+                return {"tipo": "texto", "mensagem": "📎 Envie o comprovante."}
 
-                salvar_pedido({
-                    "tipo": session["subfluxo"],
-                    "telefone": session.get("numero"),
-                    "nome": session.get("nome"),
-                    "urna": session["urna"],
-                    "status": "novo",
-                    "criado_em": datetime.now().isoformat()
-                })
+        if session["etapa"] == "comprovante":
 
-                session["encerrar_bot"] = True
+            salvar_pedido({
+                "tipo": session["subfluxo"],
+                "urna": session["urna"],
+                "pagamento": session["pagamento"],
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "pago",
+                "criado_em": datetime.now().isoformat()
+            })
 
-                return {
-                    "tipo": "texto",
-                    "mensagem": "✅ Pedido registrado! Em breve entraremos em contato."
-                }
+            return {"tipo": "texto", "mensagem": "✅ Pedido confirmado! A funerária entrará em contato."}
 
     return {"tipo": "texto", "mensagem": "Escolha válida."}
