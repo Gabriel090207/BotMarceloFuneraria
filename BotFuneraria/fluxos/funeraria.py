@@ -54,9 +54,24 @@ Escolha uma opção:""",
 
     def voltar(session):
 
+        if not session.get("historico"):
+            session["etapa"] = "menu"
+            session["subfluxo"] = None
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "Voltando ao menu...",
+                "botoes": [
+                    {"id": "1", "label": "Sepultamento"},
+                    {"id": "2", "label": "Cremação"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        etapa_anterior = session["historico"].pop()
+        session["etapa"] = etapa_anterior
 
         if etapa_anterior == "pagamento":
-
             dados = session.get("dados", {})
             urna = session.get("urna", {})
 
@@ -109,7 +124,7 @@ Escolha uma opção:""",
         session["etapa"] = etapa_anterior
 
         if etapa_anterior == "endereco":
-            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
+            return {"tipo": "texto", "mensagem": "📍 Onde será o velório?"}
 
         if etapa_anterior == "tipo_urna":
             return {
@@ -215,12 +230,12 @@ Escolha uma opção:""",
         if mensagem == "1":
             session["subfluxo"] = "sepultamento"
             mudar_etapa(session, "endereco")
-            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
+            return {"tipo": "texto", "mensagem": "📍 Onde será o velório?"}
 
         if mensagem == "2":
             session["subfluxo"] = "cremacao"
             mudar_etapa(session, "endereco")
-            return {"tipo": "texto", "mensagem": "📍 Endereço do local:"}
+            return {"tipo": "texto", "mensagem": "📍 Onde será o velório?"}
 
 
         if mensagem == "3":
@@ -236,7 +251,7 @@ Escolha uma opção:""",
     if session["subfluxo"] in ["sepultamento", "cremacao"]:
 
         if session["etapa"] == "endereco":
-            session["dados"]["endereco"] = mensagem
+            session["dados"]["local_velorio"] = mensagem
             mudar_etapa(session, "porte_corpo")
 
             return {
@@ -263,7 +278,7 @@ Escolha uma opção:""",
                 return {"tipo": "texto", "mensagem": "Escolha válida"}
 
             session["dados"]["porte_corpo"] = portes[mensagem]
-            mudar_etapa(session, "velorio")
+            mudar_etapa(session, "data")
 
             return {
                 "tipo": "botoes",
@@ -276,25 +291,7 @@ Escolha uma opção:""",
                 ]
             }
 
-        if session["etapa"] == "velorio":
-
-            if mensagem == "1":
-                session["dados"]["velorio"] = "sim"
-            elif mensagem == "2":
-                session["dados"]["velorio"] = "nao"
-            else:
-                return {"tipo": "texto", "mensagem": "Escolha válida"}
-
         
-
-
-            mudar_etapa(session, "data")
-
-            return {
-                "tipo": "texto",
-                "mensagem": "📅 Informe a data do atendimento (ex: 10/02/2026):"
-            }
-
 
         if session["etapa"] == "data":
             session["dados"]["data"] = mensagem
@@ -307,24 +304,17 @@ Escolha uma opção:""",
 
         if session["etapa"] == "horario":
             session["dados"]["horario"] = mensagem
-            mudar_etapa(session, "pergunta_translado")
 
-            return {
-                "tipo": "botoes",
-                "mensagem": "🚐 Haverá translado?",
-                "botoes": [
-                    {"id": "1", "label": "Sim"},
-                    {"id": "2", "label": "Não"},
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
+            if session["subfluxo"] == "cremacao":
+                mudar_etapa(session, "tipo_urna")
+            else:
+                mudar_etapa(session, "pergunta_translado")
 
         if session["etapa"] == "pergunta_translado":
 
             if mensagem == "1":
                 session["dados"]["tera_translado"] = "sim"
-                mudar_etapa(session, "origem_translado")
+                mudar_etapa(session, "destino_translado")
 
                 return {
                     "tipo": "texto",
@@ -349,14 +339,7 @@ Escolha uma opção:""",
 
             return {"tipo": "texto", "mensagem": "Escolha válida"}
 
-        if session["etapa"] == "origem_translado":
-            session["dados"]["origem_translado"] = mensagem
-            mudar_etapa(session, "destino_translado")
-
-            return {
-                "tipo": "texto",
-                "mensagem": "📍 Informe o destino do translado:"
-            }
+      
 
         if session["etapa"] == "destino_translado":
             session["dados"]["destino_translado"] = mensagem
@@ -466,7 +449,7 @@ Escolha uma opção:""",
 
             resumo = f"""📋 *Resumo do pedido*
 
-📍 Endereço: {dados.get("endereco", "-")}
+📍 Local do velório: {dados.get("local_velorio", "-")}
 ⚖️ Porte: {dados.get("porte_corpo", "-")}
 🕯️ Velório: {dados.get("velorio", "-")}
 📅 Data: {dados.get("data", "-")}
