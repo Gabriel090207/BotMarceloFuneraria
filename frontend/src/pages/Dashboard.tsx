@@ -1,6 +1,6 @@
 import "../styles/dashboard.css"
 import { useEffect, useState, useMemo } from "react"
-import { collection, getDocs, query, where } from "firebase/firestore"
+import { collection, getDocs, query } from "firebase/firestore"
 import { db } from "../services/firebase"
 
 type Pedido = {
@@ -9,8 +9,8 @@ type Pedido = {
   telefone?: string
   tipo: string
   status: string
-  tipo_servico?: string
   criado_em?: string
+  dados?: any
 }
 
 export default function Dashboard(){
@@ -25,10 +25,7 @@ export default function Dashboard(){
 
       try{
 
-        const q = query(
-          collection(db,"pedidos"),
-          where("tipo","in",["funeraria","plano"])
-        )
+        const q = query(collection(db,"pedidos"))
 
         const snapshot = await getDocs(q)
 
@@ -56,40 +53,54 @@ export default function Dashboard(){
 
   },[])
 
-  // 📊 FILTROS
+  // 🔥 FUNÇÃO QUE CONVERTE DATA CORRETAMENTE
+ function dataLocal(dataString?: string){
+  if(!dataString) return ""
 
-  const hoje = new Date().toISOString().slice(0,10)
+  // 🔥 força tratar como UTC e converter para Brasil (-3h)
+  const dataUTC = new Date(dataString)
+
+  const dataBrasil = new Date(dataUTC.getTime() - (3 * 60 * 60 * 1000))
+
+  return dataBrasil.toLocaleDateString("sv-SE")
+}
+
+  // 📅 HOJE
+  const hoje = new Date().toLocaleDateString("sv-SE")
 
   const pedidosHoje = useMemo(() => {
     return pedidos.filter(p =>
-      p.criado_em?.startsWith(hoje)
+      dataLocal(p.criado_em) === hoje
     )
   }, [pedidos])
 
-  const mesAtual = new Date().toISOString().slice(0,7)
+  // 📅 MÊS
+  const mesAtual = hoje.slice(0,7)
 
   const pedidosMes = useMemo(() => {
     return pedidos.filter(p =>
-      p.criado_em?.startsWith(mesAtual)
+      dataLocal(p.criado_em).startsWith(mesAtual)
     )
   }, [pedidos])
 
+  // ⚰️ SEPULTAMENTO
   const sepultamentos = useMemo(() => {
-    return pedidos.filter(p => p.tipo_servico === "Sepultamento").length
+    return pedidos.filter(p => p.tipo === "sepultamento").length
   }, [pedidos])
 
+  // 🔥 CREMAÇÃO
   const cremacao = useMemo(() => {
-    return pedidos.filter(p => p.tipo_servico === "Cremação").length
+    return pedidos.filter(p => p.tipo === "cremacao").length
   }, [pedidos])
 
   function renderStatus(status:string){
 
     if(status === "novo" || status === "aberto"){
-  return <span className="status status-open">Em Aberto</span>
-}
+      return <span className="status status-open">Em Aberto</span>
+    }
 
-    if(status === "pago"){
-      return <span className="status status-paid">Pago</span>
+    if(status === "finalizado" || status === "pago"){
+      return <span className="status status-paid">Finalizado</span>
     }
 
     if(status === "cancelado"){
@@ -104,8 +115,6 @@ export default function Dashboard(){
     <div className="dashboard">
 
       <h1>Dashboard</h1>
-
-      {/* CARDS */}
 
       <div className="cards">
 
@@ -131,11 +140,7 @@ export default function Dashboard(){
 
       </div>
 
-      {/* ERRO */}
-
       {erro && <div className="erro">{erro}</div>}
-
-      {/* TABELA */}
 
       <div className="pedidos">
 
@@ -169,9 +174,10 @@ export default function Dashboard(){
                   <td>{pedido.telefone || "-"}</td>
 
                   <td>
-                    {pedido.tipo === "plano"
-                      ? "Plano"
-                      : pedido.tipo_servico || "Funerário"}
+                    {pedido.tipo === "sepultamento" && "Sepultamento"}
+                    {pedido.tipo === "cremacao" && "Cremação"}
+                    {pedido.tipo === "translado" && "Translado"}
+                    {!pedido.tipo && "Funerário"}
                   </td>
 
                   <td>{renderStatus(pedido.status)}</td>

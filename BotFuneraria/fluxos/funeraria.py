@@ -916,6 +916,11 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         total = session.get("pagamento", {}).get("total", 0)
         sinal = session.get("pagamento", {}).get("sinal", 0)
 
+        from datetime import datetime
+        import pytz
+
+        fuso = pytz.timezone("America/Sao_Paulo")
+
         salvar_pedido({
             "tipo": session.get("subfluxo"),
             "dados": session.get("dados", {}),
@@ -928,7 +933,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
             "telefone": session.get("numero"),
             "nome": session.get("nome"),
             "status": "aberto",
-            "criado_em": datetime.now().isoformat()
+            "criado_em": datetime.now(fuso).strftime("%Y-%m-%d %H:%M:%S")
         })
 
         session["encerrar_bot"] = True
