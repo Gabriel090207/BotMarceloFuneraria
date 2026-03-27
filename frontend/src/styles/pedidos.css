@@ -170,3 +170,92 @@
   background:#FEE2E2;
   color:#991B1B;
 }
+
+
+
+.acoes-wrapper {
+  position: relative;
+}
+
+.btn-acoes {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.dropdown-acoes {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  z-index: 10;
+}
+
+.dropdown-acoes button {
+  padding: 10px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-acoes button:hover {
+  background: #f5f5f5;
+}
+
+/* MODAL */
+.modal-detalhes {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.btn-fechar {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px 14px;
+
+  background: #15803D; /* preto elegante */
+  color: #fff;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-fechar:hover {
+   background:#166534; /* mais claro no hover */
+}
+.btn-fechar:active {
+  transform: scale(0.97);
+}
+
+.btn-fechar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+.modal-detalhes hr {
+  margin: 14px 0;
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modal-detalhes p {
+  margin: 8px 0;
+  line-height: 1.4;
+}
