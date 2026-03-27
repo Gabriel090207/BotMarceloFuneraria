@@ -365,7 +365,7 @@ Podemos seguir dessa forma?""",
         if etapa == "tipo_urna":
             texto = "Vamos escolher a urna.\nVou te apresentar algumas opções disponíveis:"
             if session.get("subfluxo") == "cremacao":
-                texto = "Vamos escolher a urna para o velório:\nVou te apresentar algumas opções disponíveis:"
+                texto = "Vamos escolher a urna para a cerimonia:\nVou te apresentar algumas opções disponíveis:"
             return {
                 "tipo": "botoes",
                 "mensagem": texto,
@@ -698,7 +698,13 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
     if session["etapa"] == "crematorio":
         if mensagem == "1":
             session["dados"]["crematorio"] = "sim"
-            ir_para("tipo_urna")
+
+            # 🔥 SE NÃO TEM CERIMÔNIA → PULA URNA DO CORPO
+            if session["dados"].get("cerimonia_cremacao") == "nao":
+                ir_para("tipo_urna_cinzas")
+            else:
+                ir_para("tipo_urna")
+
             return renderizar_etapa()
 
         if mensagem == "2":
@@ -735,7 +741,14 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
         session["dados"]["tipo_urna"] = tipos[mensagem]
 
-        urnas = listar_urnas(tipos[mensagem], session["subfluxo"])
+        # 🔥 DEFINE CATEGORIA CORRETA
+        categoria = session["subfluxo"]
+
+        # Se for cremação COM cerimônia → usa urna de sepultamento
+        if session.get("subfluxo") == "cremacao" and session["dados"].get("cerimonia_cremacao") == "sim":
+            categoria = "sepultamento"
+
+        urnas = listar_urnas(tipos[mensagem], categoria)
 
         if not urnas:
             return {"tipo": "texto", "mensagem": "No momento não encontramos urnas disponíveis nessa categoria."}
@@ -914,7 +927,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
             },
             "telefone": session.get("numero"),
             "nome": session.get("nome"),
-            "status": "aguardando_comprovante",
+            "status": "aberto",
             "criado_em": datetime.now().isoformat()
         })
 
