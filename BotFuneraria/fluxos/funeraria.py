@@ -805,7 +805,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         # Aqui estou usando o mesmo listar_urnas.
         # Se no seu sistema as urnas de cinzas estiverem cadastradas em outra categoria,
         # basta ajustar o segundo parâmetro abaixo.
-        urnas_cinzas = listar_urnas(tipos[mensagem], "cinzas")
+        urnas_cinzas = listar_urnas(tipos[mensagem], "cremacao")
 
         if not urnas_cinzas:
             return {"tipo": "texto", "mensagem": "No momento não encontramos urnas de cinzas disponíveis nessa categoria."}
