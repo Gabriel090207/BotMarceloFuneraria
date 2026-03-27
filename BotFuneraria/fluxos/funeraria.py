@@ -141,12 +141,15 @@ def fluxo_funeraria(session, mensagem):
 
         if session.get("subfluxo") == "sepultamento":
             linhas.append(f"🪦 Cemitério: {dados.get('cemiterio', '-')}")
+            if dados.get("velorio") == "nao":
+                linhas.append(f"⏰ Horário do sepultamento: {dados.get('horario_sepultamento', '-')}")
             if urna:
                 linhas.append(f"⚰️ Urna escolhida: {urna.get('nome', '-')}")
                 linhas.append(f"💰 Valor da urna: {formatar_reais(float(urna.get('preco', 0)))}")
 
         elif session.get("subfluxo") == "cremacao":
             linhas.append(f"🙏 Cerimônia na cremação: {label_cerimonia(dados.get('cerimonia_cremacao', '-'))}")
+            linhas.append(f"⏰ Horário da cremação: {dados.get('horario_cremacao', '-')}")
             linhas.append(f"🏢 Crematório: {label_crematorio(dados.get('crematorio', '-'))}")
             if dados.get("crematorio") == "outro":
                 linhas.append(f"📍 Local informado: {dados.get('crematorio_outro_nome', '-')}")
@@ -313,6 +316,12 @@ def fluxo_funeraria(session, mensagem):
                 "mensagem": "🪦 Em qual cemitério será o sepultamento?"
             }
 
+        if etapa == "horario_sepultamento":
+            return {
+                "tipo": "texto",
+                "mensagem": "⏰ Qual o horário desejado para o sepultamento?"
+            }
+
         if etapa == "cerimonia_cremacao":
             return {
                 "tipo": "botoes",
@@ -322,6 +331,18 @@ def fluxo_funeraria(session, mensagem):
                     {"id": "2", "label": "Não"},
                 ])
             }
+
+        if etapa == "horario_cremacao":
+            if session["dados"].get("cerimonia_cremacao") == "sim":
+                return {
+                    "tipo": "texto",
+                    "mensagem": "⏰ Qual o horário da cerimônia de despedida?"
+                }
+            else:
+                return {
+                    "tipo": "texto",
+                    "mensagem": "⏰ Qual o horário desejado para a cremação?"
+                }
 
         if etapa == "crematorio":
             return {
@@ -510,8 +531,11 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
         if mensagem == "2":
             session["dados"]["velorio"] = "nao"
-            ir_para("local_corpo")
-            return renderizar_etapa()
+            ir_para("data_velorio")
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Qual a data desejada para o atendimento?"
+            }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
@@ -564,6 +588,14 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
     if session["etapa"] == "endereco_local_corpo":
         session["dados"]["endereco_local_corpo"] = mensagem
+
+        # 🔥 SE ESTIVER EDITANDO
+        if session.get("editando") == "local_corpo":
+            session.pop("editando", None)
+            session["etapa"] = "resumo"
+            return renderizar_etapa()
+
+        # fluxo normal
         ir_para("porte")
         return renderizar_etapa()
 
@@ -572,17 +604,37 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
             return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
         session["dados"]["porte"] = mensagem
+
+        # 🔥 EDITANDO
+        if session.get("editando") == "porte":
+            session.pop("editando", None)
+            session["etapa"] = "resumo"
+            return renderizar_etapa()
+
         ir_para("tipo_servico")
         return renderizar_etapa()
 
     if session["etapa"] == "tipo_servico":
+
         if mensagem == "1":
             session["subfluxo"] = "sepultamento"
+
+            if session.get("editando") == "tipo_servico":
+                session.pop("editando", None)
+                session["etapa"] = "resumo"
+                return renderizar_etapa()
+
             ir_para("cemiterio")
             return renderizar_etapa()
 
         if mensagem == "2":
             session["subfluxo"] = "cremacao"
+
+            if session.get("editando") == "tipo_servico":
+                session.pop("editando", None)
+                session["etapa"] = "resumo"
+                return renderizar_etapa()
+
             ir_para("cerimonia_cremacao")
             return renderizar_etapa()
 
@@ -593,6 +645,25 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
     # =========================================================
     if session["etapa"] == "cemiterio":
         session["dados"]["cemiterio"] = mensagem
+
+        # 🔥 EDITANDO
+        if session.get("editando") == "cemiterio":
+            session.pop("editando", None)
+            session["etapa"] = "resumo"
+            return renderizar_etapa()
+
+        # 🔥 SEM VELÓRIO → perguntar horário do sepultamento
+        if session["dados"].get("velorio") == "nao":
+            ir_para("horario_sepultamento")
+            return renderizar_etapa()
+
+        # fluxo normal
+        ir_para("tipo_urna")
+        return renderizar_etapa()
+    
+
+    if session["etapa"] == "horario_sepultamento":
+        session["dados"]["horario_sepultamento"] = mensagem
         ir_para("tipo_urna")
         return renderizar_etapa()
 
@@ -602,15 +673,27 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
     if session["etapa"] == "cerimonia_cremacao":
         if mensagem == "1":
             session["dados"]["cerimonia_cremacao"] = "sim"
-            ir_para("crematorio")
-            return renderizar_etapa()
+            ir_para("horario_cremacao")
+            return {
+                "tipo": "texto",
+                "mensagem": "⏰ Qual o horário da cerimônia de despedida?"
+            }
 
         if mensagem == "2":
             session["dados"]["cerimonia_cremacao"] = "nao"
-            ir_para("crematorio")
-            return renderizar_etapa()
+            ir_para("horario_cremacao")
+            return {
+                "tipo": "texto",
+                "mensagem": "⏰ Qual o horário desejado para a cremação?"
+            }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+
+    if session["etapa"] == "horario_cremacao":
+        session["dados"]["horario_cremacao"] = mensagem
+        ir_para("crematorio")
+        return renderizar_etapa()
 
     if session["etapa"] == "crematorio":
         if mensagem == "1":
@@ -627,6 +710,13 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
     if session["etapa"] == "crematorio_outro_nome":
         session["dados"]["crematorio_outro_nome"] = mensagem
+
+        # 🔥 EDITANDO
+        if session.get("editando") == "crematorio":
+            session.pop("editando", None)
+            session["etapa"] = "resumo"
+            return renderizar_etapa()
+
         ir_para("tipo_urna")
         return renderizar_etapa()
 
@@ -665,14 +755,23 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         return renderizar_etapa()
 
     if session["etapa"] == "confirmar_urna":
+
         if mensagem != "1":
             return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
+        # 🔥 PRIORIDADE: EDIÇÃO
+        if session.get("editando") == "urna":
+            session.pop("editando", None)
+            session["etapa"] = "resumo"
+            return renderizar_etapa()
+
+        # 🔥 CREMAÇÃO
         if session.get("subfluxo") == "cremacao":
             ir_para("tipo_urna_cinzas")
-        else:
-            ir_para("resumo")
+            return renderizar_etapa()
 
+        # 🔥 SEPULTAMENTO
+        ir_para("resumo")
         return renderizar_etapa()
 
     # =========================================================
@@ -716,6 +815,12 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         if mensagem != "1":
             return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
+        # 🔥 EDITANDO
+        if session.get("editando") == "urna_cinzas":
+            session.pop("editando", None)
+            session["etapa"] = "resumo"
+            return renderizar_etapa()
+
         ir_para("resumo")
         return renderizar_etapa()
 
@@ -737,39 +842,49 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
     # EDITAR PEDIDO
     # =========================================================
     if session["etapa"] == "editar_pedido":
+
         if mensagem == "1":
-            ir_para("velorio")
+            session["editando"] = "velorio"
+            session["etapa"] = "velorio"
             return renderizar_etapa()
 
         if mensagem == "2":
-            ir_para("local_corpo")
+            session["editando"] = "local_corpo"
+            session["etapa"] = "local_corpo"
             return renderizar_etapa()
 
         if mensagem == "3":
-            ir_para("porte")
+            session["editando"] = "porte"
+            session["etapa"] = "porte"
             return renderizar_etapa()
 
         if mensagem == "4":
-            ir_para("tipo_servico")
+            session["editando"] = "tipo_servico"
+            session["etapa"] = "tipo_servico"
             return renderizar_etapa()
 
         if mensagem == "5":
-            ir_para("tipo_urna")
+            session["editando"] = "urna"
+            session["etapa"] = "tipo_urna"
             return renderizar_etapa()
 
         if mensagem == "6":
             if session.get("subfluxo") != "cremacao":
-                return {"tipo": "texto", "mensagem": "Urna de cinzas só está disponível para cremação."}
-            ir_para("tipo_urna_cinzas")
+                return {"tipo": "texto", "mensagem": "Urna de cinzas só disponível para cremação."}
+
+            session["editando"] = "urna_cinzas"
+            session["etapa"] = "tipo_urna_cinzas"
             return renderizar_etapa()
 
         if mensagem == "7":
             if session.get("subfluxo") == "sepultamento":
-                ir_para("cemiterio")
+                session["editando"] = "cemiterio"
+                session["etapa"] = "cemiterio"
                 return renderizar_etapa()
 
             if session.get("subfluxo") == "cremacao":
-                ir_para("crematorio")
+                session["editando"] = "crematorio"
+                session["etapa"] = "crematorio"
                 return renderizar_etapa()
 
         if mensagem == "8":
