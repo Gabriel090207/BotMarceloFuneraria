@@ -2,18 +2,16 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 
 import { doc, getDoc, updateDoc } from "firebase/firestore"
-
 import { db } from "../services/firebase"
 
 import { uploadImagem, deletarImagem } from "../services/uploadImagem"
 
 import { FiUpload, FiX, FiCheck } from "react-icons/fi"
-
 import { NumericFormat } from "react-number-format"
 
 import "../styles/nova-urna.css"
 
-export default function EditarUrna(){
+export default function EditarPacote(){
 
   const {id} = useParams()
 
@@ -22,38 +20,31 @@ export default function EditarUrna(){
   const [sucesso,setSucesso] = useState(false)
 
   const [nome,setNome] = useState("")
-  const [tipo,setTipo] = useState("")
-  const [categoria,setCategoria] = useState("")
   const [preco,setPreco] = useState("")
+  const [descricao,setDescricao] = useState("")
 
   const [imagens,setImagens] = useState<string[]>([])
   const [novasImagens,setNovasImagens] = useState<File[]>([])
 
-  async function carregarUrna(){
+  async function carregarPacote(){
 
     if(!id) return
 
-    const ref = doc(db,"urnas",id)
-
+    const ref = doc(db,"pacotes",id)
     const snap = await getDoc(ref)
 
     const data:any = snap.data()
 
     setNome(data.nome)
-    setTipo(data.tipo)
-    setCategoria(data.categoria || "")
     setPreco(data.preco)
-
+    setDescricao(data.descricao || "")
     setImagens(data.imagens || [])
 
     setLoading(false)
-
   }
 
   useEffect(()=>{
-
-    carregarUrna()
-
+    carregarPacote()
   },[])
 
   /* REMOVER IMAGEM */
@@ -61,15 +52,12 @@ export default function EditarUrna(){
   async function removerImagem(url:string){
 
     await deletarImagem(url)
-
     setImagens(imagens.filter(img => img !== url))
 
   }
 
   function removerNova(index:number){
-
     setNovasImagens(novasImagens.filter((_,i)=>i !== index))
-
   }
 
   /* ADICIONAR IMAGEM */
@@ -77,7 +65,6 @@ export default function EditarUrna(){
   function adicionarImagem(e:React.ChangeEvent<HTMLInputElement>){
 
     const files = e.target.files
-
     if(!files) return
 
     const novas = [...novasImagens]
@@ -90,24 +77,21 @@ export default function EditarUrna(){
       }
 
       novas.push(files[i])
-
     }
 
     setNovasImagens(novas)
-
   }
 
   /* SALVAR */
 
   async function salvar(){
 
-    if(!nome || !tipo || !categoria || !preco){
-  alert("Preencha todos os campos")
-  return
-}
+    if(!nome || !preco || !descricao){
+      alert("Preencha todos os campos")
+      return
+    }
 
     if(!id) return
-
     if(salvando) return
 
     setSalvando(true)
@@ -117,108 +101,53 @@ export default function EditarUrna(){
     try{
 
       for(const img of novasImagens){
-
         const url = await uploadImagem(img,id)
-
         urls.push(url)
-
       }
 
-      await updateDoc(doc(db,"urnas",id),{
-
+      await updateDoc(doc(db,"pacotes",id),{
         nome,
-        tipo,
-        categoria,
         preco,
+        descricao,
         imagens: urls
-
       })
 
       setImagens(urls)
-
       setNovasImagens([])
-
       setSucesso(true)
 
     }catch(e){
-
       console.error(e)
-
       alert("Erro ao salvar")
-
     }finally{
-
       setSalvando(false)
-
     }
-
   }
 
   if(loading){
-
     return <p>Carregando...</p>
-
   }
 
   return(
 
     <div className="nova-urna-page">
 
-      <h1>Editar Urna</h1>
+      <h1>Editar Pacote</h1>
 
       <div className="nova-urna-form">
 
         <div className="nova-urna-grid">
 
           <div className="nova-urna-field">
-
-            <label>Nome da urna</label>
-
+            <label>Nome do pacote</label>
             <input
               value={nome}
               onChange={(e)=>setNome(e.target.value)}
             />
-
           </div>
 
           <div className="nova-urna-field">
-
-            <label>Tipo</label>
-
-            <select
-              value={tipo}
-              onChange={(e)=>setTipo(e.target.value)}
-            >
-
-              <option value="simples">Simples</option>
-              <option value="intermediaria">Intermediária</option>
-              <option value="premium">Premium</option>
-
-            </select>
-
-          </div>
-
-          <div className="nova-urna-field">
-
-  <label>Categoria</label>
-
-  <select
-    value={categoria}
-    onChange={(e)=>setCategoria(e.target.value)}
-  >
-
-   <option value="">Selecione</option>
-<option value="sepultamento">Sepultamento</option>
-<option value="cremacao">Cremação</option>
-
-  </select>
-
-</div>
-
-          <div className="nova-urna-field">
-
             <label>Preço</label>
-
             <NumericFormat
               value={preco}
               thousandSeparator="."
@@ -229,13 +158,21 @@ export default function EditarUrna(){
               onValueChange={(values)=>setPreco(values.value)}
               className="input-preco"
             />
-
           </div>
 
         </div>
 
-        {/* UPLOAD */}
+        {/* DESCRIÇÃO */}
+        <div className="nova-urna-field">
+          <label>Descrição</label>
+          <textarea
+            value={descricao}
+            onChange={(e)=>setDescricao(e.target.value)}
+            rows={4}
+          />
+        </div>
 
+        {/* UPLOAD */}
         <div className="upload-area">
 
           <label className="upload-box">
@@ -248,13 +185,9 @@ export default function EditarUrna(){
             />
 
             <div className="upload-content">
-
               <FiUpload className="upload-icon"/>
-
               <p>Adicionar novas imagens</p>
-
               <span>(máximo 5)</span>
-
             </div>
 
           </label>
@@ -262,26 +195,18 @@ export default function EditarUrna(){
         </div>
 
         {/* IMAGENS */}
-
         <div className="preview-grid">
 
           {imagens.map((img)=>(
-              
             <div className="preview-item" key={img}>
-
               <img src={img}/>
-
               <button
                 className="remove-img"
                 onClick={()=>removerImagem(img)}
               >
-
                 <FiX/>
-
               </button>
-
             </div>
-
           ))}
 
           {novasImagens.map((img,index)=>{
@@ -289,24 +214,16 @@ export default function EditarUrna(){
             const url = URL.createObjectURL(img)
 
             return(
-
               <div className="preview-item" key={index}>
-
                 <img src={url}/>
-
                 <button
                   className="remove-img"
                   onClick={()=>removerNova(index)}
                 >
-
                   <FiX/>
-
                 </button>
-
               </div>
-
             )
-
           })}
 
         </div>
@@ -316,31 +233,21 @@ export default function EditarUrna(){
           onClick={salvar}
           disabled={salvando}
         >
-
           {salvando ? "Salvando..." : "Salvar alterações"}
-
         </button>
 
       </div>
 
       {sucesso && (
-
         <div className="modal-overlay">
-
           <div className="modal-sucesso">
-
             <FiCheck className="modal-icon"/>
-
             <h2>Alterações salvas</h2>
-
             <button onClick={()=>setSucesso(false)}>
               OK
             </button>
-
           </div>
-
         </div>
-
       )}
 
     </div>

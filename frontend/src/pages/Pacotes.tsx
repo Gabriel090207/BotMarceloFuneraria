@@ -5,56 +5,49 @@ import { db } from "../services/firebase"
 
 import "../styles/urnas.css"
 
-export default function Urnas(){
+export default function Pacotes(){
 
-  const [urnas,setUrnas] = useState<any[]>([])
+  const [pacotes,setPacotes] = useState<any[]>([])
   const [loading,setLoading] = useState(true)
 
-  const [urnaExcluir,setUrnaExcluir] = useState<any>(null)
+  const [pacoteExcluir,setPacoteExcluir] = useState<any>(null)
 
-  async function carregarUrnas(){
+  async function carregarPacotes(){
 
-    const snapshot = await getDocs(collection(db,"urnas"))
+    const snapshot = await getDocs(collection(db,"pacotes"))
 
     const lista:any[] = []
 
     snapshot.forEach((d)=>{
-
       lista.push({
         id:d.id,
         ...d.data()
       })
-
     })
 
-    setUrnas(lista)
-
+    setPacotes(lista)
     setLoading(false)
 
   }
 
   useEffect(()=>{
-
-    carregarUrnas()
-
+    carregarPacotes()
   },[])
 
-  async function removerUrna(){
+  async function removerPacote(){
 
-    if(!urnaExcluir) return
+    if(!pacoteExcluir) return
 
-    await deleteDoc(doc(db,"urnas",urnaExcluir.id))
+    await deleteDoc(doc(db,"pacotes",pacoteExcluir.id))
 
-    setUrnas(urnas.filter(u=>u.id !== urnaExcluir.id))
+    setPacotes(pacotes.filter(p=>p.id !== pacoteExcluir.id))
 
-    setUrnaExcluir(null)
+    setPacoteExcluir(null)
 
   }
 
   if(loading){
-
-    return <p>Carregando urnas...</p>
-
+    return <p>Carregando pacotes...</p>
   }
 
   return(
@@ -63,13 +56,13 @@ export default function Urnas(){
 
       <div className="urnas-header">
 
-        <h1>Urnas</h1>
+        <h1>Pacotes</h1>
 
         <button
           className="btn-adicionar"
-          onClick={()=>window.location.href="/nova-urna"}
+          onClick={()=>window.location.href="/novo-pacote"}
         >
-          + Nova Urna
+          + Novo Pacote
         </button>
 
       </div>
@@ -81,47 +74,36 @@ export default function Urnas(){
           <thead>
 
             <tr>
-
               <th>Imagem</th>
               <th>Nome</th>
-              <th>Tipo</th>
               <th>Preço</th>
               <th>Ações</th>
-
             </tr>
 
           </thead>
 
           <tbody>
 
-            {urnas.map((urna)=>(
+            {pacotes.map((pacote)=>(
 
-              <tr key={urna.id}>
+              <tr key={pacote.id}>
 
                 <td>
-
-                  {urna.imagens?.[0] && (
-
+                  {pacote.imagens?.[0] && (
                     <img
-                      src={urna.imagens[0]}
+                      src={pacote.imagens[0]}
                       className="urna-thumb"
                     />
-
                   )}
-
                 </td>
 
-                <td>{urna.nome}</td>
-
-                <td>{urna.tipo}</td>
+                <td>{pacote.nome}</td>
 
                 <td>
-
-                  {Number(urna.preco).toLocaleString("pt-BR",{
+                  {Number(pacote.preco).toLocaleString("pt-BR",{
                     style:"currency",
                     currency:"BRL"
                   })}
-
                 </td>
 
                 <td>
@@ -130,14 +112,14 @@ export default function Urnas(){
 
                     <button
                       className="btn-editar"
-                      onClick={()=>window.location.href=`/editar-urna/${urna.id}`}
+                      onClick={()=>window.location.href=`/editar-pacote/${pacote.id}`}
                     >
                       Editar
                     </button>
 
                     <button
                       className="btn-remover"
-                      onClick={()=>setUrnaExcluir(urna)}
+                      onClick={()=>setPacoteExcluir(pacote)}
                     >
                       Remover
                     </button>
@@ -156,30 +138,30 @@ export default function Urnas(){
 
       </div>
 
-      {urnaExcluir && (
+      {pacoteExcluir && (
 
         <div className="modal-overlay">
 
           <div className="modal-confirm">
 
-            <h2>Remover urna</h2>
+            <h2>Remover pacote</h2>
 
             <p>
-              Deseja realmente remover esta urna?
+              Deseja realmente remover este pacote?
             </p>
 
             <div className="modal-actions">
 
               <button
                 className="btn-cancelar"
-                onClick={()=>setUrnaExcluir(null)}
+                onClick={()=>setPacoteExcluir(null)}
               >
                 Cancelar
               </button>
 
               <button
                 className="btn-remover"
-                onClick={removerUrna}
+                onClick={removerPacote}
               >
                 Remover
               </button>

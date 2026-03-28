@@ -11,9 +11,9 @@ import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Pedidos from "./pages/Pedidos"
 
-import Urnas from "./pages/Urnas"
-import NovaUrna from "./pages/NovaUrna"
-import EditarUrna from "./pages/EditarUrna"
+import Urnas from "./pages/Pacotes"
+import NovaUrna from "./pages/NovoPacote"
+import EditarUrna from "./pages/EditarPacote"
 
 import Produtos from "./pages/Produtos"
 import PlanosFamiliares from "./pages/PlanosFamiliares"
@@ -50,10 +50,11 @@ export default function App(){
 
         <Route path="pedidos" element={<Pedidos />} />
 
-        <Route path="urnas" element={<Urnas />} />
-        <Route path="nova-urna" element={<NovaUrna />} />
-        <Route path="editar-urna/:id" element={<EditarUrna />} />
 
+        <Route path="pacotes" element={<Urnas />} />
+        <Route path="novo-pacote" element={<NovaUrna />} />
+        <Route path="editar-pacote/:id" element={<EditarUrna />} />
+        
         <Route path="produtos" element={<Produtos />} />
 
         <Route path="planos-familiares" element={<PlanosFamiliares />} />

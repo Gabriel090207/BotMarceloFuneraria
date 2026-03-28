@@ -63,9 +63,9 @@ export default function Sidebar(){
             Pedidos
           </Link>
 
-          <Link to="/urnas" onClick={()=>setOpen(false)}>
+          <Link to="/pacotes" onClick={()=>setOpen(false)}>
             <FiBox />
-            Urnas
+            Pacotes
           </Link>
 
           <Link to="/planos-familiares" onClick={()=>setOpen(false)}>

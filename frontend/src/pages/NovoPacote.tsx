@@ -9,12 +9,11 @@ import { db } from "../services/firebase"
 
 import { uploadImagem } from "../services/uploadImagem"
 
-export default function NovaUrna(){
+export default function NovoPacote(){
 
   const [nome,setNome] = useState("")
-  const [tipo,setTipo] = useState("")
-  const [categoria,setCategoria] = useState("")
   const [preco,setPreco] = useState("")
+  const [descricao,setDescricao] = useState("")
 
   const [imagens,setImagens] = useState<File[]>([])
 
@@ -24,7 +23,6 @@ export default function NovaUrna(){
   function adicionarImagem(e:React.ChangeEvent<HTMLInputElement>){
 
     const files = e.target.files
-
     if(!files) return
 
     const novas = [...imagens]
@@ -32,33 +30,27 @@ export default function NovaUrna(){
     for(let i=0;i<files.length;i++){
 
       if(novas.length >= 5){
-        alert("Máximo de 5 imagens por urna")
+        alert("Máximo de 5 imagens por pacote")
         break
       }
 
       novas.push(files[i])
-
     }
 
     setImagens(novas)
-
   }
 
   function removerImagem(index:number){
-
     const novas = imagens.filter((_,i)=>i !== index)
-
     setImagens(novas)
-
   }
 
-  async function salvarUrna(){
+  async function salvarPacote(){
 
-
-    if(!nome || !tipo || !categoria || !preco){
-  alert("Preencha todos os campos")
-  return
-}
+    if(!nome || !preco || !descricao){
+      alert("Preencha todos os campos")
+      return
+    }
 
     if(loading) return
 
@@ -66,118 +58,62 @@ export default function NovaUrna(){
 
     try{
 
-      const docRef = await addDoc(collection(db,"urnas"),{
+      const docRef = await addDoc(collection(db,"pacotes"),{
+        nome,
+        preco,
+        descricao,
+        ativo:true,
+        criado_em: new Date()
+      })
 
-  nome,
-  tipo,
-  categoria, // 🔥 NOVO
-  preco,
-  ativo:true,
-  criado_em: new Date()
-
-})
-
-      const urnaId = docRef.id
+      const pacoteId = docRef.id
 
       const urls:string[] = []
 
       for(const img of imagens){
-
-        const url = await uploadImagem(img, urnaId)
-
+        const url = await uploadImagem(img, pacoteId)
         urls.push(url)
-
       }
 
-      await updateDoc(doc(db,"urnas",urnaId),{
-
+      await updateDoc(doc(db,"pacotes",pacoteId),{
         imagens: urls
-
       })
 
       setNome("")
-      setTipo("")
-      setCategoria("")
       setPreco("")
+      setDescricao("")
       setImagens([])
 
       setSucesso(true)
 
     }catch(e){
-
       console.error(e)
-
-      alert("Erro ao salvar urna")
-
+      alert("Erro ao salvar pacote")
     }finally{
-
       setLoading(false)
-
     }
-
   }
 
   return(
 
     <div className="nova-urna-page">
 
-      <h1>Nova Urna</h1>
+      <h1>Novo Pacote</h1>
 
       <div className="nova-urna-form">
 
         <div className="nova-urna-grid">
 
           <div className="nova-urna-field">
-
-            <label>Nome da urna</label>
-
+            <label>Nome do pacote</label>
             <input
               value={nome}
               onChange={(e)=>setNome(e.target.value)}
             />
-
           </div>
 
           <div className="nova-urna-field">
-
-            <label>Tipo</label>
-
-            <select
-              value={tipo}
-              onChange={(e)=>setTipo(e.target.value)}
-            >
-
-              <option value="">Selecione</option>
-              <option value="simples">Simples</option>
-              <option value="intermediaria">Intermediária</option>
-              <option value="premium">Premium</option>
-
-            </select>
-
-          </div>
-
-
-          <div className="nova-urna-field">
-
-  <label>Categoria</label>
-
-  <select
-    value={categoria}
-    onChange={(e)=>setCategoria(e.target.value)}
-  >
-
-   <option value="" disabled>Selecione</option>
-    <option value="sepultamento">Sepultamento</option>
-    <option value="cremacao">Cremação</option>
-
-  </select>
-
-</div>
-
-          <div className="nova-urna-field">
-
             <label>Preço</label>
-
             <NumericFormat
               value={preco}
               thousandSeparator="."
@@ -188,9 +124,18 @@ export default function NovaUrna(){
               onValueChange={(values)=>setPreco(values.value)}
               className="input-preco"
             />
-
           </div>
 
+        </div>
+
+        {/* 🔥 NOVO CAMPO */}
+        <div className="nova-urna-field">
+          <label>Descrição do pacote</label>
+          <textarea
+            value={descricao}
+            onChange={(e)=>setDescricao(e.target.value)}
+            rows={4}
+          />
         </div>
 
         <div className="upload-area">
@@ -205,13 +150,9 @@ export default function NovaUrna(){
             />
 
             <div className="upload-content">
-
               <FiUpload className="upload-icon"/>
-
-              <p>Adicionar imagens da urna</p>
-
+              <p>Adicionar imagens do pacote</p>
               <span>(máximo 5)</span>
-
             </div>
 
           </label>
@@ -227,22 +168,15 @@ export default function NovaUrna(){
               const url = URL.createObjectURL(img)
 
               return(
-
                 <div className="preview-item" key={index}>
-
                   <img src={url}/>
-
                   <button
                     className="remove-img"
                     onClick={()=>removerImagem(index)}
                   >
-
                     <FiX/>
-
                   </button>
-
                 </div>
-
               )
 
             })}
@@ -253,12 +187,10 @@ export default function NovaUrna(){
 
         <button
           className="btn-salvar"
-          onClick={salvarUrna}
+          onClick={salvarPacote}
           disabled={loading}
         >
-
-          {loading ? "Salvando..." : "Salvar urna"}
-
+          {loading ? "Salvando..." : "Salvar pacote"}
         </button>
 
       </div>
@@ -271,7 +203,7 @@ export default function NovaUrna(){
 
             <FiCheck className="modal-icon"/>
 
-            <h2>Urna criada com sucesso</h2>
+            <h2>Pacote criado com sucesso</h2>
 
             <button onClick={()=>setSucesso(false)}>
               OK

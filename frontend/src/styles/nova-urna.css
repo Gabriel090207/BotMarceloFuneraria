@@ -52,7 +52,8 @@
 }
 
 .nova-urna-field input,
-.nova-urna-field select{
+.nova-urna-field select,
+.nova-urna-field textarea{
 
   padding:10px 16px;
 
@@ -67,12 +68,19 @@
 }
 
 .nova-urna-field input:focus,
-.nova-urna-field select:focus{
+.nova-urna-field select:focus,
+.nova-urna-field textarea:focus{
 
   outline:none;
 
   border-color:#15803D;
 
+}
+
+.nova-urna-field textarea{
+  min-height:120px;
+  resize:none;
+  font-family:inherit;
 }
 
 /* SELECT CUSTOM */

@@ -1,8 +1,7 @@
 from datetime import datetime
 from core.firebase import salvar_pedido
-from core.urnas import listar_urnas
 from core.pagamentos import formatar_reais
-
+from core.pacotes import listar_pacotes
 
 def fluxo_funeraria(session, mensagem):
     # =========================================================
@@ -22,10 +21,6 @@ def fluxo_funeraria(session, mensagem):
         session["historico"] = []
         session["dados"] = {}
         session["subfluxo"] = None
-        session.pop("urnas", None)
-        session.pop("urna", None)
-        session.pop("urnas_cinzas", None)
-        session.pop("urna_cinzas", None)
         session.pop("pagamento", None)
 
     def ir_para(nova_etapa):
@@ -66,9 +61,9 @@ def fluxo_funeraria(session, mensagem):
 
     def label_porte(valor):
         mapa = {
-            "1": "Até 70kg",
-            "2": "Entre 70kg e 100kg",
-            "3": "Acima de 100kg",
+            "1": "Até 85kg",
+            "2": "Entre 85kg e 130kg",
+            "3": "Acima de 130kg",
         }
         return mapa.get(valor, valor)
 
@@ -90,37 +85,10 @@ def fluxo_funeraria(session, mensagem):
         }
         return mapa.get(valor, valor)
 
-    def label_tipo_servico(valor):
-        mapa = {
-            "1": "Sepultamento",
-            "2": "Cremação",
-            "sepultamento": "Sepultamento",
-            "cremacao": "Cremação",
-        }
-        return mapa.get(valor, valor)
-
-    def label_cerimonia(valor):
-        mapa = {
-            "1": "Sim",
-            "2": "Não",
-            "sim": "Sim",
-            "nao": "Não",
-        }
-        return mapa.get(valor, valor)
-
-    def label_crematorio(valor):
-        mapa = {
-            "1": "Sim, seguir com crematório parceiro",
-            "2": "Prefere outro local",
-            "sim": "Sim, seguir com crematório parceiro",
-            "outro": "Prefere outro local",
-        }
-        return mapa.get(valor, valor)
-
+    
     def obter_resumo():
         dados = session.get("dados", {})
-        urna = session.get("urna")
-        urna_cinzas = session.get("urna_cinzas")
+        
 
         linhas = []
         linhas.append("📋 *Resumo do atendimento*")
@@ -136,38 +104,21 @@ def fluxo_funeraria(session, mensagem):
         linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}")
         linhas.append(f"📌 Endereço do local atual: {dados.get('endereco_local_corpo', '-')}")
         linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte', '-'))}")
-        linhas.append(f"⚰️ Tipo de serviço: {label_tipo_servico(session.get('subfluxo', '-'))}")
+        pacote = session.get("pacote")
 
-        if session.get("subfluxo") == "sepultamento":
-            linhas.append(f"🪦 Cemitério: {dados.get('cemiterio', '-')}")
-           
-            if urna:
-                linhas.append(f"⚰️ Urna escolhida: {urna.get('nome', '-')}")
-                linhas.append(f"💰 Valor da urna: {formatar_reais(float(urna.get('preco', 0)))}")
+        if pacote:
+            linhas.append(f"📦 Pacote: {pacote.get('nome', '-')}")
+            linhas.append(f"💰 Valor: R$ {pacote.get('preco', '-')}")
+        
 
-        elif session.get("subfluxo") == "cremacao":
-            linhas.append(f"🙏 Cerimônia na cremação: {label_cerimonia(dados.get('cerimonia_cremacao', '-'))}")
-            
-            linhas.append(f"🏢 Crematório: {label_crematorio(dados.get('crematorio', '-'))}")
-            if dados.get("crematorio") == "outro":
-                linhas.append(f"📍 Local informado: {dados.get('crematorio_outro_nome', '-')}")
-            if urna:
-                linhas.append(f"⚰️ Urna do velório: {urna.get('nome', '-')}")
-                linhas.append(f"💰 Valor da urna do velório: {formatar_reais(float(urna.get('preco', 0)))}")
-            if urna_cinzas:
-                linhas.append(f"🕊️ Urna de cinzas: {urna_cinzas.get('nome', '-')}")
-                linhas.append(f"💰 Valor da urna de cinzas: {formatar_reais(float(urna_cinzas.get('preco', 0)))}")
-
+        
         return "\n".join(linhas)
 
     def calcular_pagamento():
-        total = 0.0
 
-        if session.get("urna"):
-            total += float(session["urna"].get("preco", 0))
+        pacote = session.get("pacote")
 
-        if session.get("urna_cinzas"):
-            total += float(session["urna_cinzas"].get("preco", 0))
+        total = float(pacote.get("preco", 0)) if pacote else 0
 
         sinal = round(total * 0.1, 2)
 
@@ -178,36 +129,7 @@ def fluxo_funeraria(session, mensagem):
 
         return total, sinal
 
-    def montar_botoes_urnas(lista):
-        botoes = []
-        for i, urna in enumerate(lista):
-            botoes.append({
-                "id": str(i + 1),
-                "label": f"{urna['nome']} - {formatar_reais(float(urna['preco']))}"
-            })
-        return botao_voltar_menu(botoes)
-
-    def renderizar_confirmacao_urna(urna, titulo_botao="Confirmar"):
-        respostas = []
-
-        for img in urna.get("imagens", []):
-            respostas.append({
-                "tipo": "imagem",
-                "url": img
-            })
-
-        respostas.append({
-            "tipo": "botoes",
-            "mensagem": f"""🪦 {urna['nome']}
-💰 {formatar_reais(float(urna['preco']))}""",
-            "botoes": [
-                {"id": "1", "label": titulo_botao},
-                {"id": "0", "label": "Voltar"},
-                {"id": "00", "label": "Menu principal"},
-            ]
-        })
-
-        return respostas
+    
 
     # =========================================================
     # RENDERIZAÇÃO DAS ETAPAS
@@ -268,11 +190,7 @@ def fluxo_funeraria(session, mensagem):
                 ])
             }
 
-        if etapa == "horario_velorio":
-            return {
-                "tipo": "texto",
-                "mensagem": "⏰ E o horário previsto para início?"
-            }
+       
 
         if etapa == "local_corpo":
             return {
@@ -297,141 +215,32 @@ def fluxo_funeraria(session, mensagem):
                 "tipo": "botoes",
                 "mensagem": """Para prepararmos tudo da melhor forma, você pode nos informar o porte aproximado do seu ente querido?""",
                 "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Até 70kg"},
-                    {"id": "2", "label": "Entre 70kg e 100kg"},
-                    {"id": "3", "label": "Acima de 100kg"},
+                    {"id": "1", "label": "Até 85kg"},
+                    {"id": "2", "label": "Entre 85kg e 130kg"},
+                    {"id": "3", "label": "Acima de 130kg"},
                 ])
             }
 
-        if etapa == "tipo_servico":
+        if etapa == "pacotes":
+
+            pacotes = listar_pacotes()
+            session["pacotes"] = pacotes
+
+            botoes = []
+
+            for i, p in enumerate(pacotes):
+                botoes.append({
+                    "id": str(i + 1),
+                    "label": f"{p.get('nome')} - R$ {p.get('preco')}"
+                })
+
             return {
                 "tipo": "botoes",
-                "mensagem": """Como deseja realizar a despedida?""",
-                "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Sepultamento"},
-                    {"id": "2", "label": "Cremação"},
-                ])
+                "mensagem": "📦 Escolha um pacote:",
+                "botoes": botao_voltar_menu(botoes)
             }
 
-        if etapa == "cemiterio":
-            return {
-                "tipo": "texto",
-                "mensagem": "🪦 Em qual cemitério será o sepultamento?"
-            }
-
-        if etapa == "horario_sepultamento":
-            return {
-                "tipo": "texto",
-                "mensagem": "⏰ Qual o horário desejado para o sepultamento?"
-            }
-
-        if etapa == "cerimonia_cremacao":
-            return {
-                "tipo": "botoes",
-                "mensagem": """Deseja realizar uma cerimônia de despedida no momento da cremação?""",
-                "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Sim"},
-                    {"id": "2", "label": "Não"},
-                ])
-            }
-
-        if etapa == "horario_cremacao":
-            if session["dados"].get("cerimonia_cremacao") == "sim":
-                return {
-                    "tipo": "texto",
-                    "mensagem": "⏰ Qual o horário da cerimônia de despedida?"
-                }
-            else:
-                return {
-                    "tipo": "texto",
-                    "mensagem": "⏰ Qual o horário desejado para a cremação?"
-                }
-
-        if etapa == "crematorio":
-            return {
-                "tipo": "botoes",
-                "mensagem": """Trabalhamos com crematório parceiro e cuidamos de toda a organização.
-
-Podemos seguir dessa forma?""",
-                "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Sim"},
-                    {"id": "2", "label": "Prefiro outro local"},
-                ])
-            }
-
-        if etapa == "crematorio_outro_nome":
-            return {
-                "tipo": "texto",
-                "mensagem": "Pode me informar o nome ou local do crematório desejado?"
-            }
-
-        if etapa == "tipo_urna":
-            texto = "Vamos escolher a urna.\nVou te apresentar algumas opções disponíveis:"
-            if session.get("subfluxo") == "cremacao":
-                texto = "Vamos escolher a urna para a cerimonia:\nVou te apresentar algumas opções disponíveis:"
-            return {
-                "tipo": "botoes",
-                "mensagem": texto,
-                "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Simples"},
-                    {"id": "2", "label": "Intermediária"},
-                    {"id": "3", "label": "Premium"},
-                ])
-            }
-
-        if etapa == "lista_urnas":
-            urnas = session.get("urnas", [])
-            return {
-                "tipo": "botoes",
-                "mensagem": "Escolha a urna:",
-                "botoes": montar_botoes_urnas(urnas)
-            }
-
-        if etapa == "confirmar_urna":
-            urna = session.get("urna")
-            if not urna:
-                return {"tipo": "texto", "mensagem": "Não encontramos a urna selecionada."}
-            return renderizar_confirmacao_urna(urna, "Confirmar urna")
-
-        if etapa == "tipo_urna_cinzas":
-            return {
-                "tipo": "botoes",
-                "mensagem": """E depois, você poderá escolher a urna para guardar as cinzas com carinho:
-
-Qual estilo deseja ver?""",
-                "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Simples"},
-                    {"id": "2", "label": "Intermediária"},
-                    {"id": "3", "label": "Premium"},
-                ])
-            }
-
-        if etapa == "lista_urnas_cinzas":
-            urnas = session.get("urnas_cinzas", [])
-            return {
-                "tipo": "botoes",
-                "mensagem": "Escolha a urna de cinzas:",
-                "botoes": montar_botoes_urnas(urnas)
-            }
-
-        if etapa == "confirmar_urna_cinzas":
-            urna_cinzas = session.get("urna_cinzas")
-            if not urna_cinzas:
-                return {"tipo": "texto", "mensagem": "Não encontramos a urna de cinzas selecionada."}
-            return renderizar_confirmacao_urna(urna_cinzas, "Confirmar urna de cinzas")
-
-        if etapa == "resumo":
-            return {
-                "tipo": "botoes",
-                "mensagem": obter_resumo(),
-                "botoes": [
-                    {"id": "1", "label": "Confirmar pedido"},
-                    {"id": "2", "label": "Editar pedido"},
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
-
+        
         if etapa == "editar_pedido":
             return {
                 "tipo": "botoes",
@@ -440,11 +249,20 @@ Qual estilo deseja ver?""",
                     {"id": "1", "label": "Velório"},
                     {"id": "2", "label": "Local do ente querido"},
                     {"id": "3", "label": "Porte"},
-                    {"id": "4", "label": "Tipo de serviço"},
-                    {"id": "5", "label": "Urna"},
-                    {"id": "6", "label": "Urna de cinzas"},
-                    {"id": "7", "label": "Cemitério / Crematório"},
-                    {"id": "8", "label": "Voltar ao resumo"},
+                    {"id": "4", "label": "Voltar ao resumo"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+
+        if etapa == "resumo":
+            return {
+                "tipo": "botoes",
+                "mensagem": obter_resumo(),
+                "botoes": [
+                    {"id": "1", "label": "Confirmar e continuar"},
+                    {"id": "2", "label": "Editar informações"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
@@ -593,7 +411,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         session["dados"]["data_velorio"] = mensagem
         ir_para("local_corpo")
         return renderizar_etapa()
-        
+
     if session["etapa"] == "local_corpo":
         if mensagem not in ["1", "2", "3", "4"]:
             return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -627,215 +445,69 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
-        ir_para("tipo_servico")
+        ir_para("pacotes")
         return renderizar_etapa()
 
-    if session["etapa"] == "tipo_servico":
+    if session["etapa"] == "pacotes":
 
-        if mensagem == "1":
-            session["subfluxo"] = "sepultamento"
+        try:
+            pacote = session["pacotes"][int(mensagem) - 1]
+        except:
+            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
-            if session.get("editando") == "tipo_servico":
-                session.pop("editando", None)
-                session["etapa"] = "resumo"
-                return renderizar_etapa()
+        session["pacote"] = pacote
 
-            ir_para("cemiterio")
-            return renderizar_etapa()
+        respostas = []
 
-        if mensagem == "2":
-            session["subfluxo"] = "cremacao"
+        # envia imagens
+        for img in pacote.get("imagens", []):
+            respostas.append({
+                "tipo": "imagem",
+                "url": img
+            })
 
-            if session.get("editando") == "tipo_servico":
-                session.pop("editando", None)
-                session["etapa"] = "resumo"
-                return renderizar_etapa()
+        # mensagem final
+        respostas.append({
+            "tipo": "botoes",
+            "mensagem": f"""📦 *{pacote.get('nome')}*
 
-            ir_para("cerimonia_cremacao")
-            return renderizar_etapa()
+💰 R$ {pacote.get('preco')}
 
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+{pacote.get('descricao', '')}
 
-    # =========================================================
-    # SEPULTAMENTO
-    # =========================================================
-    if session["etapa"] == "cemiterio":
-        session["dados"]["cemiterio"] = mensagem
+Deseja confirmar ou alterar?""",
+            "botoes": [
+                {"id": "1", "label": "Confirmar"},
+                {"id": "2", "label": "Alterar"},
+                {"id": "0", "label": "Voltar"},
+                {"id": "00", "label": "Menu principal"},
+            ]
+        })
 
-        # 🔥 EDITANDO
-        if session.get("editando") == "cemiterio":
-            session.pop("editando", None)
-            session["etapa"] = "resumo"
-            return renderizar_etapa()
+        session["etapa"] = "confirmar_pacote"
 
-        # 🔥 SEM VELÓRIO → perguntar horário do sepultamento
-        if session["dados"].get("velorio") == "nao":
-            ir_para("tipo_urna")
-            return renderizar_etapa()
-
-        # fluxo normal
-        ir_para("tipo_urna")
-        return renderizar_etapa()
-    
+        return respostas
 
     
-
-    # =========================================================
-    # CREMAÇÃO
-    # =========================================================
-    if session["etapa"] == "cerimonia_cremacao":
-        if mensagem == "1":
-            session["dados"]["cerimonia_cremacao"] = "sim"
-            ir_para("crematorio")
-            return {
-                "tipo": "texto",
-                "mensagem": "⏰ Qual o horário da cerimônia de despedida?"
-            }
-
-        if mensagem == "2":
-            session["dados"]["cerimonia_cremacao"] = "nao"
-            ir_para("crematorio")
-            return {
-                "tipo": "texto",
-                "mensagem": "⏰ Qual o horário desejado para a cremação?"
-            }
-
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-
-   
-    if session["etapa"] == "crematorio":
-        if mensagem == "1":
-            session["dados"]["crematorio"] = "sim"
-            ir_para("tipo_urna")
-            return renderizar_etapa()
-
-        if mensagem == "2":
-            session["dados"]["crematorio"] = "outro"
-            ir_para("crematorio_outro_nome")
-            return renderizar_etapa()
-
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-    if session["etapa"] == "crematorio_outro_nome":
-        session["dados"]["crematorio_outro_nome"] = mensagem
-
-        # 🔥 EDITANDO
-        if session.get("editando") == "crematorio":
-            session.pop("editando", None)
-            session["etapa"] = "resumo"
-            return renderizar_etapa()
-
-        ir_para("tipo_urna")
-        return renderizar_etapa()
-
-    # =========================================================
-    # URNA PRINCIPAL
-    # =========================================================
-    if session["etapa"] == "tipo_urna":
-        tipos = {
-            "1": "simples",
-            "2": "intermediaria",
-            "3": "premium"
-        }
-
-        if mensagem not in tipos:
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-        session["dados"]["tipo_urna"] = tipos[mensagem]
-
-        urnas = listar_urnas(tipos[mensagem], session["subfluxo"])
-
-        if not urnas:
-            return {"tipo": "texto", "mensagem": "No momento não encontramos urnas disponíveis nessa categoria."}
-
-        session["urnas"] = urnas
-        ir_para("lista_urnas")
-        return renderizar_etapa()
-
-    if session["etapa"] == "lista_urnas":
-        try:
-            urna = session["urnas"][int(mensagem) - 1]
-        except Exception:
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-        session["urna"] = urna
-        ir_para("confirmar_urna")
-        return renderizar_etapa()
-
-    if session["etapa"] == "confirmar_urna":
-
-        if mensagem != "1":
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-        # 🔥 PRIORIDADE: EDIÇÃO
-        if session.get("editando") == "urna":
-            session.pop("editando", None)
-            session["etapa"] = "resumo"
-            return renderizar_etapa()
-
-        # 🔥 CREMAÇÃO
-        if session.get("subfluxo") == "cremacao":
-            ir_para("tipo_urna_cinzas")
-            return renderizar_etapa()
-
-        # 🔥 SEPULTAMENTO
-        ir_para("resumo")
-        return renderizar_etapa()
-
-    # =========================================================
-    # URNA DE CINZAS
-    # =========================================================
-    if session["etapa"] == "tipo_urna_cinzas":
-        tipos = {
-            "1": "simples",
-            "2": "intermediaria",
-            "3": "premium"
-        }
-
-        if mensagem not in tipos:
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-        session["dados"]["tipo_urna_cinzas"] = tipos[mensagem]
-
-        # Aqui estou usando o mesmo listar_urnas.
-        # Se no seu sistema as urnas de cinzas estiverem cadastradas em outra categoria,
-        # basta ajustar o segundo parâmetro abaixo.
-        urnas_cinzas = listar_urnas(tipos[mensagem], "cinzas")
-
-        if not urnas_cinzas:
-            return {"tipo": "texto", "mensagem": "No momento não encontramos urnas de cinzas disponíveis nessa categoria."}
-
-        session["urnas_cinzas"] = urnas_cinzas
-        ir_para("lista_urnas_cinzas")
-        return renderizar_etapa()
-
-    if session["etapa"] == "lista_urnas_cinzas":
-        try:
-            urna_cinzas = session["urnas_cinzas"][int(mensagem) - 1]
-        except Exception:
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-        session["urna_cinzas"] = urna_cinzas
-        ir_para("confirmar_urna_cinzas")
-        return renderizar_etapa()
-
-    if session["etapa"] == "confirmar_urna_cinzas":
-        if mensagem != "1":
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-        # 🔥 EDITANDO
-        if session.get("editando") == "urna_cinzas":
-            session.pop("editando", None)
-            session["etapa"] = "resumo"
-            return renderizar_etapa()
-
-        ir_para("resumo")
-        return renderizar_etapa()
-
     # =========================================================
     # RESUMO
     # =========================================================
+
+    if session["etapa"] == "confirmar_pacote":
+
+        if mensagem == "1":
+            ir_para("resumo")
+            return renderizar_etapa()
+
+        if mensagem == "2":
+            session["encerrar_bot"] = True
+            return {
+                "tipo": "texto",
+                "mensagem": "Perfeito 🙏\n\nVou te encaminhar agora para um atendente."
+            }
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
     if session["etapa"] == "resumo":
         if mensagem == "1":
             ir_para("pagamento")
@@ -868,40 +540,10 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
             return renderizar_etapa()
 
         if mensagem == "4":
-            session["editando"] = "tipo_servico"
-            session["etapa"] = "tipo_servico"
-            return renderizar_etapa()
-
-        if mensagem == "5":
-            session["editando"] = "urna"
-            session["etapa"] = "tipo_urna"
-            return renderizar_etapa()
-
-        if mensagem == "6":
-            if session.get("subfluxo") != "cremacao":
-                return {"tipo": "texto", "mensagem": "Urna de cinzas só disponível para cremação."}
-
-            session["editando"] = "urna_cinzas"
-            session["etapa"] = "tipo_urna_cinzas"
-            return renderizar_etapa()
-
-        if mensagem == "7":
-            if session.get("subfluxo") == "sepultamento":
-                session["editando"] = "cemiterio"
-                session["etapa"] = "cemiterio"
-                return renderizar_etapa()
-
-            if session.get("subfluxo") == "cremacao":
-                session["editando"] = "crematorio"
-                session["etapa"] = "crematorio"
-                return renderizar_etapa()
-
-        if mensagem == "8":
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
     # =========================================================
     # PAGAMENTO
     # =========================================================
@@ -913,10 +555,8 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         sinal = session.get("pagamento", {}).get("sinal", 0)
 
         salvar_pedido({
-            "tipo": session.get("subfluxo"),
+            "pacote": session.get("pacote"),
             "dados": session.get("dados", {}),
-            "urna": session.get("urna"),
-            "urna_cinzas": session.get("urna_cinzas"),
             "pagamento": {
                 "total": total,
                 "sinal": sinal
