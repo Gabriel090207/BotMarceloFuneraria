@@ -132,8 +132,7 @@ def fluxo_funeraria(session, mensagem):
             if dados.get("local_velorio") == "externo":
                 linhas.append(f"📍 Endereço do velório: {dados.get('endereco_velorio', '-')}")
             linhas.append(f"📅 Data do velório: {dados.get('data_velorio', '-')}")
-            linhas.append(f"⏰ Horário do velório: {dados.get('horario_velorio', '-')}")
-
+            
         linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}")
         linhas.append(f"📌 Endereço do local atual: {dados.get('endereco_local_corpo', '-')}")
         linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte', '-'))}")
@@ -141,15 +140,14 @@ def fluxo_funeraria(session, mensagem):
 
         if session.get("subfluxo") == "sepultamento":
             linhas.append(f"🪦 Cemitério: {dados.get('cemiterio', '-')}")
-            if dados.get("velorio") == "nao":
-                linhas.append(f"⏰ Horário do sepultamento: {dados.get('horario_sepultamento', '-')}")
+           
             if urna:
                 linhas.append(f"⚰️ Urna escolhida: {urna.get('nome', '-')}")
                 linhas.append(f"💰 Valor da urna: {formatar_reais(float(urna.get('preco', 0)))}")
 
         elif session.get("subfluxo") == "cremacao":
             linhas.append(f"🙏 Cerimônia na cremação: {label_cerimonia(dados.get('cerimonia_cremacao', '-'))}")
-            linhas.append(f"⏰ Horário da cremação: {dados.get('horario_cremacao', '-')}")
+            
             linhas.append(f"🏢 Crematório: {label_crematorio(dados.get('crematorio', '-'))}")
             if dados.get("crematorio") == "outro":
                 linhas.append(f"📍 Local informado: {dados.get('crematorio_outro_nome', '-')}")
@@ -268,13 +266,6 @@ def fluxo_funeraria(session, mensagem):
                     {"id": "2", "label": "Amanhã"},
                     {"id": "3", "label": "Outro"},
                 ])
-            }
-
-
-        if etapa == "data_velorio_digitada":
-            return {
-                "tipo": "texto",
-                "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
             }
 
         if etapa == "horario_velorio":
@@ -544,10 +535,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         if mensagem == "2":
             session["dados"]["velorio"] = "nao"
             ir_para("data_velorio")
-            return {
-                "tipo": "texto",
-                "mensagem": "📅 Qual a data desejada para o atendimento?"
-            }
+            return renderizar_etapa()
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
@@ -558,12 +546,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         if mensagem == "1":
             session["dados"]["local_velorio"] = "funeraria"
             ir_para("data_velorio")
-            return {
-                "tipo": "texto",
-                "mensagem": """Perfeito, iremos organizar tudo com cuidado em nossa unidade 🙏
-
-📅 Qual a data desejada para o velório?"""
-            }
+            return renderizar_etapa()
 
         if mensagem == "2":
             session["dados"]["local_velorio"] = "externo"
@@ -578,40 +561,11 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         return renderizar_etapa()
 
     if session["etapa"] == "data_velorio":
-
-        if mensagem == "1":
-            session["dados"]["data_velorio"] = datetime.now().strftime("%d/%m/%Y")
-            ir_para("local_corpo")
-            return renderizar_etapa()
-
-        if mensagem == "2":
-            from datetime import timedelta
-            amanha = datetime.now() + timedelta(days=1)
-            session["dados"]["data_velorio"] = amanha.strftime("%d/%m/%Y")
-            ir_para("local_corpo")
-            return renderizar_etapa()
-
-        if mensagem == "3":
-            ir_para("data_velorio_digitada")
-            return {
-                "tipo": "texto",
-                "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
-            }
-
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-
-
-    if session["etapa"] == "data_velorio_digitada":
         session["dados"]["data_velorio"] = mensagem
         ir_para("local_corpo")
         return renderizar_etapa()
 
-
-    if session["etapa"] == "horario_velorio":
-        session["dados"]["horario_velorio"] = mensagem
-        ir_para("local_corpo")
-        return renderizar_etapa()
+    
 
     # =========================================================
     # SEM VELÓRIO / CONTINUAÇÃO GERAL
@@ -692,7 +646,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
         # 🔥 SEM VELÓRIO → perguntar horário do sepultamento
         if session["dados"].get("velorio") == "nao":
-            ir_para("horario_sepultamento")
+            ir_para("tipo_urna")
             return renderizar_etapa()
 
         # fluxo normal
@@ -700,10 +654,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         return renderizar_etapa()
     
 
-    if session["etapa"] == "horario_sepultamento":
-        session["dados"]["horario_sepultamento"] = mensagem
-        ir_para("tipo_urna")
-        return renderizar_etapa()
+    
 
     # =========================================================
     # CREMAÇÃO
@@ -711,7 +662,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
     if session["etapa"] == "cerimonia_cremacao":
         if mensagem == "1":
             session["dados"]["cerimonia_cremacao"] = "sim"
-            ir_para("horario_cremacao")
+            ir_para("crematorio")
             return {
                 "tipo": "texto",
                 "mensagem": "⏰ Qual o horário da cerimônia de despedida?"
@@ -719,7 +670,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
         if mensagem == "2":
             session["dados"]["cerimonia_cremacao"] = "nao"
-            ir_para("horario_cremacao")
+            ir_para("crematorio")
             return {
                 "tipo": "texto",
                 "mensagem": "⏰ Qual o horário desejado para a cremação?"
@@ -728,21 +679,11 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
 
-    if session["etapa"] == "horario_cremacao":
-        session["dados"]["horario_cremacao"] = mensagem
-        ir_para("crematorio")
-        return renderizar_etapa()
-
+   
     if session["etapa"] == "crematorio":
         if mensagem == "1":
             session["dados"]["crematorio"] = "sim"
-
-            # 🔥 SE NÃO TEM CERIMÔNIA → PULA URNA DO CORPO
-            if session["dados"].get("cerimonia_cremacao") == "nao":
-                ir_para("tipo_urna_cinzas")
-            else:
-                ir_para("tipo_urna")
-
+            ir_para("tipo_urna")
             return renderizar_etapa()
 
         if mensagem == "2":
@@ -779,14 +720,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
         session["dados"]["tipo_urna"] = tipos[mensagem]
 
-        # 🔥 DEFINE CATEGORIA CORRETA
-        categoria = session["subfluxo"]
-
-        # Se for cremação COM cerimônia → usa urna de sepultamento
-        if session.get("subfluxo") == "cremacao" and session["dados"].get("cerimonia_cremacao") == "sim":
-            categoria = "sepultamento"
-
-        urnas = listar_urnas(tipos[mensagem], categoria)
+        urnas = listar_urnas(tipos[mensagem], session["subfluxo"])
 
         if not urnas:
             return {"tipo": "texto", "mensagem": "No momento não encontramos urnas disponíveis nessa categoria."}
@@ -843,7 +777,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         # Aqui estou usando o mesmo listar_urnas.
         # Se no seu sistema as urnas de cinzas estiverem cadastradas em outra categoria,
         # basta ajustar o segundo parâmetro abaixo.
-        urnas_cinzas = listar_urnas(tipos[mensagem], "cremacao")
+        urnas_cinzas = listar_urnas(tipos[mensagem], "cinzas")
 
         if not urnas_cinzas:
             return {"tipo": "texto", "mensagem": "No momento não encontramos urnas de cinzas disponíveis nessa categoria."}
@@ -954,11 +888,6 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         total = session.get("pagamento", {}).get("total", 0)
         sinal = session.get("pagamento", {}).get("sinal", 0)
 
-        from datetime import datetime
-        import pytz
-
-        fuso = pytz.timezone("America/Sao_Paulo")
-
         salvar_pedido({
             "tipo": session.get("subfluxo"),
             "dados": session.get("dados", {}),
@@ -971,7 +900,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
             "telefone": session.get("numero"),
             "nome": session.get("nome"),
             "status": "aberto",
-            "criado_em": datetime.now(fuso).strftime("%Y-%m-%d %H:%M:%S")
+            "criado_em": datetime.now().isoformat()
         })
 
         session["encerrar_bot"] = True
