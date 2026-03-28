@@ -260,7 +260,7 @@ def fluxo_funeraria(session, mensagem):
         if etapa == "data_velorio":
             return {
                 "tipo": "botoes",
-                "mensagem": "📅 Qual a data desejada?",
+                "mensagem": "📅 Qual a data desejada do serviço?",
                 "botoes": botao_voltar_menu([
                     {"id": "1", "label": "Hoje"},
                     {"id": "2", "label": "Amanhã"},
@@ -561,15 +561,39 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         return renderizar_etapa()
 
     if session["etapa"] == "data_velorio":
-        session["dados"]["data_velorio"] = mensagem
-        ir_para("local_corpo")
-        return renderizar_etapa()
+
+        if mensagem == "1":
+            session["dados"]["data_velorio"] = datetime.now().strftime("%d/%m/%Y")
+            ir_para("local_corpo")
+            return renderizar_etapa()
+
+        if mensagem == "2":
+            from datetime import timedelta
+            amanha = datetime.now() + timedelta(days=1)
+            session["dados"]["data_velorio"] = amanha.strftime("%d/%m/%Y")
+            ir_para("local_corpo")
+            return renderizar_etapa()
+
+        if mensagem == "3":
+            ir_para("data_velorio_digitada")
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
+            }
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
     
 
     # =========================================================
     # SEM VELÓRIO / CONTINUAÇÃO GERAL
     # =========================================================
+
+    if session["etapa"] == "data_velorio_digitada":
+        session["dados"]["data_velorio"] = mensagem
+        ir_para("local_corpo")
+        return renderizar_etapa()
+        
     if session["etapa"] == "local_corpo":
         if mensagem not in ["1", "2", "3", "4"]:
             return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
