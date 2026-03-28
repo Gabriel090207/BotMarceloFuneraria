@@ -261,9 +261,21 @@ def fluxo_funeraria(session, mensagem):
 
         if etapa == "data_velorio":
             return {
-                "tipo": "texto",
-                "mensagem": "📅 Qual a data desejada para o velório?"
+                "tipo": "botoes",
+                "mensagem": "📅 Qual a data desejada?",
+                "botoes": botao_voltar_menu([
+                    {"id": "1", "label": "Hoje"},
+                    {"id": "2", "label": "Amanhã"},
+                    {"id": "3", "label": "Outro"},
+                ])
             }
+
+
+    if etapa == "data_velorio_digitada":
+        return {
+            "tipo": "texto",
+            "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
+        }
 
         if etapa == "horario_velorio":
             return {
@@ -566,9 +578,35 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
         return renderizar_etapa()
 
     if session["etapa"] == "data_velorio":
+
+        if mensagem == "1":
+            session["dados"]["data_velorio"] = datetime.now().strftime("%d/%m/%Y")
+            ir_para("local_corpo")
+            return renderizar_etapa()
+
+        if mensagem == "2":
+            from datetime import timedelta
+            amanha = datetime.now() + timedelta(days=1)
+            session["dados"]["data_velorio"] = amanha.strftime("%d/%m/%Y")
+            ir_para("local_corpo")
+            return renderizar_etapa()
+
+        if mensagem == "3":
+            ir_para("data_velorio_digitada")
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
+            }
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+
+
+    if session["etapa"] == "data_velorio_digitada":
         session["dados"]["data_velorio"] = mensagem
-        ir_para("horario_velorio")
+        ir_para("local_corpo")
         return renderizar_etapa()
+
 
     if session["etapa"] == "horario_velorio":
         session["dados"]["horario_velorio"] = mensagem
