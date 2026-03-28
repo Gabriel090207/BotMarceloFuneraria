@@ -451,6 +451,9 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
     if session["etapa"] == "pacotes":
 
+        if mensagem == "0":
+            return renderizar_etapa()
+
         try:
             pacote = session["pacotes"][int(mensagem) - 1]
         except:
@@ -496,6 +499,11 @@ Deseja confirmar ou alterar alguma coisa?""",
 
     if session["etapa"] == "confirmar_pacote":
 
+        if mensagem == "0":
+            # 🔥 VOLTAR PARA LISTA DE PACOTES
+            session["etapa"] = "pacotes"
+            return renderizar_etapa()
+
         if mensagem == "1":
             ir_para("resumo")
             return renderizar_etapa()
@@ -508,18 +516,6 @@ Deseja confirmar ou alterar alguma coisa?""",
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
-    if session["etapa"] == "resumo":
-        if mensagem == "1":
-            ir_para("pagamento")
-            return renderizar_etapa()
-
-        if mensagem == "2":
-            ir_para("editar_pedido")
-            return renderizar_etapa()
-
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
-
     # =========================================================
     # EDITAR PEDIDO
     # =========================================================
