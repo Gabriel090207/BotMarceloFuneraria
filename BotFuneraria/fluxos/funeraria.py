@@ -271,11 +271,11 @@ def fluxo_funeraria(session, mensagem):
             }
 
 
-    if etapa == "data_velorio_digitada":
-        return {
-            "tipo": "texto",
-            "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
-        }
+        if etapa == "data_velorio_digitada":
+            return {
+                "tipo": "texto",
+                "mensagem": "📅 Digite a data desejada (ex: 25/03/2026):"
+            }
 
         if etapa == "horario_velorio":
             return {
