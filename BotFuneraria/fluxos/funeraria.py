@@ -249,7 +249,8 @@ def fluxo_funeraria(session, mensagem):
                     {"id": "1", "label": "Velório"},
                     {"id": "2", "label": "Local do ente querido"},
                     {"id": "3", "label": "Porte"},
-                    {"id": "4", "label": "Voltar ao resumo"},
+                    {"id": "4", "label": "Pacote"},  # 🔥 NOVO
+                    {"id": "5", "label": "Voltar ao resumo"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
@@ -475,7 +476,7 @@ Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu
 
 {pacote.get('descricao', '')}
 
-Deseja confirmar ou alterar?""",
+Deseja confirmar ou alterar alguma coisa?""",
             "botoes": [
                 {"id": "1", "label": "Confirmar"},
                 {"id": "2", "label": "Alterar"},
@@ -503,7 +504,7 @@ Deseja confirmar ou alterar?""",
             session["encerrar_bot"] = True
             return {
                 "tipo": "texto",
-                "mensagem": "Perfeito 🙏\n\nVou te encaminhar agora para um atendente."
+                "mensagem": "Perfeito 🙏\n\nVou te encaminhar agora para um atendente que irá te ajudar nisso."
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -540,6 +541,12 @@ Deseja confirmar ou alterar?""",
             return renderizar_etapa()
 
         if mensagem == "4":
+            # 🔥 IR PARA PACOTES
+            session.pop("pacote", None)
+            session["etapa"] = "pacotes"
+            return renderizar_etapa()
+
+        if mensagem == "5":
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
