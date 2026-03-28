@@ -306,18 +306,14 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
         mensagem = "00"
 
 
-    # 🔥 TRATAR VOLTAR ESPECÍFICO ANTES DO GLOBAL
+    
+    
 
-    if mensagem == "0":
+    # 🔥 TRATAR VOLTAR SOMENTE NO CONFIRMAR PACOTE
 
-        # se estiver vendo detalhe do pacote
-        if session.get("etapa") == "confirmar_pacote":
-            session["etapa"] = "pacotes"
-            return renderizar_etapa()
-
-        # se já está na lista de pacotes
-        if session.get("etapa") == "pacotes":
-            return renderizar_etapa()
+    if mensagem == "0" and session.get("etapa") == "confirmar_pacote":
+        session["etapa"] = "pacotes"
+        return renderizar_etapa()
 
     # =========================================================
     # AÇÕES GLOBAIS
