@@ -54,7 +54,7 @@
 
 .urnas-table th{
 
-  text-align:left;
+
 
   font-size:14px;
 
@@ -72,13 +72,50 @@
 
 }
 
-.urna-acoes{
+/* centralizar coluna ações */
 
-  display:flex;
-
-  gap:10px;
-
+.urnas-table th:last-child,
+.urnas-table td:last-child{
+  text-align:center;
 }
+
+/* IMAGEM */
+.urnas-table th:nth-child(1),
+.urnas-table td:nth-child(1){
+  text-align:center;
+}
+
+/* NOME */
+
+
+/* espaçamento da coluna nome */
+/* espaçamento da coluna nome (título + conteúdo) */
+.urnas-table th:nth-child(2),
+.urnas-table td:nth-child(2){
+  padding-left: 30px;
+  text-align:center;
+}
+
+
+/* PREÇO */
+.urnas-table th:nth-child(3),
+.urnas-table td:nth-child(3){
+  text-align:center;
+}
+
+/* AÇÕES */
+.urnas-table th:nth-child(4),
+.urnas-table td:nth-child(4){
+  text-align:center;
+}
+
+.urna-acoes{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+}
+
 
 .btn-editar{
 
