@@ -1,9 +1,6 @@
-from core.firebase import db, iniciar_firebase
-
+from core.firebase import db
 
 def listar_pacotes():
-
-    iniciar_firebase()  # 🔥 ESSA LINHA FALTAVA
 
     docs = db.collection("pacotes").where("ativo", "==", True).stream()
 
