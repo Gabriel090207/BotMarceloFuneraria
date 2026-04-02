@@ -526,6 +526,23 @@ Deseja confirmar ou alterar alguma coisa?""",
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+
+
+    # =========================================================
+    # RESUMO - AÇÕES
+    # =========================================================
+    if session["etapa"] == "resumo":
+
+        if mensagem == "1":
+            ir_para("pagamento")
+            return renderizar_etapa()
+
+        if mensagem == "2":
+            ir_para("editar_pedido")
+            return renderizar_etapa()
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
     # =========================================================
     # EDITAR PEDIDO
     # =========================================================
