@@ -6,7 +6,7 @@ from fluxos.floricultura import fluxo_floricultura
 from fluxos.funeraria import fluxo_funeraria
 from fluxos.atendente import fluxo_atendente
 from fluxos.planos_familiares import fluxo_planos_familiares
-
+from fluxos.financeiro import fluxo_financeiro
 
 def responder(numero, mensagem):
 
@@ -98,10 +98,7 @@ Como podemos te ajudar hoje?
         elif mensagem == "3":
             session["fluxo"] = "financeiro"
             session["etapa"] = "inicio"
-            return {
-                "tipo": "texto",
-                "mensagem": "Fluxo Financeiro / Administrativo será criado no próximo passo."
-            }
+            return fluxo_financeiro(session, mensagem)
 
         elif mensagem == "4":
             session["fluxo"] = "floricultura"
@@ -136,10 +133,7 @@ Como podemos te ajudar hoje?
         return fluxo_atendente(session, mensagem)
 
     if session["fluxo"] == "financeiro":
-        return {
-            "tipo": "texto",
-            "mensagem": "Fluxo Financeiro / Administrativo será criado no próximo passo."
-        }
+        return fluxo_financeiro(session, mensagem)
 
     return {
         "tipo": "texto",
