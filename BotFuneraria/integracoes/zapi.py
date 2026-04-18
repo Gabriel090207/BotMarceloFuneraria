@@ -10,6 +10,10 @@ ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
 ZAPI_CLIENT_TOKEN = os.getenv("ZAPI_CLIENT_TOKEN")
 
 
+# ==================================================
+# TEXTO
+# ==================================================
+
 def enviar_texto(phone, mensagem):
     url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-text"
 
@@ -27,11 +31,15 @@ def enviar_texto(phone, mensagem):
 
     response = requests.post(url, json=payload, headers=headers)
 
-    print("📥 Z-API STATUS:", response.status_code)
-    print("📥 Z-API RESPOSTA:", response.text)
+    print("📥 STATUS:", response.status_code)
+    print("📥 RESPOSTA:", response.text)
 
     return response.json()
 
+
+# ==================================================
+# BOTÕES
+# ==================================================
 
 def enviar_botoes(phone, mensagem, botoes):
     url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-button-list"
@@ -53,11 +61,15 @@ def enviar_botoes(phone, mensagem, botoes):
 
     response = requests.post(url, json=payload, headers=headers)
 
-    print("📥 Z-API STATUS:", response.status_code)
-    print("📥 Z-API RESPOSTA:", response.text)
+    print("📥 STATUS:", response.status_code)
+    print("📥 RESPOSTA:", response.text)
 
     return response.json()
 
+
+# ==================================================
+# IMAGEM
+# ==================================================
 
 def enviar_imagem(phone, url_imagem):
     url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-image"
@@ -76,42 +88,15 @@ def enviar_imagem(phone, url_imagem):
 
     response = requests.post(url, json=payload, headers=headers)
 
-    print("📥 Z-API STATUS:", response.status_code)
-    print("📥 Z-API RESPOSTA:", response.text)
+    print("📥 STATUS:", response.status_code)
+    print("📥 RESPOSTA:", response.text)
 
     return response.json()
 
 
-
-def enviar_mensagem(msg, numero):
-
-    print("📤 Enviando:", msg)
-
-    if not isinstance(msg, dict):
-        print("❌ ERRO: mensagem inválida:", msg)
-        return
-
-    tipo = msg.get("tipo")
-
-    if tipo == "texto":
-        return enviar_texto(numero, msg.get("mensagem"))
-
-    elif tipo == "botoes":
-        return enviar_botoes(numero, msg.get("mensagem"), msg.get("botoes"))
-
-    elif tipo == "imagem":
-        return enviar_imagem(numero, msg.get("url"))
-
-    else:
-        print("❌ Tipo desconhecido:", tipo)
-
-def enviar_resposta(resposta, numero):
-
-    if isinstance(resposta, list):
-        for r in resposta:
-            enviar_mensagem(r, numero)
-    else:
-        enviar_mensagem(resposta, numero)
+# ==================================================
+# VIDEO
+# ==================================================
 
 def enviar_video(phone, url_video):
     url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-video"
@@ -125,8 +110,59 @@ def enviar_video(phone, url_video):
         "Client-Token": ZAPI_CLIENT_TOKEN
     }
 
+    print("📤 Enviando VIDEO:", payload)
+    print("🌐 URL FINAL:", url)
+
     response = requests.post(url, json=payload, headers=headers)
 
-    print(response.status_code, response.text)
+    print("📥 STATUS:", response.status_code)
+    print("📥 RESPOSTA:", response.text)
 
     return response.json()
+
+
+# ==================================================
+# DISPATCHER
+# ==================================================
+
+def enviar_mensagem(msg, numero):
+
+    print("📤 Enviando:", msg)
+
+    if not isinstance(msg, dict):
+        print("❌ Mensagem inválida:", msg)
+        return
+
+    tipo = msg.get("tipo")
+
+    if tipo == "texto":
+        return enviar_texto(numero, msg.get("mensagem"))
+
+    elif tipo == "botoes":
+        return enviar_botoes(
+            numero,
+            msg.get("mensagem"),
+            msg.get("botoes")
+        )
+
+    elif tipo == "imagem":
+        return enviar_imagem(numero, msg.get("url"))
+
+    elif tipo == "video":
+        return enviar_video(numero, msg.get("url"))
+
+    else:
+        print("❌ Tipo desconhecido:", tipo)
+
+
+# ==================================================
+# RESPOSTA LISTA OU ÚNICA
+# ==================================================
+
+def enviar_resposta(resposta, numero):
+
+    if isinstance(resposta, list):
+        for item in resposta:
+            enviar_mensagem(item, numero)
+    else:
+        enviar_mensagem(resposta, numero)

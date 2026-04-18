@@ -12,7 +12,6 @@ COBERTURA_COMPLETA = """
 ✅ Ornamentação com flores artificiais
 ✅ Kit café da manhã para até 05 pessoas que pernoitarem + Copa 24h
 ✅ Pagamento de taxa municipal, livro de presença, véu e velas
-✅ Paramentação completa para velório (exclusivo velório externo)
 ✅ Contratação de demais serviços como flores naturais, cerimonial ecumênico, translado, entre outros é feito direto com o(a) atendente.
 """
 
@@ -37,7 +36,7 @@ def eh(msg, *opcoes):
 def menu_principal():
     return {
         "tipo": "botoes",
-        "mensagem": "🔙 Voltamos ao menu principal.\n\nEscolha uma opção:",
+        "mensagem": "🏠 *Menu Principal*\n\nEscolha uma opção:",
         "botoes": [
             {"id": "1", "label": "Serviços funerários"},
             {"id": "2", "label": "Planos"},
@@ -57,7 +56,7 @@ def fluxo_funeraria_orcamento(session, mensagem):
     nome = session.get("nome", "")
 
     # ==================================================
-    # MENU INICIAL
+    # INÍCIO
     # ==================================================
 
     if session["etapa"] == "inicio":
@@ -130,6 +129,8 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
     # ==================================================
     # ESTRUTURA
     # ==================================================
@@ -146,8 +147,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
     # ==================================================
-    # LISTA SERVIÇOS
+    # LISTA
     # ==================================================
 
     if session["etapa"] == "lista":
@@ -218,16 +221,16 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 """.replace(",", "X").replace(".", ",").replace("X", ".")
 
                 if servico.get("capacidade"):
-                    texto += f'\n✅ Capacidade interna: {servico["capacidade"]}'
+                    texto += f"\n✅ Capacidade interna: {servico['capacidade']}"
 
                 if servico.get("suite"):
-                    texto += f'\n✅ Suíte: {servico["suite"]}'
+                    texto += f"\n✅ Suíte: {servico['suite']}"
 
                 if servico.get("area_externa"):
-                    texto += f'\n✅ {servico["area_externa"]}'
+                    texto += f"\n✅ {servico['area_externa']}"
 
                 if servico.get("descricao"):
-                    texto += f'\n\n📝 {servico["descricao"]}'
+                    texto += f"\n\n📝 {servico['descricao']}"
 
                 if str(servico.get("cobertura", "")).lower() == "externo":
                     texto += "\n" + COBERTURA_EXTERNO
@@ -273,8 +276,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
     # ==================================================
-    # COLETA
+    # COLETA NOME
     # ==================================================
 
     if session["etapa"] == "coletar_nome":
@@ -282,10 +287,18 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
         session["etapa"] = "cidade"
         return {"tipo": "texto", "mensagem": "Informe sua cidade."}
 
+    # ==================================================
+    # CIDADE
+    # ==================================================
+
     if session["etapa"] == "cidade":
         session["dados"]["cidade"] = mensagem
         session["etapa"] = "data"
         return {"tipo": "texto", "mensagem": "Para quando precisa? (opcional)"}
+
+    # ==================================================
+    # DATA
+    # ==================================================
 
     if session["etapa"] == "data":
 
