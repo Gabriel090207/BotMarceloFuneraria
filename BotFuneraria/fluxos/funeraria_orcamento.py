@@ -195,7 +195,11 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
-        if str(mensagem).isdigit():
+        msg = str(mensagem).strip()
+
+        if msg in ["0", "00"]:
+            pass
+        elif msg.isdigit():
 
             indice = int(mensagem) - 1
             servicos = session["servicos_cache"]

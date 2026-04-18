@@ -342,10 +342,14 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             return renderizar_etapa()
 
         if mensagem == "2":
+            session["historico"] = []
+            session["dados"] = {}
+            session["subfluxo"] = None
             session["fluxo"] = "funeraria_orcamento"
             session["etapa"] = "inicio"
             return fluxo_funeraria_orcamento(session, mensagem)
-
+        
+        
         return {
             "tipo": "texto",
             "mensagem": "Por favor, escolha uma opção válida."
