@@ -2,6 +2,7 @@ def fluxo_floricultura(session, mensagem):
 
     session.setdefault("etapa", "inicio")
     session.setdefault("historico", [])
+    session.setdefault("carrinho", [])
 
     nome = session.get("nome", "")
 
@@ -33,7 +34,7 @@ def fluxo_floricultura(session, mensagem):
     }
 
     # -------------------------------------------------
-    # FUNÇÕES
+    # FUNÇÕES AUXILIARES
     # -------------------------------------------------
 
     def salvar_historico():
@@ -46,14 +47,12 @@ def fluxo_floricultura(session, mensagem):
             session["etapa"] = session["historico"].pop()
         else:
             session["etapa"] = "menu"
-
         return renderizar()
 
     def menu_principal():
         session["fluxo"] = None
         session["etapa"] = "inicio"
         session["historico"] = []
-        session["etapa_global"] = "menu"
 
         return {
             "tipo": "botoes",
@@ -67,24 +66,36 @@ def fluxo_floricultura(session, mensagem):
             ]
         }
 
+    def resumo_pedido():
+        linhas = ["🌸 *Pedido Floricultura*", ""]
+        for item in session["carrinho"]:
+            linhas.append(f"• {item}")
+        return "\n".join(linhas)
+
     def renderizar():
 
         etapa = session["etapa"]
 
         if etapa == "inicio" or etapa == "menu":
+
             session["etapa"] = "menu"
+
+            msg = f"{nome}, escolha uma opção:"
+            if session["carrinho"]:
+                msg = f"{nome}, o que mais você deseja?"
 
             return {
                 "tipo": "botoes",
                 "mensagem": f"""🌸 Floricultura
 
-{nome}, escolha uma opção:""",
+{msg}""",
                 "botoes": [
                     {"id": "1", "label": "Arranjos e Presentes"},
                     {"id": "2", "label": "Coroa padrão"},
                     {"id": "3", "label": "Coroa com rosas"},
                     {"id": "4", "label": "Buquê padrão"},
                     {"id": "5", "label": "Buquê com rosas"},
+                    {"id": "8", "label": "Finalizar pedido agora"},
                     {"id": "9", "label": "Falar com atendente"},
                     {"id": "00", "label": "Menu principal"},
                 ]
@@ -118,7 +129,7 @@ https://floriculturavalledasflores.com.br""",
 
 {produto["descricao"]}
 
-Deseja confirmar interesse?""",
+Deseja adicionar ao pedido?""",
                     "botoes": [
                         {"id": "1", "label": "Confirmar"},
                         {"id": "0", "label": "Voltar"},
@@ -132,8 +143,8 @@ Deseja confirmar interesse?""",
                 "tipo": "botoes",
                 "mensagem": "🙏 Deseja mais alguma coisa?",
                 "botoes": [
-                    {"id": "1", "label": "Sim"},
-                    {"id": "2", "label": "Falar com atendente"},
+                    {"id": "1", "label": "Não, confirmar pedido"},
+                    {"id": "2", "label": "Sim"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
@@ -156,7 +167,7 @@ Deseja confirmar interesse?""",
         return menu_principal()
 
     # -------------------------------------------------
-    # ENTRADA
+    # INÍCIO
     # -------------------------------------------------
 
     if session["etapa"] == "inicio":
@@ -179,13 +190,29 @@ Deseja confirmar interesse?""",
             session["etapa"] = "produto"
             return renderizar()
 
+        if mensagem == "8":
+
+            if not session["carrinho"]:
+                return {
+                    "tipo": "texto",
+                    "mensagem": "Seu pedido está vazio."
+                }
+
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": resumo_pedido() + "\n\n👨‍💼 Você será encaminhado para finalizar seu pedido."
+            }
+
         if mensagem == "9":
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
             return {
                 "tipo": "texto",
-                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": resumo_pedido() + "\n\n👨‍💼 Você será encaminhado para nosso atendimento."
             }
 
         return {
@@ -200,6 +227,10 @@ Deseja confirmar interesse?""",
     if session["etapa"] == "produto":
 
         if mensagem == "1":
+
+            produto = produtos[session["produto"]]
+            session["carrinho"].append(produto["nome"])
+
             salvar_historico()
             session["etapa"] = "pos_interesse"
             return renderizar()
@@ -216,18 +247,18 @@ Deseja confirmar interesse?""",
     if session["etapa"] == "pos_interesse":
 
         if mensagem == "1":
-            session["historico"] = []
-            session["etapa"] = "menu"
-            return renderizar()
-
-        if mensagem == "2":
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
             return {
                 "tipo": "texto",
-                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": resumo_pedido() + "\n\n👨‍💼 Você será encaminhado para finalizar seu pedido."
             }
+
+        if mensagem == "2":
+            session["historico"] = []
+            session["etapa"] = "menu"
+            return renderizar()
 
         return {
             "tipo": "texto",
