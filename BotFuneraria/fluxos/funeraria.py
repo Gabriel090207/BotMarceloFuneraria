@@ -1,7 +1,7 @@
 from datetime import datetime
 from core.firebase import salvar_pedido
 from core.pagamentos import formatar_reais
-from core.pacotes import listar_pacotes
+from core.firebase import buscar_servicos_funerarios
 
 from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
 
@@ -106,11 +106,11 @@ def fluxo_funeraria(session, mensagem):
         linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}")
         linhas.append(f"📌 Endereço do local atual: {dados.get('endereco_local_corpo', '-')}")
         linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte', '-'))}")
-        pacote = session.get("pacote")
+        servico = session.get("servico")
 
-        if pacote:
-            linhas.append(f"📦 Pacote: {pacote.get('nome', '-')}")
-            linhas.append(f"💰 Valor: R$ {pacote.get('preco', '-')}")
+        if servico:
+            linhas.append(f"⚰️ Serviço: {servico.get('nome', '-')}")
+            linhas.append(f"💰 Valor: R$ {servico.get('preco', '-')}")
         
 
         
@@ -118,10 +118,8 @@ def fluxo_funeraria(session, mensagem):
 
     def calcular_pagamento():
 
-        pacote = session.get("pacote")
-
-        total = float(pacote.get("preco", 0)) if pacote else 0
-
+        servico = session.get("servico")
+        total = float(servico.get("preco", 0)) if servico else 0
         sinal = round(total * 0.1, 2)
 
         session["pagamento"] = {
@@ -223,14 +221,14 @@ def fluxo_funeraria(session, mensagem):
                 ])
             }
 
-        if etapa == "pacotes":
+        if etapa == "servicos":
 
-            pacotes = listar_pacotes()
-            session["pacotes"] = pacotes
+            servicos = buscar_servicos_funerarios()
+            session["servicos"] = servicos
 
             botoes = []
 
-            for i, p in enumerate(pacotes):
+            for i, p in enumerate(servicos):
                 botoes.append({
                     "id": str(i + 1),
                     "label": f"{p.get('nome')} - R$ {p.get('preco')}"
@@ -238,7 +236,7 @@ def fluxo_funeraria(session, mensagem):
 
             return {
                 "tipo": "botoes",
-                "mensagem": "📦 Escolha um pacote:",
+                "mensagem": "⚰️ Escolha o serviço desejado:",
                 "botoes": botao_voltar_menu(botoes)
             }
 
@@ -251,7 +249,7 @@ def fluxo_funeraria(session, mensagem):
                     {"id": "1", "label": "Velório"},
                     {"id": "2", "label": "Local do ente querido"},
                     {"id": "3", "label": "Porte"},
-                    {"id": "4", "label": "Pacote"},  # 🔥 NOVO
+                    {"id": "4", "label": "Serviço"},  # 🔥 NOVO
                     {"id": "5", "label": "Voltar ao resumo"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
@@ -313,8 +311,8 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
 
     # 🔥 TRATAR VOLTAR SOMENTE NO CONFIRMAR PACOTE
 
-    if mensagem == "0" and session.get("etapa") == "confirmar_pacote":
-        session["etapa"] = "pacotes"
+    if mensagem == "0" and session.get("etapa") == "confirmar_servico":
+        session["etapa"] = "servicos"
         return renderizar_etapa()
 
     # =========================================================
@@ -459,25 +457,25 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
-        ir_para("pacotes")
+        ir_para("servicos")
         return renderizar_etapa()
 
-    if session["etapa"] == "pacotes":
+    if session["etapa"] == "servicos":
 
         if mensagem == "0":
             return renderizar_etapa()
 
         try:
-            pacote = session["pacotes"][int(mensagem) - 1]
+            servico = session["servicos"][int(mensagem) - 1]
         except:
             return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
-        session["pacote"] = pacote
+        session["servico"] = servico
 
         respostas = []
 
         # envia imagens
-        for img in pacote.get("imagens", []):
+        for img in servico.get("imagens", []):
             respostas.append({
                 "tipo": "imagem",
                 "url": img
@@ -486,11 +484,11 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
         # mensagem final
         respostas.append({
             "tipo": "botoes",
-            "mensagem": f"""📦 *{pacote.get('nome')}*
+            "mensagem": f"""📦 *{servico.get('nome')}*
 
-💰 R$ {pacote.get('preco')}
+💰 R$ {servico.get('preco')}
 
-{pacote.get('descricao', '')}
+{servico.get('descricao', '')}
 
 Deseja confirmar ou alterar alguma coisa?""",
             "botoes": [
@@ -501,7 +499,7 @@ Deseja confirmar ou alterar alguma coisa?""",
             ]
         })
 
-        session["etapa"] = "confirmar_pacote"
+        session["etapa"] = "confirmar_servico"
 
         return respostas
 
@@ -510,11 +508,11 @@ Deseja confirmar ou alterar alguma coisa?""",
     # RESUMO
     # =========================================================
 
-    if session["etapa"] == "confirmar_pacote":
+    if session["etapa"] == "confirmar_servico":
 
         if mensagem == "0":
             # 🔥 VOLTAR PARA LISTA DE PACOTES
-            session["etapa"] = "pacotes"
+            session["etapa"] = "servicos"
             return renderizar_etapa()
 
         if mensagem == "1":
@@ -568,8 +566,8 @@ Deseja confirmar ou alterar alguma coisa?""",
 
         if mensagem == "4":
             # 🔥 IR PARA PACOTES
-            session.pop("pacote", None)
-            session["etapa"] = "pacotes"
+            session.pop("servico", None)
+            session["etapa"] = "servicos"
             return renderizar_etapa()
 
         if mensagem == "5":
@@ -588,7 +586,7 @@ Deseja confirmar ou alterar alguma coisa?""",
         sinal = session.get("pagamento", {}).get("sinal", 0)
 
         salvar_pedido({
-            "pacote": session.get("pacote"),
+            "servico": session.get("servico"),
             "dados": session.get("dados", {}),
             "pagamento": {
                 "total": total,
