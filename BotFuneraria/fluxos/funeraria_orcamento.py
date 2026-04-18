@@ -29,6 +29,11 @@ COBERTURA_EXTERNO = """
 """
 
 
+def eh(msg, *opcoes):
+    valor = str(msg).strip().lower()
+    return valor in [str(x).strip().lower() for x in opcoes]
+
+
 def menu_principal():
     return {
         "tipo": "botoes",
@@ -79,11 +84,11 @@ def fluxo_funeraria_orcamento(session, mensagem):
 
     if session["etapa"] == "submenu":
 
-        if mensagem == "1":
+        if eh(mensagem, "1", "Ver serviços e valores"):
             session["etapa"] = "lista"
             return fluxo_funeraria_orcamento(session, "x")
 
-        if mensagem == "2":
+        if eh(mensagem, "2", "Conhecer estrutura"):
             session["etapa"] = "estrutura"
 
             return [
@@ -103,7 +108,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                 }
             ]
 
-        if mensagem == "3":
+        if eh(mensagem, "3", "Falar com atendente"):
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
             return {
@@ -111,7 +116,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                 "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
             }
 
-        if mensagem == "0":
+        if eh(mensagem, "0", "Voltar"):
             session["fluxo"] = "funeraria"
             session["etapa"] = "inicio"
             return {
@@ -119,7 +124,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                 "mensagem": "🔙 Voltando ao menu funerária."
             }
 
-        if mensagem == "00":
+        if eh(mensagem, "00", "Menu principal"):
             session["fluxo"] = None
             session["etapa"] = "inicio"
             session["etapa_global"] = "menu"
@@ -131,11 +136,11 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
     if session["etapa"] == "estrutura":
 
-        if mensagem == "1":
+        if eh(mensagem, "1", "Ver serviços"):
             session["etapa"] = "lista"
             return fluxo_funeraria_orcamento(session, "x")
 
-        if mensagem == "00":
+        if eh(mensagem, "00", "Menu principal"):
             session["fluxo"] = None
             session["etapa"] = "inicio"
             session["etapa_global"] = "menu"
@@ -177,17 +182,17 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
     if session["etapa"] == "menu_lista":
 
-        if mensagem == "0":
+        if eh(mensagem, "0", "Voltar"):
             session["etapa"] = "inicio"
             return fluxo_funeraria_orcamento(session, "x")
 
-        if mensagem == "00":
+        if eh(mensagem, "00", "Menu principal"):
             session["fluxo"] = None
             session["etapa"] = "inicio"
             session["etapa_global"] = "menu"
             return menu_principal()
 
-        if mensagem.isdigit():
+        if str(mensagem).isdigit():
 
             indice = int(mensagem) - 1
             servicos = session["servicos_cache"]
@@ -242,10 +247,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
                 return resposta
 
-        return {
-            "tipo": "texto",
-            "mensagem": "Escolha uma opção válida."
-        }
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
     # ==================================================
     # DETALHES
@@ -253,19 +255,19 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
     if session["etapa"] == "detalhes":
 
-        if mensagem == "1":
+        if eh(mensagem, "1", "Tenho interesse"):
             session["etapa"] = "coletar_nome"
             return {"tipo": "texto", "mensagem": "Informe seu nome completo."}
 
-        if mensagem == "2":
+        if eh(mensagem, "2", "Ver outra opção"):
             session["etapa"] = "lista"
             return fluxo_funeraria_orcamento(session, "x")
 
-        if mensagem == "0":
+        if eh(mensagem, "0", "Voltar"):
             session["etapa"] = "lista"
             return fluxo_funeraria_orcamento(session, "x")
 
-        if mensagem == "00":
+        if eh(mensagem, "00", "Menu principal"):
             session["fluxo"] = None
             session["etapa"] = "inicio"
             session["etapa_global"] = "menu"
@@ -276,13 +278,11 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
     # ==================================================
 
     if session["etapa"] == "coletar_nome":
-
         session["dados"]["nome"] = mensagem
         session["etapa"] = "cidade"
         return {"tipo": "texto", "mensagem": "Informe sua cidade."}
 
     if session["etapa"] == "cidade":
-
         session["dados"]["cidade"] = mensagem
         session["etapa"] = "data"
         return {"tipo": "texto", "mensagem": "Para quando precisa? (opcional)"}
@@ -307,7 +307,4 @@ Data: {session["dados"]["data"]}
 👨‍💼 Você será encaminhado para nosso atendimento."""
         }
 
-    return {
-        "tipo": "texto",
-        "mensagem": "Escolha uma opção válida."
-    }
+    return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}

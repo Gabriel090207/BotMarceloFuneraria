@@ -112,3 +112,21 @@ def enviar_resposta(resposta, numero):
             enviar_mensagem(r, numero)
     else:
         enviar_mensagem(resposta, numero)
+
+def enviar_video(phone, url_video):
+    url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-video"
+
+    payload = {
+        "phone": phone,
+        "video": url_video
+    }
+
+    headers = {
+        "Client-Token": ZAPI_CLIENT_TOKEN
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    print(response.status_code, response.text)
+
+    return response.json()
