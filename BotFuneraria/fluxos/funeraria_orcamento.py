@@ -1,5 +1,6 @@
 from core.firebase import buscar_servicos_funerarios
 
+VIDEO_ESTRUTURA = "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/midias%2FWhatsApp%20Video%202026-04-15%20at%2017.16.41.mp4?alt=media&token=a3297384-1607-45a2-a3a9-3772caf942e0"
 
 COBERTURA_COMPLETA = """
 💡 *COBERTURA:*
@@ -28,6 +29,20 @@ COBERTURA_EXTERNO = """
 """
 
 
+def menu_principal():
+    return {
+        "tipo": "botoes",
+        "mensagem": "🔙 Voltamos ao menu principal.\n\nEscolha uma opção:",
+        "botoes": [
+            {"id": "1", "label": "Serviços funerários"},
+            {"id": "2", "label": "Planos"},
+            {"id": "3", "label": "Financeiro / Administrativo"},
+            {"id": "4", "label": "Floricultura"},
+            {"id": "5", "label": "Falar com atendente"},
+        ]
+    }
+
+
 def fluxo_funeraria_orcamento(session, mensagem):
 
     session.setdefault("etapa", "inicio")
@@ -37,10 +52,100 @@ def fluxo_funeraria_orcamento(session, mensagem):
     nome = session.get("nome", "")
 
     # ==================================================
-    # MENU PRINCIPAL DO ORÇAMENTO
+    # MENU INICIAL
     # ==================================================
 
     if session["etapa"] == "inicio":
+
+        session["etapa"] = "submenu"
+
+        return {
+            "tipo": "botoes",
+            "mensagem": f"""🏢 *Orçamento Funerário*
+
+{nome}, como podemos te ajudar?""",
+            "botoes": [
+                {"id": "1", "label": "Ver serviços e valores"},
+                {"id": "2", "label": "Conhecer estrutura"},
+                {"id": "3", "label": "Falar com atendente"},
+                {"id": "0", "label": "Voltar"},
+                {"id": "00", "label": "Menu principal"},
+            ]
+        }
+
+    # ==================================================
+    # SUBMENU
+    # ==================================================
+
+    if session["etapa"] == "submenu":
+
+        if mensagem == "1":
+            session["etapa"] = "lista"
+            return fluxo_funeraria_orcamento(session, "x")
+
+        if mensagem == "2":
+            session["etapa"] = "estrutura"
+
+            return [
+                {
+                    "tipo": "video",
+                    "url": VIDEO_ESTRUTURA
+                },
+                {
+                    "tipo": "botoes",
+                    "mensagem": """🏢 *Conheça nossa estrutura*
+
+Ambientes preparados para acolher sua família com conforto, respeito e tranquilidade.""",
+                    "botoes": [
+                        {"id": "1", "label": "Ver serviços"},
+                        {"id": "00", "label": "Menu principal"},
+                    ]
+                }
+            ]
+
+        if mensagem == "3":
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+            return {
+                "tipo": "texto",
+                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+            }
+
+        if mensagem == "0":
+            session["fluxo"] = "funeraria"
+            session["etapa"] = "inicio"
+            return {
+                "tipo": "texto",
+                "mensagem": "🔙 Voltando ao menu funerária."
+            }
+
+        if mensagem == "00":
+            session["fluxo"] = None
+            session["etapa"] = "inicio"
+            session["etapa_global"] = "menu"
+            return menu_principal()
+
+    # ==================================================
+    # ESTRUTURA
+    # ==================================================
+
+    if session["etapa"] == "estrutura":
+
+        if mensagem == "1":
+            session["etapa"] = "lista"
+            return fluxo_funeraria_orcamento(session, "x")
+
+        if mensagem == "00":
+            session["fluxo"] = None
+            session["etapa"] = "inicio"
+            session["etapa_global"] = "menu"
+            return menu_principal()
+
+    # ==================================================
+    # LISTA SERVIÇOS
+    # ==================================================
+
+    if session["etapa"] == "lista":
 
         servicos = buscar_servicos_funerarios()
         session["servicos_cache"] = servicos
@@ -58,45 +163,29 @@ def fluxo_funeraria_orcamento(session, mensagem):
         botoes.append({"id": "0", "label": "Voltar"})
         botoes.append({"id": "00", "label": "Menu principal"})
 
-        session["etapa"] = "menu"
+        session["etapa"] = "menu_lista"
 
         return {
             "tipo": "botoes",
-            "mensagem": f"""🏢 *Orçamento Funerário*
-
-{nome}, escolha uma opção:""",
+            "mensagem": "🏢 *Serviços e Valores*\n\nEscolha uma opção:",
             "botoes": botoes
         }
 
     # ==================================================
-    # MENU LISTA SERVIÇOS
+    # MENU LISTA
     # ==================================================
 
-    if session["etapa"] == "menu":
+    if session["etapa"] == "menu_lista":
 
         if mensagem == "0":
             session["etapa"] = "inicio"
-            session["fluxo"] = "funeraria"
-            return {
-                "tipo": "texto",
-                "mensagem": "🔙 Voltando ao menu funerária."
-            }
+            return fluxo_funeraria_orcamento(session, "x")
 
         if mensagem == "00":
             session["fluxo"] = None
             session["etapa"] = "inicio"
             session["etapa_global"] = "menu"
-            return {
-                "tipo": "botoes",
-                "mensagem": "🏠 Menu principal:",
-                "botoes": [
-                    {"id": "1", "label": "Serviços funerários"},
-                    {"id": "2", "label": "Planos"},
-                    {"id": "3", "label": "Financeiro / Administrativo"},
-                    {"id": "4", "label": "Floricultura"},
-                    {"id": "5", "label": "Falar com atendente"},
-                ]
-            }
+            return menu_principal()
 
         if mensagem.isdigit():
 
@@ -107,16 +196,16 @@ def fluxo_funeraria_orcamento(session, mensagem):
 
                 servico = servicos[indice]
                 session["dados"]["servico"] = servico
-
                 session["etapa"] = "detalhes"
 
                 resposta = []
 
                 if servico.get("imagens"):
-                    resposta.append({
-                        "tipo": "imagem",
-                        "url": servico["imagens"][0]
-                    })
+                    for img in servico["imagens"]:
+                        resposta.append({
+                            "tipo": "imagem",
+                            "url": img
+                        })
 
                 texto = f"""🏢 *{servico["nome"]}*
 
@@ -135,7 +224,7 @@ def fluxo_funeraria_orcamento(session, mensagem):
                 if servico.get("descricao"):
                     texto += f'\n\n📝 {servico["descricao"]}'
 
-                if servico.get("cobertura") == "externo":
+                if str(servico.get("cobertura", "")).lower() == "externo":
                     texto += "\n" + COBERTURA_EXTERNO
                 else:
                     texto += "\n" + COBERTURA_COMPLETA
@@ -166,92 +255,41 @@ def fluxo_funeraria_orcamento(session, mensagem):
 
         if mensagem == "1":
             session["etapa"] = "coletar_nome"
-            return {
-                "tipo": "botoes",
-                "mensagem": "Informe seu nome completo.",
-                "botoes": [
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
+            return {"tipo": "texto", "mensagem": "Informe seu nome completo."}
 
         if mensagem == "2":
-            session["etapa"] = "inicio"
-            return fluxo_funeraria_orcamento(session, mensagem)
+            session["etapa"] = "lista"
+            return fluxo_funeraria_orcamento(session, "x")
 
         if mensagem == "0":
-            session["etapa"] = "inicio"
-            return fluxo_funeraria_orcamento(session, mensagem)
+            session["etapa"] = "lista"
+            return fluxo_funeraria_orcamento(session, "x")
 
         if mensagem == "00":
             session["fluxo"] = None
             session["etapa"] = "inicio"
             session["etapa_global"] = "menu"
-            return {
-                "tipo": "botoes",
-                "mensagem": "🏠 Menu principal:",
-                "botoes": [
-                    {"id": "1", "label": "Serviços funerários"},
-                    {"id": "2", "label": "Planos"},
-                    {"id": "3", "label": "Financeiro / Administrativo"},
-                    {"id": "4", "label": "Floricultura"},
-                    {"id": "5", "label": "Falar com atendente"},
-                ]
-            }
+            return menu_principal()
 
     # ==================================================
-    # COLETAS
+    # COLETA
     # ==================================================
 
     if session["etapa"] == "coletar_nome":
 
-        if mensagem == "0":
-            session["etapa"] = "detalhes"
-            return fluxo_funeraria_orcamento(session, "x")
-
-        if mensagem == "00":
-            session["fluxo"] = None
-            session["etapa"] = "inicio"
-            session["etapa_global"] = "menu"
-
         session["dados"]["nome"] = mensagem
         session["etapa"] = "cidade"
-
-        return {
-            "tipo": "botoes",
-            "mensagem": "Informe sua cidade.",
-            "botoes": [
-                {"id": "0", "label": "Voltar"},
-                {"id": "00", "label": "Menu principal"},
-            ]
-        }
+        return {"tipo": "texto", "mensagem": "Informe sua cidade."}
 
     if session["etapa"] == "cidade":
 
-        if mensagem == "0":
-            session["etapa"] = "coletar_nome"
-            return fluxo_funeraria_orcamento(session, "x")
-
         session["dados"]["cidade"] = mensagem
         session["etapa"] = "data"
-
-        return {
-            "tipo": "botoes",
-            "mensagem": "Para quando precisa? (opcional)",
-            "botoes": [
-                {"id": "0", "label": "Voltar"},
-                {"id": "00", "label": "Menu principal"},
-            ]
-        }
+        return {"tipo": "texto", "mensagem": "Para quando precisa? (opcional)"}
 
     if session["etapa"] == "data":
 
-        if mensagem == "0":
-            session["etapa"] = "cidade"
-            return fluxo_funeraria_orcamento(session, "x")
-
         session["dados"]["data"] = mensagem
-
         servico = session["dados"]["servico"]
 
         session["fluxo"] = "atendente"
