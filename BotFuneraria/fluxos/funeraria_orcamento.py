@@ -129,7 +129,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     # ==================================================
     # ESTRUTURA
@@ -147,7 +150,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     # ==================================================
     # LISTA
@@ -195,11 +201,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
-        msg = str(mensagem).strip()
-
-        if msg in ["0", "00"]:
-            pass
-        elif msg.isdigit():
+        if str(mensagem).isdigit():
 
             indice = int(mensagem) - 1
             servicos = session["servicos_cache"]
@@ -254,7 +256,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
                 return resposta
 
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     # ==================================================
     # DETALHES
@@ -264,7 +269,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
         if eh(mensagem, "1", "Tenho interesse"):
             session["etapa"] = "coletar_nome"
-            return {"tipo": "texto", "mensagem": "Informe seu nome completo."}
+            return {
+                "tipo": "texto",
+                "mensagem": "Informe seu nome completo."
+            }
 
         if eh(mensagem, "2", "Ver outra opção"):
             session["etapa"] = "lista"
@@ -280,16 +288,22 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa_global"] = "menu"
             return menu_principal()
 
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     # ==================================================
-    # COLETA NOME
+    # COLETAR NOME
     # ==================================================
 
     if session["etapa"] == "coletar_nome":
         session["dados"]["nome"] = mensagem
         session["etapa"] = "cidade"
-        return {"tipo": "texto", "mensagem": "Informe sua cidade."}
+        return {
+            "tipo": "texto",
+            "mensagem": "Informe sua cidade."
+        }
 
     # ==================================================
     # CIDADE
@@ -298,7 +312,10 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
     if session["etapa"] == "cidade":
         session["dados"]["cidade"] = mensagem
         session["etapa"] = "data"
-        return {"tipo": "texto", "mensagem": "Para quando precisa? (opcional)"}
+        return {
+            "tipo": "texto",
+            "mensagem": "Para quando precisa? (opcional)"
+        }
 
     # ==================================================
     # DATA
@@ -324,4 +341,7 @@ Data: {session["dados"]["data"]}
 👨‍💼 Você será encaminhado para nosso atendimento."""
         }
 
-    return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+    return {
+        "tipo": "texto",
+        "mensagem": "Escolha uma opção válida."
+    }
