@@ -3,6 +3,8 @@ from core.firebase import salvar_pedido
 from core.pagamentos import formatar_reais
 from core.pacotes import listar_pacotes
 
+from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
+
 def fluxo_funeraria(session, mensagem):
     # =========================================================
     # ESTADO INICIAL
@@ -340,12 +342,9 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             return renderizar_etapa()
 
         if mensagem == "2":
-            return {
-                "tipo": "texto",
-                "mensagem": """Claro 🙏
-
-Para montar um orçamento com mais precisão, escolha *Serviços imediatos* e eu vou te conduzir passo a passo com cuidado."""
-            }
+            session["fluxo"] = "funeraria_orcamento"
+            session["etapa"] = "inicio"
+            return fluxo_funeraria_orcamento(session, mensagem)
 
         return {
             "tipo": "texto",

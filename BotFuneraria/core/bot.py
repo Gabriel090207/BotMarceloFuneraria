@@ -7,6 +7,7 @@ from fluxos.funeraria import fluxo_funeraria
 from fluxos.atendente import fluxo_atendente
 from fluxos.planos_familiares import fluxo_planos_familiares
 from fluxos.financeiro import fluxo_financeiro
+from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
 
 def responder(numero, mensagem):
 
@@ -122,6 +123,9 @@ Como podemos te ajudar hoje?
 
     if session["fluxo"] == "funeraria":
         return fluxo_funeraria(session, mensagem)
+
+    if session["fluxo"] == "funeraria_orcamento":
+        return fluxo_funeraria_orcamento(session, mensagem)
 
     if session["fluxo"] == "planos":
         return fluxo_planos_familiares(session, mensagem)
