@@ -29,3 +29,19 @@ db = firestore.client()
 
 def salvar_pedido(dados):
     db.collection("pedidos").add(dados)
+
+
+def buscar_servicos_funerarios():
+
+    docs = db.collection("servicos").stream()
+
+    lista = []
+
+    for doc in docs:
+        item = doc.to_dict()
+        item["id"] = doc.id
+        lista.append(item)
+
+    lista.sort(key=lambda x: x.get("nome", ""))
+
+    return lista
