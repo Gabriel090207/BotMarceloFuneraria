@@ -1,14 +1,12 @@
 from core.session import get_session
 from datetime import datetime
+import pytz
 
 from fluxos.floricultura import fluxo_floricultura
 from fluxos.funeraria import fluxo_funeraria
 from fluxos.atendente import fluxo_atendente
 from fluxos.planos_familiares import fluxo_planos_familiares
-from fluxos.planos_empresariais import fluxo_planos_empresariais
 
-from datetime import datetime
-import pytz
 
 def responder(numero, mensagem):
 
@@ -27,9 +25,9 @@ def responder(numero, mensagem):
     if "fluxo" not in session:
         session["fluxo"] = None
 
-    # ---------------------------
-    # INICIO
-    # ---------------------------
+    # -------------------------------------------------
+    # INÍCIO
+    # -------------------------------------------------
 
     if session["etapa_global"] == "inicio":
 
@@ -54,9 +52,9 @@ Antes de iniciar o atendimento, poderia me informar seu nome?
 """
         }
 
-    # ---------------------------
+    # -------------------------------------------------
     # NOME
-    # ---------------------------
+    # -------------------------------------------------
 
     if session["etapa_global"] == "nome":
 
@@ -74,33 +72,36 @@ Como podemos te ajudar hoje?
 """,
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
-                {"id": "2", "label": "Planos familiares"},
-                {"id": "3", "label": "Planos empresariais"},
+                {"id": "2", "label": "Planos"},
+                {"id": "3", "label": "Financeiro / Administrativo"},
                 {"id": "4", "label": "Floricultura"},
                 {"id": "5", "label": "Falar com atendente"},
             ]
         }
 
-    # ---------------------------
+    # -------------------------------------------------
     # MENU PRINCIPAL
-    # ---------------------------
+    # -------------------------------------------------
 
     if session["etapa_global"] == "menu" and session["fluxo"] is None:
 
         if mensagem == "1":
             session["fluxo"] = "funeraria"
-            session["etapa"] = "inicio"  # 🔥 ESSENCIAL
+            session["etapa"] = "inicio"
             return fluxo_funeraria(session, mensagem)
 
         elif mensagem == "2":
-            session["fluxo"] = "planos_familiares"
+            session["fluxo"] = "planos"
             session["etapa"] = "inicio"
             return fluxo_planos_familiares(session, mensagem)
 
         elif mensagem == "3":
-            session["fluxo"] = "planos_empresariais"
+            session["fluxo"] = "financeiro"
             session["etapa"] = "inicio"
-            return fluxo_planos_empresariais(session, mensagem)
+            return {
+                "tipo": "texto",
+                "mensagem": "Fluxo Financeiro / Administrativo será criado no próximo passo."
+            }
 
         elif mensagem == "4":
             session["fluxo"] = "floricultura"
@@ -118,12 +119,15 @@ Como podemos te ajudar hoje?
                 "mensagem": "Escolha uma opção válida."
             }
 
-    # ---------------------------
-    # REDIRECIONAMENTO
-    # ---------------------------
+    # -------------------------------------------------
+    # REDIRECIONAMENTOS
+    # -------------------------------------------------
 
     if session["fluxo"] == "funeraria":
         return fluxo_funeraria(session, mensagem)
+
+    if session["fluxo"] == "planos":
+        return fluxo_planos_familiares(session, mensagem)
 
     if session["fluxo"] == "floricultura":
         return fluxo_floricultura(session, mensagem)
@@ -131,8 +135,13 @@ Como podemos te ajudar hoje?
     if session["fluxo"] == "atendente":
         return fluxo_atendente(session, mensagem)
 
-    if session["fluxo"] == "planos_familiares":
-        return fluxo_planos_familiares(session, mensagem)
+    if session["fluxo"] == "financeiro":
+        return {
+            "tipo": "texto",
+            "mensagem": "Fluxo Financeiro / Administrativo será criado no próximo passo."
+        }
 
-    if session["fluxo"] == "planos_empresariais":
-        return fluxo_planos_empresariais(session, mensagem)
+    return {
+        "tipo": "texto",
+        "mensagem": "Escolha uma opção válida."
+    }
