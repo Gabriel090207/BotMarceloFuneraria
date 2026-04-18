@@ -34,7 +34,7 @@ def fluxo_floricultura(session, mensagem):
     }
 
     # -------------------------------------------------
-    # FUNÇÕES AUXILIARES
+    # AUXILIARES
     # -------------------------------------------------
 
     def salvar_historico():
@@ -76,6 +76,8 @@ def fluxo_floricultura(session, mensagem):
 
         etapa = session["etapa"]
 
+        # ---------------- MENU ----------------
+
         if etapa == "inicio" or etapa == "menu":
 
             session["etapa"] = "menu"
@@ -84,22 +86,33 @@ def fluxo_floricultura(session, mensagem):
             if session["carrinho"]:
                 msg = f"{nome}, o que mais você deseja?"
 
+            botoes = [
+                {"id": "1", "label": "Arranjos e Presentes"},
+                {"id": "2", "label": "Coroa padrão"},
+                {"id": "3", "label": "Coroa com rosas"},
+                {"id": "4", "label": "Buquê padrão"},
+                {"id": "5", "label": "Buquê com rosas"},
+            ]
+
+            if session["carrinho"]:
+                botoes.append(
+                    {"id": "8", "label": "Finalizar pedido agora"}
+                )
+
+            botoes += [
+                {"id": "9", "label": "Falar com atendente"},
+                {"id": "00", "label": "Menu principal"},
+            ]
+
             return {
                 "tipo": "botoes",
                 "mensagem": f"""🌸 Floricultura
 
 {msg}""",
-                "botoes": [
-                    {"id": "1", "label": "Arranjos e Presentes"},
-                    {"id": "2", "label": "Coroa padrão"},
-                    {"id": "3", "label": "Coroa com rosas"},
-                    {"id": "4", "label": "Buquê padrão"},
-                    {"id": "5", "label": "Buquê com rosas"},
-                    {"id": "8", "label": "Finalizar pedido agora"},
-                    {"id": "9", "label": "Falar com atendente"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
+                "botoes": botoes
             }
+
+        # ---------------- SITE ----------------
 
         if etapa == "site":
             return {
@@ -113,7 +126,10 @@ https://floriculturavalledasflores.com.br""",
                 ]
             }
 
+        # ---------------- PRODUTO ----------------
+
         if etapa == "produto":
+
             produto = produtos[session["produto"]]
 
             return [
@@ -137,6 +153,8 @@ Deseja adicionar ao pedido?""",
                     ]
                 }
             ]
+
+        # ---------------- PÓS ITEM ----------------
 
         if etapa == "pos_interesse":
             return {
@@ -241,7 +259,7 @@ Deseja adicionar ao pedido?""",
         }
 
     # -------------------------------------------------
-    # PÓS INTERESSE
+    # PÓS ITEM
     # -------------------------------------------------
 
     if session["etapa"] == "pos_interesse":
