@@ -1,7 +1,7 @@
 def fluxo_floricultura(session, mensagem):
 
-    if "etapa" not in session:
-        session["etapa"] = "inicio"
+    session.setdefault("etapa", "inicio")
+    session.setdefault("historico", [])
 
     nome = session.get("nome", "")
 
@@ -33,22 +33,26 @@ def fluxo_floricultura(session, mensagem):
     }
 
     # -------------------------------------------------
-    # NORMALIZA BOTÕES
+    # FUNÇÕES
     # -------------------------------------------------
 
-    if mensagem == "Voltar":
-        mensagem = "0"
+    def salvar_historico():
+        etapa = session.get("etapa")
+        if etapa:
+            session["historico"].append(etapa)
 
-    elif mensagem == "Menu principal":
-        mensagem = "00"
+    def voltar():
+        if session["historico"]:
+            session["etapa"] = session["historico"].pop()
+        else:
+            session["etapa"] = "menu"
 
-    # -------------------------------------------------
-    # MENU PRINCIPAL
-    # -------------------------------------------------
+        return renderizar()
 
-    def voltar_menu_principal():
+    def menu_principal():
         session["fluxo"] = None
         session["etapa"] = "inicio"
+        session["historico"] = []
         session["etapa_global"] = "menu"
 
         return {
@@ -63,47 +67,43 @@ def fluxo_floricultura(session, mensagem):
             ]
         }
 
-    # -------------------------------------------------
-    # INÍCIO
-    # -------------------------------------------------
+    def renderizar():
 
-    if session["etapa"] == "inicio":
+        etapa = session["etapa"]
 
-        session["etapa"] = "menu"
+        if etapa == "inicio" or etapa == "menu":
+            session["etapa"] = "menu"
 
-        return {
-            "tipo": "botoes",
-            "mensagem": f"""🌸 Floricultura
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""🌸 Floricultura
 
 {nome}, escolha uma opção:""",
-            "botoes": [
-                {"id": "1", "label": "Arranjos e Presentes"},
-                {"id": "2", "label": "Coroa padrão"},
-                {"id": "3", "label": "Coroa com rosas"},
-                {"id": "4", "label": "Buquê padrão"},
-                {"id": "5", "label": "Buquê com rosas"},
-                {"id": "9", "label": "Falar com atendente"},
-                {"id": "00", "label": "Voltar ao menu"},
-            ]
-        }
-
-    # -------------------------------------------------
-    # MENU
-    # -------------------------------------------------
-
-    if session["etapa"] == "menu":
-
-        if mensagem == "1":
-            return {
-                "tipo": "texto",
-                "mensagem": "🌐 Arranjos e Presentes:\nhttps://floriculturavalledasflores.com.br"
+                "botoes": [
+                    {"id": "1", "label": "Arranjos e Presentes"},
+                    {"id": "2", "label": "Coroa padrão"},
+                    {"id": "3", "label": "Coroa com rosas"},
+                    {"id": "4", "label": "Buquê padrão"},
+                    {"id": "5", "label": "Buquê com rosas"},
+                    {"id": "9", "label": "Falar com atendente"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
-        elif mensagem in produtos:
+        if etapa == "site":
+            return {
+                "tipo": "botoes",
+                "mensagem": """🌐 Arranjos e Presentes:
 
-            produto = produtos[mensagem]
-            session["produto_escolhido"] = mensagem
-            session["etapa"] = "produto"
+https://floriculturavalledasflores.com.br""",
+                "botoes": [
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+        if etapa == "produto":
+            produto = produtos[session["produto"]]
 
             return [
                 {
@@ -127,7 +127,59 @@ Deseja confirmar interesse?""",
                 }
             ]
 
-        elif mensagem == "9":
+        if etapa == "pos_interesse":
+            return {
+                "tipo": "botoes",
+                "mensagem": "🙏 Deseja mais alguma coisa?",
+                "botoes": [
+                    {"id": "1", "label": "Sim"},
+                    {"id": "2", "label": "Falar com atendente"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
+
+    # -------------------------------------------------
+    # NORMALIZAÇÃO
+    # -------------------------------------------------
+
+    if mensagem == "Voltar":
+        mensagem = "0"
+
+    if mensagem == "Menu principal":
+        mensagem = "00"
+
+    if mensagem == "0":
+        return voltar()
+
+    if mensagem == "00":
+        return menu_principal()
+
+    # -------------------------------------------------
+    # ENTRADA
+    # -------------------------------------------------
+
+    if session["etapa"] == "inicio":
+        return renderizar()
+
+    # -------------------------------------------------
+    # MENU
+    # -------------------------------------------------
+
+    if session["etapa"] == "menu":
+
+        if mensagem == "1":
+            salvar_historico()
+            session["etapa"] = "site"
+            return renderizar()
+
+        if mensagem in produtos:
+            salvar_historico()
+            session["produto"] = mensagem
+            session["etapa"] = "produto"
+            return renderizar()
+
+        if mensagem == "9":
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
@@ -136,14 +188,10 @@ Deseja confirmar interesse?""",
                 "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
             }
 
-        elif mensagem == "00":
-            return voltar_menu_principal()
-
-        else:
-            return {
-                "tipo": "texto",
-                "mensagem": "Escolha uma opção válida."
-            }
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     # -------------------------------------------------
     # PRODUTO
@@ -152,31 +200,14 @@ Deseja confirmar interesse?""",
     if session["etapa"] == "produto":
 
         if mensagem == "1":
-
+            salvar_historico()
             session["etapa"] = "pos_interesse"
+            return renderizar()
 
-            return {
-                "tipo": "botoes",
-                "mensagem": "Perfeito 🙏\n\nDeseja mais alguma coisa?",
-                "botoes": [
-                    {"id": "1", "label": "Ver menu novamente"},
-                    {"id": "2", "label": "Falar com atendente"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
-
-        elif mensagem == "0":
-            session["etapa"] = "menu"
-            return fluxo_floricultura(session, "menu")
-
-        elif mensagem == "00":
-            return voltar_menu_principal()
-
-        else:
-            return {
-                "tipo": "texto",
-                "mensagem": "Escolha uma opção válida."
-            }
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     # -------------------------------------------------
     # PÓS INTERESSE
@@ -185,21 +216,11 @@ Deseja confirmar interesse?""",
     if session["etapa"] == "pos_interesse":
 
         if mensagem == "1":
+            session["historico"] = []
             session["etapa"] = "menu"
+            return renderizar()
 
-            return {
-                "tipo": "botoes",
-                "mensagem": "😊 O que você deseja agora?",
-                "botoes": [
-                    {"id": "1", "label": "Serviços funerários"},
-                    {"id": "2", "label": "Planos"},
-                    {"id": "3", "label": "Financeiro / Administrativo"},
-                    {"id": "4", "label": "Floricultura"},
-                    {"id": "5", "label": "Falar com atendente"},
-                ]
-            }
-
-        elif mensagem == "2":
+        if mensagem == "2":
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
@@ -208,16 +229,9 @@ Deseja confirmar interesse?""",
                 "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
             }
 
-        elif mensagem == "00":
-            return voltar_menu_principal()
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
-        else:
-            return {
-                "tipo": "texto",
-                "mensagem": "Escolha uma opção válida."
-            }
-
-    return {
-        "tipo": "texto",
-        "mensagem": "Escolha uma opção válida."
-    }
+    return renderizar()
