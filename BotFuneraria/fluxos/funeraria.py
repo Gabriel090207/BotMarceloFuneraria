@@ -3,7 +3,11 @@ from core.firebase import salvar_pedido
 from core.pagamentos import formatar_reais
 from core.firebase import buscar_servicos_funerarios
 
-from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
+from fluxos.funeraria_orcamento import (
+    fluxo_funeraria_orcamento,
+    COBERTURA_COMPLETA,
+    COBERTURA_EXTERNO
+)
 
 def fluxo_funeraria(session, mensagem):
     # =========================================================
@@ -224,6 +228,21 @@ def fluxo_funeraria(session, mensagem):
         if etapa == "servicos":
 
             servicos = buscar_servicos_funerarios()
+
+            local = session["dados"].get("local_velorio")
+
+            if local == "funeraria":
+                servicos = [
+                    s for s in servicos
+                    if str(s.get("categoria", "")).lower() != "externo"
+                ]
+
+            elif local == "externo":
+                servicos = [
+                    s for s in servicos
+                    if str(s.get("categoria", "")).lower() == "externo"
+                ]
+
             session["servicos"] = servicos
 
             botoes = []
@@ -482,15 +501,32 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             })
 
         # mensagem final
+        texto = f"""🏢 *{servico.get('nome')}*
+
+💰 R$ {servico.get('preco')}"""
+
+        if servico.get("capacidade"):
+            texto += f"\n\n✅ Capacidade interna: {servico['capacidade']}"
+
+        if str(servico.get("suite", "")).lower() == "sim":
+            texto += f"\n✅ Suíte: {servico['suite']}"
+
+        if servico.get("area_externa"):
+            texto += f"\n✅ {servico['area_externa']}"
+
+        if servico.get("descricao"):
+            texto += f"\n\n{servico['descricao']}"
+
+        if str(servico.get("categoria", "")).lower() == "externo":
+            texto += COBERTURA_EXTERNO
+        else:
+            texto += COBERTURA_COMPLETA
+
+        texto += "\n\nDeseja confirmar ou alterar alguma coisa?"
+
         respostas.append({
             "tipo": "botoes",
-            "mensagem": f"""📦 *{servico.get('nome')}*
-
-💰 R$ {servico.get('preco')}
-
-{servico.get('descricao', '')}
-
-Deseja confirmar ou alterar alguma coisa?""",
+            "mensagem": texto,
             "botoes": [
                 {"id": "1", "label": "Confirmar"},
                 {"id": "2", "label": "Alterar"},
