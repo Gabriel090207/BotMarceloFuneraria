@@ -518,9 +518,9 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             texto += f"\n\n{servico['descricao']}"
 
         if str(servico.get("categoria", "")).lower() == "externo":
-            texto += COBERTURA_EXTERNO
+            texto += "\n" + COBERTURA_EXTERNO
         else:
-            texto += COBERTURA_COMPLETA
+            texto += "\n" + COBERTURA_COMPLETA
 
         texto += "\n\nDeseja confirmar ou alterar alguma coisa?"
 
@@ -547,22 +547,22 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
     if session["etapa"] == "confirmar_servico":
 
         if mensagem == "0":
-            # 🔥 VOLTAR PARA LISTA DE PACOTES
             session["etapa"] = "servicos"
             return renderizar_etapa()
 
-        if mensagem == "1":
+        elif mensagem == "1":
             ir_para("resumo")
             return renderizar_etapa()
 
-        if mensagem == "2":
+        elif mensagem == "2":
             session["encerrar_bot"] = True
             return {
                 "tipo": "texto",
                 "mensagem": "Perfeito 🙏\n\nVou te encaminhar agora para um atendente que irá te ajudar nisso."
             }
 
-        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+        else:
+            return None
 
 
 
