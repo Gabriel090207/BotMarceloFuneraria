@@ -9,6 +9,14 @@ from fluxos.planos_familiares import fluxo_planos_familiares
 from fluxos.financeiro import fluxo_financeiro
 from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
 
+
+
+SAUDACOES = [
+    "oi", "ola", "olá", "bom dia", "boa tarde",
+    "boa noite", "hey", "eai", "opa", "menu"
+]
+
+
 def responder(numero, mensagem):
 
     session = get_session(numero)
@@ -59,6 +67,20 @@ Antes de iniciar o atendimento, poderia me informar seu nome?
 
     if session["etapa_global"] == "nome":
 
+        texto = mensagem.strip().lower()
+
+        if texto in SAUDACOES:
+            return {
+                "tipo": "texto",
+                "mensagem": "Para continuar o atendimento, poderia me informar seu nome, por favor? 🙏"
+            }
+
+        if len(texto) <= 1:
+            return {
+                "tipo": "texto",
+                "mensagem": "Não consegui identificar. Pode me informar seu nome, por favor? 🙏"
+            }
+
         session["nome"] = mensagem.strip().title()
         session["etapa_global"] = "menu"
 
@@ -66,11 +88,9 @@ Antes de iniciar o atendimento, poderia me informar seu nome?
 
         return {
             "tipo": "botoes",
-            "mensagem": f"""
-Prazer, {nome} 🙏
+            "mensagem": f"""Prazer, {nome} 🙏
 
-Como podemos te ajudar hoje?
-""",
+Como podemos te ajudar hoje?""",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
