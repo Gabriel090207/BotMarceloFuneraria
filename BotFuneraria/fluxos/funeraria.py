@@ -507,12 +507,15 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
                 "mensagem": "Escolha uma opção válida."
             }
 
-        ir_para("porte")
+        session["etapa"] = "porte"
 
-        return {
-            "tipo": "texto",
-            "mensagem": "🙏 Pedimos que um familiar aguarde no local para recepcionar nossa equipe."
-        }
+        return [
+            {
+                "tipo": "texto",
+                "mensagem": "🙏 Pedimos que um familiar aguarde no local para recepcionar nossa equipe."
+            },
+            renderizar_etapa()
+        ]
 
     if session["etapa"] == "endereco_local_corpo":
         session["dados"]["endereco_local_corpo"] = mensagem
