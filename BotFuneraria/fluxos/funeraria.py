@@ -552,7 +552,9 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             return renderizar_etapa()
 
         elif mensagem == "2":
-            session["etapa"] = "servicos"
+            session["etapa"] = "aguardando_ver_servicos"
+
+        
 
             return [
                 {
@@ -568,6 +570,22 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
                     ]
                 }
             ]
+
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
+
+    if session["etapa"] == "aguardando_ver_servicos":
+
+        if mensagem == "1":
+            session["etapa"] = "servicos"
+            return renderizar_etapa()
+
+        elif mensagem == "00":
+            session["fluxo"] = None
+            session["etapa_global"] = "menu"
+            return None
 
         return {
             "tipo": "texto",
