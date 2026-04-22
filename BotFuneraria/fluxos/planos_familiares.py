@@ -66,7 +66,7 @@ def fluxo_planos_familiares(session, mensagem):
 
         return {
             "tipo": "botoes",
-            "mensagem": "🔙 Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
@@ -324,7 +324,7 @@ Deseja seguir?""",
             session["encerrar_bot"] = True
             return {
                 "tipo": "texto",
-                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": "👤 Você será encaminhado para nosso atendimento."
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -409,7 +409,7 @@ Nome: {session["dados"]["nome_completo"]}
 Pessoas: {session["dados"]["quantidade"]}
 Idades: {session["dados"]["idades"]}
 
-👨‍💼 Você será encaminhado para finalizar o atendimento."""
+👤 Você será encaminhado para finalizar o atendimento."""
         }
 
     if session["etapa"] == "coletar_cidade":
@@ -426,7 +426,7 @@ Nome: {session["dados"]["nome_completo"]}
 Pessoas: {session["dados"]["quantidade"]}
 Cidade: {session["dados"]["cidade"]}
 
-👨‍💼 Você será encaminhado para finalizar o atendimento."""
+👤 Você será encaminhado para finalizar o atendimento."""
         }
 
     # =================================================
@@ -465,7 +465,7 @@ CPF: {session["dados"]["cpf"]}
 Falecido(a): {session["dados"]["falecido"]}
 Cidade: {session["dados"]["cidade_sinistro"]}
 
-👨‍💼 Você será encaminhado para nosso atendimento."""
+👤 Você será encaminhado para nosso atendimento."""
         }
 
     return renderizar()

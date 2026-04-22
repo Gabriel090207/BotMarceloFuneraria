@@ -38,7 +38,7 @@ def fluxo_financeiro(session, mensagem):
 
         return {
             "tipo": "botoes",
-            "mensagem": "🔙 Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
@@ -61,7 +61,7 @@ Nome: {session["dados"].get("nome")}
 CPF: {session["dados"].get("cpf")}
 Descrição: {session["dados"].get("descricao", "Não informada")}
 
-👨‍💼 Você será encaminhado para nosso atendimento."""
+👤 Você será encaminhado para nosso atendimento."""
         }
 
     def renderizar():
@@ -225,7 +225,7 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
             session["encerrar_bot"] = True
             return {
                 "tipo": "texto",
-                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": "👤 Você será encaminhado para nosso atendimento."
             }
 
         if mensagem in mapa:
@@ -254,7 +254,7 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
             session["encerrar_bot"] = True
             return {
                 "tipo": "texto",
-                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": "👤 Você será encaminhado para nosso atendimento."
             }
 
         if mensagem in mapa:

@@ -8,25 +8,25 @@ def fluxo_floricultura(session, mensagem):
 
     produtos = {
         "2": {
-            "nome": "Coroa de flores naturais do campo",
+            "nome": "🌸 Coroa de flores naturais do campo",
             "preco": "R$ 350,00",
             "descricao": "Modelo padrão.",
             "imagem": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/floricultura%2Fcoroa_padrao.png?alt=media&token=f14263ac-c37b-46d3-8e28-fc8e5233dbb3"
         },
         "3": {
-            "nome": "Coroa de flores naturais com 6 rosas",
+            "nome": "🌸 Coroa de flores naturais com 6 rosas",
             "preco": "R$ 400,00",
             "descricao": "Modelo especial.",
             "imagem": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/floricultura%2Fcoroa_rosas.png?alt=media&token=8801a471-b2a7-4a94-ad22-ab5c4183c35c"
         },
         "4": {
-            "nome": "Buquê com flores do campo naturais",
+            "nome": "🌼 Buquê com flores do campo naturais",
             "preco": "A partir de R$ 150,00",
             "descricao": "Modelo padrão.",
             "imagem": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/floricultura%2Fbuque_padrao.png?alt=media&token=d7657ef6-afac-46d7-b032-858d17aae189"
         },
         "5": {
-            "nome": "Buquê de flores naturais do campo e 6 rosas",
+            "nome": "💐 Buquê de flores naturais do campo e 6 rosas",
             "preco": "A partir de R$ 200,00",
             "descricao": "Modelo padrão.",
             "imagem": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/floricultura%2Fbuque_rosas.png?alt=media&token=c26c0a8f-7c6f-4805-9620-81f672c80cae"
@@ -56,7 +56,7 @@ def fluxo_floricultura(session, mensagem):
 
         return {
             "tipo": "botoes",
-            "mensagem": "🔙 Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
@@ -117,7 +117,7 @@ def fluxo_floricultura(session, mensagem):
         if etapa == "site":
             return {
                 "tipo": "botoes",
-                "mensagem": """🌐 Arranjos e Presentes:
+                "mensagem": """🎁 Arranjos e Presentes:
 
 https://floriculturavalledasflores.com.br""",
                 "botoes": [
@@ -139,7 +139,7 @@ https://floriculturavalledasflores.com.br""",
                 },
                 {
                     "tipo": "botoes",
-                    "mensagem": f"""🌸 *{produto["nome"]}*
+                    "mensagem": f"""*{produto["nome"]}*
 
 💰 {produto["preco"]}
 
@@ -159,7 +159,7 @@ Deseja adicionar ao pedido?""",
         if etapa == "pos_interesse":
             return {
                 "tipo": "botoes",
-                "mensagem": "🙏 Deseja mais alguma coisa?",
+                "mensagem": "🌹 Deseja mais alguma coisa?",
                 "botoes": [
                     {"id": "1", "label": "Não, confirmar pedido"},
                     {"id": "2", "label": "Sim"},
@@ -221,7 +221,7 @@ Deseja adicionar ao pedido?""",
 
             return {
                 "tipo": "texto",
-                "mensagem": resumo_pedido() + "\n\n👨‍💼 Você será encaminhado para finalizar seu pedido."
+                "mensagem": resumo_pedido() + "\n\n👤 Você será encaminhado para finalizar seu pedido."
             }
 
         if mensagem == "9":
@@ -230,7 +230,7 @@ Deseja adicionar ao pedido?""",
 
             return {
                 "tipo": "texto",
-                "mensagem": resumo_pedido() + "\n\n👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": resumo_pedido() + "\n\n👤 Você será encaminhado para nosso atendimento."
             }
 
         return {
@@ -270,7 +270,7 @@ Deseja adicionar ao pedido?""",
 
             return {
                 "tipo": "texto",
-                "mensagem": resumo_pedido() + "\n\n👨‍💼 Você será encaminhado para finalizar seu pedido."
+                "mensagem": resumo_pedido() + "\n\n👤 Você será encaminhado para finalizar seu pedido."
             }
 
         if mensagem == "2":

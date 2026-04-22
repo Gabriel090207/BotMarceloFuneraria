@@ -36,7 +36,7 @@ def eh(msg, *opcoes):
 def menu_principal():
     return {
         "tipo": "botoes",
-        "mensagem": "🏠 *Menu Principal*\n\nEscolha uma opção:",
+        "mensagem": "🕊️ *Menu Principal*\n\nEscolha uma opção:",
         "botoes": [
             {"id": "1", "label": "Serviços funerários"},
             {"id": "2", "label": "Planos"},
@@ -112,7 +112,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["encerrar_bot"] = True
             return {
                 "tipo": "texto",
-                "mensagem": "👨‍💼 Você será encaminhado para nosso atendimento."
+                "mensagem": "👤 Você será encaminhado para nosso atendimento."
             }
 
         if eh(mensagem, "0", "Voltar"):
@@ -120,7 +120,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session["etapa"] = "inicio"
             return {
                 "tipo": "texto",
-                "mensagem": "🔙 Voltando ao menu funerária."
+                "mensagem": "🕊️ Voltando ao menu funerária."
             }
 
         if eh(mensagem, "00", "Menu principal"):
@@ -338,7 +338,7 @@ Nome: {session["dados"]["nome"]}
 Cidade: {session["dados"]["cidade"]}
 Data: {session["dados"]["data"]}
 
-👨‍💼 Você será encaminhado para nosso atendimento."""
+👤 Você será encaminhado para nosso atendimento."""
         }
 
     return {
