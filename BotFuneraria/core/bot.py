@@ -55,7 +55,7 @@ def responder(numero, mensagem):
         return {
             "tipo": "texto",
             "mensagem": f"""
-{saudacao}, seja bem-vindo à nossa funerária 🙏
+{saudacao}, bem-vindo (a) a Funerária Canaã 🕊️
 
 Antes de iniciar o atendimento, poderia me informar seu nome?
 """

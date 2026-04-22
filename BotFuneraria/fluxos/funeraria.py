@@ -225,6 +225,17 @@ def fluxo_funeraria(session, mensagem):
                 ])
             }
 
+
+        if etapa == "conhece_funeraria":
+            return {
+                "tipo": "botoes",
+                "mensagem": "🏢 Você já conhece nossa estrutura?",
+                "botoes": botao_voltar_menu([
+                    {"id": "1", "label": "Sim, já conheço"},
+                    {"id": "2", "label": "Não, quero conhecer"},
+                ])
+            }
+
         if etapa == "servicos":
 
             servicos = buscar_servicos_funerarios()
@@ -248,9 +259,12 @@ def fluxo_funeraria(session, mensagem):
             botoes = []
 
             for i, p in enumerate(servicos):
+                preco = formatar_reais(float(p.get("preco", 0)))
+
                 botoes.append({
                     "id": str(i + 1),
-                    "label": f"{p.get('nome')} - R$ {p.get('preco')}"
+                    "label": f"{p.get('nome')} - a partir de {preco}"
+  
                 })
 
             return {
@@ -444,12 +458,61 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
         return renderizar_etapa()
 
     if session["etapa"] == "local_corpo":
+
         if mensagem not in ["1", "2", "3", "4"]:
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }
 
         session["dados"]["local_corpo"] = mensagem
+
+        if mensagem == "1":  # Hospital
+            ir_para("hospital_nome")
+            return {
+                "tipo": "texto",
+                "mensagem": "🏥 Qual o nome do hospital?"
+            }
+
         ir_para("endereco_local_corpo")
         return renderizar_etapa()
+
+
+    if session["etapa"] == "hospital_nome":
+        session["dados"]["hospital_nome"] = mensagem
+
+        ir_para("hospital_liberacao")
+
+        return {
+            "tipo": "botoes",
+            "mensagem": "O ente querido já foi liberado no necrotério?",
+            "botoes": botao_voltar_menu([
+                {"id": "1", "label": "Sim"},
+                {"id": "2", "label": "Não"},
+            ])
+        }
+
+
+    if session["etapa"] == "hospital_liberacao":
+
+        if mensagem == "1":
+            session["dados"]["liberacao_hospital"] = "Sim"
+
+        elif mensagem == "2":
+            session["dados"]["liberacao_hospital"] = "Não"
+
+        else:
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }
+
+        ir_para("porte")
+
+        return {
+            "tipo": "texto",
+            "mensagem": "🙏 Pedimos que um familiar aguarde no local para recepcionar nossa equipe."
+        }
 
     if session["etapa"] == "endereco_local_corpo":
         session["dados"]["endereco_local_corpo"] = mensagem
@@ -476,8 +539,37 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
-        ir_para("servicos")
+        ir_para("conhece_funeraria")
         return renderizar_etapa()
+
+    if session["etapa"] == "conhece_funeraria":
+
+        if mensagem == "1":
+            ir_para("servicos")
+            return renderizar_etapa()
+
+        elif mensagem == "2":
+            session["etapa"] = "servicos"
+
+            return [
+                {
+                    "tipo": "video",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/midias%2FWhatsApp%20Video%202026-04-15%20at%2017.16.41.mp4?alt=media&token=a3297384-1607-45a2-a3a9-3772caf942e0"
+                },
+                {
+                    "tipo": "botoes",
+                    "mensagem": "🏢 Conheça nossa estrutura 🙏",
+                    "botoes": [
+                        {"id": "1", "label": "Ver serviços"},
+                        {"id": "00", "label": "Menu principal"},
+                    ]
+                }
+            ]
+
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
 
     if session["etapa"] == "servicos":
 
@@ -503,7 +595,10 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
         # mensagem final
         texto = f"""🏢 *{servico.get('nome')}*
 
-💰 R$ {servico.get('preco')}"""
+💰 A partir de {formatar_reais(float(servico.get('preco', 0)))}
+
+ℹ️ Valor inicial considerando urna padrão para até 85kg.
+Para outras necessidades, consulte nossa equipe."""
 
         if servico.get("capacidade"):
             texto += f"\n\n✅ Capacidade interna: {servico['capacidade']}"
@@ -555,11 +650,8 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             return renderizar_etapa()
 
         elif mensagem == "2":
-            session["encerrar_bot"] = True
-            return {
-                "tipo": "texto",
-                "mensagem": "Perfeito 🙏\n\nVou te encaminhar agora para um atendente que irá te ajudar nisso."
-            }
+            ir_para("editar_pedido")
+            return renderizar_etapa()
 
         else:
             return None
@@ -601,8 +693,9 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             return renderizar_etapa()
 
         if mensagem == "4":
-            # 🔥 IR PARA PACOTES
             session.pop("servico", None)
+            session.pop("editando", None)
+            session["historico"] = []
             session["etapa"] = "servicos"
             return renderizar_etapa()
 

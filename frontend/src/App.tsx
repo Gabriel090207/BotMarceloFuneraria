@@ -1,6 +1,5 @@
 import { Routes, Route } from "react-router-dom"
 
-
 import ScrollToTop from "./components/ScrollToTop"
 
 import AdminLayout from "./layout/AdminLayout"
@@ -11,13 +10,12 @@ import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Pedidos from "./pages/Pedidos"
 
-import Urnas from "./pages/Pacotes"
-import NovaUrna from "./pages/NovoPacote"
-import EditarUrna from "./pages/EditarPacote"
+import Servicos from "./pages/Servicos"
+import NovoServico from "./pages/NovoServico"
+import EditarServico from "./pages/EditarServico"
 
 import Produtos from "./pages/Produtos"
-import PlanosFamiliares from "./pages/PlanosFamiliares"
-import PlanosEmpresariais from "./pages/PlanosEmpresariais"
+
 
 import Configuracoes from "./pages/Configuracoes"
 
@@ -25,49 +23,46 @@ export default function App(){
 
   return(
 
+    <>
+      <ScrollToTop/>
 
-      <>
-    <ScrollToTop/>
+      <Routes>
 
-    <Routes>
+        {/* LOGIN */}
+        <Route path="/login" element={<Login />} />
 
-      {/* LOGIN */}
+        {/* ROTAS PROTEGIDAS */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
 
-      <Route path="/login" element={<Login />} />
+          <Route index element={<Dashboard />} />
 
-      {/* ROTAS PROTEGIDAS */}
+          <Route path="pedidos" element={<Pedidos />} />
 
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <AdminLayout />
-          </ProtectedRoute>
-        }
-      >
+          {/* SERVIÇOS FUNERÁRIOS */}
+          <Route path="servicos" element={<Servicos />} />
+          <Route path="novo-servico" element={<NovoServico />} />
+          <Route path="editar-servico/:id" element={<EditarServico />} />
 
-        <Route index element={<Dashboard />} />
+          {/* PRODUTOS */}
+          <Route path="produtos" element={<Produtos />} />
 
-        <Route path="pedidos" element={<Pedidos />} />
-
-
-        <Route path="pacotes" element={<Urnas />} />
-        <Route path="novo-pacote" element={<NovaUrna />} />
-        <Route path="editar-pacote/:id" element={<EditarUrna />} />
+          {/* PLANOS */}
         
-        <Route path="produtos" element={<Produtos />} />
 
-        <Route path="planos-familiares" element={<PlanosFamiliares />} />
-        <Route path="planos-empresariais" element={<PlanosEmpresariais />} />
+          {/* CONFIGURAÇÕES */}
+          <Route path="configuracoes" element={<Configuracoes />} />
 
-        {/* CONFIGURAÇÕES */}
+        </Route>
 
-        <Route path="configuracoes" element={<Configuracoes />} />
-
-      </Route>
-
-    </Routes>
-</>
+      </Routes>
+    </>
 
   )
 

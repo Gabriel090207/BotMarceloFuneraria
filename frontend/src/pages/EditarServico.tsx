@@ -11,56 +11,66 @@ import { NumericFormat } from "react-number-format"
 
 import "../styles/nova-urna.css"
 
-export default function EditarPacote(){
+export default function EditarServico(){
 
-  const {id} = useParams()
+  const { id } = useParams()
 
   const [loading,setLoading] = useState(true)
   const [salvando,setSalvando] = useState(false)
   const [sucesso,setSucesso] = useState(false)
 
   const [nome,setNome] = useState("")
+  const [categoria,setCategoria] = useState("")
   const [preco,setPreco] = useState("")
+  const [capacidade,setCapacidade] = useState("")
+  const [suite,setSuite] = useState("")
+  const [areaExterna,setAreaExterna] = useState("")
   const [descricao,setDescricao] = useState("")
+  const [cobertura,setCobertura] = useState("completa")
 
   const [imagens,setImagens] = useState<string[]>([])
   const [novasImagens,setNovasImagens] = useState<File[]>([])
 
-  async function carregarPacote(){
+  async function carregarServico(){
 
     if(!id) return
 
-    const ref = doc(db,"pacotes",id)
+    const ref = doc(db,"servicos",id)
     const snap = await getDoc(ref)
+
+    if(!snap.exists()){
+      alert("Serviço não encontrado")
+      return
+    }
 
     const data:any = snap.data()
 
-    setNome(data.nome)
-    setPreco(data.preco)
+    setNome(data.nome || "")
+    setCategoria(data.categoria || "")
+    setPreco(data.preco || "")
+    setCapacidade(data.capacidade || "")
+    setSuite(data.suite || "")
+    setAreaExterna(data.area_externa || "")
     setDescricao(data.descricao || "")
+    setCobertura(data.cobertura || "completa")
     setImagens(data.imagens || [])
 
     setLoading(false)
   }
 
   useEffect(()=>{
-    carregarPacote()
+    carregarServico()
   },[])
-
-  /* REMOVER IMAGEM */
 
   async function removerImagem(url:string){
 
     await deletarImagem(url)
     setImagens(imagens.filter(img => img !== url))
-
   }
 
   function removerNova(index:number){
     setNovasImagens(novasImagens.filter((_,i)=>i !== index))
   }
-
-  /* ADICIONAR IMAGEM */
 
   function adicionarImagem(e:React.ChangeEvent<HTMLInputElement>){
 
@@ -82,17 +92,14 @@ export default function EditarPacote(){
     setNovasImagens(novas)
   }
 
-  /* SALVAR */
-
   async function salvar(){
 
-    if(!nome || !preco || !descricao){
-      alert("Preencha todos os campos")
+    if(!nome || !categoria || !preco){
+      alert("Preencha os campos obrigatórios")
       return
     }
 
-    if(!id) return
-    if(salvando) return
+    if(!id || salvando) return
 
     setSalvando(true)
 
@@ -105,10 +112,15 @@ export default function EditarPacote(){
         urls.push(url)
       }
 
-      await updateDoc(doc(db,"pacotes",id),{
+      await updateDoc(doc(db,"servicos",id),{
         nome,
+        categoria,
         preco,
+        capacidade,
+        suite,
+        area_externa: areaExterna,
         descricao,
+        cobertura,
         imagens: urls
       })
 
@@ -118,7 +130,7 @@ export default function EditarPacote(){
 
     }catch(e){
       console.error(e)
-      alert("Erro ao salvar")
+      alert("Erro ao salvar alterações")
     }finally{
       setSalvando(false)
     }
@@ -132,19 +144,37 @@ export default function EditarPacote(){
 
     <div className="nova-urna-page">
 
-      <h1>Editar Pacote</h1>
+      <h1>Editar Serviço</h1>
 
       <div className="nova-urna-form">
 
         <div className="nova-urna-grid">
 
           <div className="nova-urna-field">
-            <label>Nome do pacote</label>
+            <label>Nome</label>
             <input
               value={nome}
               onChange={(e)=>setNome(e.target.value)}
             />
           </div>
+
+          <div className="nova-urna-field">
+            <label>Categoria</label>
+            <select
+              value={categoria}
+              onChange={(e)=>setCategoria(e.target.value)}
+            >
+              <option value="">Selecione</option>
+              <option value="externo">Externo</option>
+              <option value="standard">Standard</option>
+              <option value="comfort">Comfort</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div className="nova-urna-grid">
 
           <div className="nova-urna-field">
             <label>Preço</label>
@@ -160,19 +190,60 @@ export default function EditarPacote(){
             />
           </div>
 
+          <div className="nova-urna-field">
+            <label>Capacidade</label>
+            <input
+              value={capacidade}
+              onChange={(e)=>setCapacidade(e.target.value)}
+            />
+          </div>
+
         </div>
 
-        {/* DESCRIÇÃO */}
+        <div className="nova-urna-grid">
+
+          <div className="nova-urna-field">
+            <label>Suíte</label>
+            <select
+              value={suite}
+              onChange={(e)=>setSuite(e.target.value)}
+            >
+              <option value="">Selecione</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
+            </select>
+          </div>
+
+          <div className="nova-urna-field">
+            <label>Área externa</label>
+            <input
+              value={areaExterna}
+              onChange={(e)=>setAreaExterna(e.target.value)}
+            />
+          </div>
+
+        </div>
+
         <div className="nova-urna-field">
           <label>Descrição</label>
           <textarea
+            rows={3}
             value={descricao}
             onChange={(e)=>setDescricao(e.target.value)}
-            rows={4}
           />
         </div>
 
-        {/* UPLOAD */}
+        <div className="nova-urna-field">
+          <label>Cobertura</label>
+          <select
+            value={cobertura}
+            onChange={(e)=>setCobertura(e.target.value)}
+          >
+            <option value="completa">Completa</option>
+            <option value="externo">Externo</option>
+          </select>
+        </div>
+
         <div className="upload-area">
 
           <label className="upload-box">
@@ -194,7 +265,6 @@ export default function EditarPacote(){
 
         </div>
 
-        {/* IMAGENS */}
         <div className="preview-grid">
 
           {imagens.map((img)=>(
@@ -253,5 +323,4 @@ export default function EditarPacote(){
     </div>
 
   )
-
 }

@@ -2,18 +2,23 @@ import { useState } from "react"
 import { FiUpload, FiX, FiCheck } from "react-icons/fi"
 import { NumericFormat } from "react-number-format"
 
-import "../styles/nova-urna.css"
-
 import { addDoc, collection, updateDoc, doc } from "firebase/firestore"
 import { db } from "../services/firebase"
 
 import { uploadImagem } from "../services/uploadImagem"
 
-export default function NovoPacote(){
+import "../styles/nova-urna.css"
+
+export default function NovoServico(){
 
   const [nome,setNome] = useState("")
+  const [categoria,setCategoria] = useState("")
   const [preco,setPreco] = useState("")
+  const [capacidade,setCapacidade] = useState("")
+  const [suite,setSuite] = useState("")
+  const [areaExterna,setAreaExterna] = useState("")
   const [descricao,setDescricao] = useState("")
+  const [cobertura,setCobertura] = useState("completa")
 
   const [imagens,setImagens] = useState<File[]>([])
 
@@ -30,7 +35,7 @@ export default function NovoPacote(){
     for(let i=0;i<files.length;i++){
 
       if(novas.length >= 5){
-        alert("Máximo de 5 imagens por pacote")
+        alert("Máximo de 5 imagens")
         break
       }
 
@@ -41,14 +46,13 @@ export default function NovoPacote(){
   }
 
   function removerImagem(index:number){
-    const novas = imagens.filter((_,i)=>i !== index)
-    setImagens(novas)
+    setImagens(imagens.filter((_,i)=>i !== index))
   }
 
-  async function salvarPacote(){
+  async function salvarServico(){
 
-    if(!nome || !preco || !descricao){
-      alert("Preencha todos os campos")
+    if(!nome || !categoria || !preco){
+      alert("Preencha os campos obrigatórios")
       return
     }
 
@@ -58,37 +62,47 @@ export default function NovoPacote(){
 
     try{
 
-      const docRef = await addDoc(collection(db,"pacotes"),{
+      const docRef = await addDoc(collection(db,"servicos"),{
         nome,
+        categoria,
         preco,
+        capacidade,
+        suite,
+        area_externa: areaExterna,
         descricao,
+        cobertura,
         ativo:true,
-        criado_em: new Date()
+        criado_em:new Date()
       })
 
-      const pacoteId = docRef.id
+      const servicoId = docRef.id
 
       const urls:string[] = []
 
       for(const img of imagens){
-        const url = await uploadImagem(img, pacoteId)
+        const url = await uploadImagem(img, servicoId)
         urls.push(url)
       }
 
-      await updateDoc(doc(db,"pacotes",pacoteId),{
+      await updateDoc(doc(db,"servicos",servicoId),{
         imagens: urls
       })
 
       setNome("")
+      setCategoria("")
       setPreco("")
+      setCapacidade("")
+      setSuite("")
+      setAreaExterna("")
       setDescricao("")
+      setCobertura("completa")
       setImagens([])
 
       setSucesso(true)
 
     }catch(e){
       console.error(e)
-      alert("Erro ao salvar pacote")
+      alert("Erro ao salvar serviço")
     }finally{
       setLoading(false)
     }
@@ -98,19 +112,37 @@ export default function NovoPacote(){
 
     <div className="nova-urna-page">
 
-      <h1>Novo Pacote</h1>
+      <h1>Novo Serviço Funerário</h1>
 
       <div className="nova-urna-form">
 
         <div className="nova-urna-grid">
 
           <div className="nova-urna-field">
-            <label>Nome do pacote</label>
+            <label>Nome</label>
             <input
               value={nome}
               onChange={(e)=>setNome(e.target.value)}
             />
           </div>
+
+          <div className="nova-urna-field">
+            <label>Categoria</label>
+            <select
+              value={categoria}
+              onChange={(e)=>setCategoria(e.target.value)}
+            >
+              <option value="">Selecione</option>
+              <option value="externo">Externo</option>
+              <option value="standard">Standard</option>
+              <option value="comfort">Comfort</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div className="nova-urna-grid">
 
           <div className="nova-urna-field">
             <label>Preço</label>
@@ -126,16 +158,60 @@ export default function NovoPacote(){
             />
           </div>
 
+          <div className="nova-urna-field">
+            <label>Capacidade</label>
+            <input
+              value={capacidade}
+              onChange={(e)=>setCapacidade(e.target.value)}
+              placeholder="Ex: 60 pessoas"
+            />
+          </div>
+
         </div>
 
-        {/* 🔥 NOVO CAMPO */}
+        <div className="nova-urna-grid">
+
+          <div className="nova-urna-field">
+            <label>Suíte</label>
+            <select
+              value={suite}
+              onChange={(e)=>setSuite(e.target.value)}
+            >
+              <option value="">Selecione</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
+            </select>
+          </div>
+
+          <div className="nova-urna-field">
+            <label>Área externa</label>
+            <input
+              value={areaExterna}
+              onChange={(e)=>setAreaExterna(e.target.value)}
+              placeholder="Ex: Área externa"
+            />
+          </div>
+
+        </div>
+
         <div className="nova-urna-field">
-          <label>Descrição do pacote</label>
+          <label>Descrição</label>
           <textarea
+            rows={3}
             value={descricao}
             onChange={(e)=>setDescricao(e.target.value)}
-            rows={4}
           />
+        </div>
+
+        <div className="nova-urna-field">
+          <label>Cobertura</label>
+          <select
+            value={cobertura}
+            onChange={(e)=>setCobertura(e.target.value)}
+          >
+            <option value="completa">Completa</option>
+            <option value="externo">Externo</option>
+          </select>
         </div>
 
         <div className="upload-area">
@@ -151,7 +227,7 @@ export default function NovoPacote(){
 
             <div className="upload-content">
               <FiUpload className="upload-icon"/>
-              <p>Adicionar imagens do pacote</p>
+              <p>Adicionar imagens</p>
               <span>(máximo 5)</span>
             </div>
 
@@ -178,7 +254,6 @@ export default function NovoPacote(){
                   </button>
                 </div>
               )
-
             })}
 
           </div>
@@ -187,10 +262,10 @@ export default function NovoPacote(){
 
         <button
           className="btn-salvar"
-          onClick={salvarPacote}
+          onClick={salvarServico}
           disabled={loading}
         >
-          {loading ? "Salvando..." : "Salvar pacote"}
+          {loading ? "Salvando..." : "Salvar serviço"}
         </button>
 
       </div>
@@ -203,7 +278,7 @@ export default function NovoPacote(){
 
             <FiCheck className="modal-icon"/>
 
-            <h2>Pacote criado com sucesso</h2>
+            <h2>Serviço criado com sucesso</h2>
 
             <button onClick={()=>setSucesso(false)}>
               OK

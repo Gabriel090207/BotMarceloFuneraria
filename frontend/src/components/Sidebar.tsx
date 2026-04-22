@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom"
-import { FiHome, FiShoppingCart, FiBox, FiUsers, FiBriefcase, FiSettings } from "react-icons/fi"
+import {
+  FiHome,
+  FiShoppingCart,
+  FiBox,
+  FiSettings
+} from "react-icons/fi"
+
 import { useEffect, useState } from "react"
 import { doc, getDoc } from "firebase/firestore"
 import { auth, db } from "../services/firebase"
@@ -18,7 +24,6 @@ export default function Sidebar(){
       if(!auth.currentUser) return
 
       const ref = doc(db,"users",auth.currentUser.uid)
-
       const snap = await getDoc(ref)
 
       if(snap.exists()){
@@ -35,7 +40,7 @@ export default function Sidebar(){
 
     carregar()
 
-    return () => {
+    return ()=>{
       window.removeEventListener("toggleSidebar", handleToggle)
     }
 
@@ -46,7 +51,7 @@ export default function Sidebar(){
     <>
       <div
         className={`sidebar-overlay ${open ? "active" : ""}`}
-        onClick={() => setOpen(false)}
+        onClick={()=>setOpen(false)}
       />
 
       <aside className={`sidebar ${open ? "open" : ""}`}>
@@ -63,20 +68,12 @@ export default function Sidebar(){
             Pedidos
           </Link>
 
-          <Link to="/pacotes" onClick={()=>setOpen(false)}>
+          <Link to="/servicos" onClick={()=>setOpen(false)}>
             <FiBox />
-            Pacotes
+            Serviços Funerários
           </Link>
 
-          <Link to="/planos-familiares" onClick={()=>setOpen(false)}>
-            <FiUsers />
-            Planos Familiares
-          </Link>
-
-          <Link to="/planos-empresariais" onClick={()=>setOpen(false)}>
-            <FiBriefcase />
-            Planos Empresariais
-          </Link>
+         
 
           {role === "admin" && (
             <Link to="/configuracoes" onClick={()=>setOpen(false)}>

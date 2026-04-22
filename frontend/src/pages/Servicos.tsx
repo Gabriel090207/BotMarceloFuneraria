@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react"
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore"
-
 import { db } from "../services/firebase"
 
 import "../styles/urnas.css"
 
-export default function Pacotes(){
+export default function Servicos(){
 
-  const [pacotes,setPacotes] = useState<any[]>([])
+  const [servicos,setServicos] = useState<any[]>([])
   const [loading,setLoading] = useState(true)
 
-  const [pacoteExcluir,setPacoteExcluir] = useState<any>(null)
+  const [servicoExcluir,setServicoExcluir] = useState<any>(null)
 
-  async function carregarPacotes(){
+  async function carregarServicos(){
 
-    const snapshot = await getDocs(collection(db,"pacotes"))
+    const snapshot = await getDocs(collection(db,"servicos"))
 
     const lista:any[] = []
 
@@ -25,29 +24,26 @@ export default function Pacotes(){
       })
     })
 
-    setPacotes(lista)
+    setServicos(lista)
     setLoading(false)
-
   }
 
   useEffect(()=>{
-    carregarPacotes()
+    carregarServicos()
   },[])
 
-  async function removerPacote(){
+  async function removerServico(){
 
-    if(!pacoteExcluir) return
+    if(!servicoExcluir) return
 
-    await deleteDoc(doc(db,"pacotes",pacoteExcluir.id))
+    await deleteDoc(doc(db,"servicos",servicoExcluir.id))
 
-    setPacotes(pacotes.filter(p=>p.id !== pacoteExcluir.id))
-
-    setPacoteExcluir(null)
-
+    setServicos(servicos.filter(s => s.id !== servicoExcluir.id))
+    setServicoExcluir(null)
   }
 
   if(loading){
-    return <p>Carregando pacotes...</p>
+    return <p>Carregando serviços...</p>
   }
 
   return(
@@ -56,13 +52,13 @@ export default function Pacotes(){
 
       <div className="urnas-header">
 
-        <h1>Pacotes</h1>
+        <h1>Serviços Funerários</h1>
 
         <button
           className="btn-adicionar"
-          onClick={()=>window.location.href="/novo-pacote"}
+          onClick={()=>window.location.href="/novo-servico"}
         >
-          + Novo Pacote
+          + Novo Serviço
         </button>
 
       </div>
@@ -72,35 +68,38 @@ export default function Pacotes(){
         <table>
 
           <thead>
-
             <tr>
               <th>Imagem</th>
               <th>Nome</th>
+              <th>Categoria</th>
               <th>Preço</th>
               <th>Ações</th>
             </tr>
-
           </thead>
 
           <tbody>
 
-            {pacotes.map((pacote)=>(
+            {servicos.map((servico)=>(
 
-              <tr key={pacote.id}>
+              <tr key={servico.id}>
 
                 <td>
-                  {pacote.imagens?.[0] && (
+                  {servico.imagens?.[0] && (
                     <img
-                      src={pacote.imagens[0]}
+                      src={servico.imagens[0]}
                       className="urna-thumb"
                     />
                   )}
                 </td>
 
-                <td>{pacote.nome}</td>
+                <td>{servico.nome}</td>
+
+                <td style={{textTransform:"capitalize"}}>
+                  {servico.categoria}
+                </td>
 
                 <td>
-                  {Number(pacote.preco).toLocaleString("pt-BR",{
+                  {Number(servico.preco).toLocaleString("pt-BR",{
                     style:"currency",
                     currency:"BRL"
                   })}
@@ -112,14 +111,14 @@ export default function Pacotes(){
 
                     <button
                       className="btn-editar"
-                      onClick={()=>window.location.href=`/editar-pacote/${pacote.id}`}
+                      onClick={()=>window.location.href=`/editar-servico/${servico.id}`}
                     >
                       Editar
                     </button>
 
                     <button
                       className="btn-remover"
-                      onClick={()=>setPacoteExcluir(pacote)}
+                      onClick={()=>setServicoExcluir(servico)}
                     >
                       Remover
                     </button>
@@ -138,30 +137,28 @@ export default function Pacotes(){
 
       </div>
 
-      {pacoteExcluir && (
+      {servicoExcluir && (
 
         <div className="modal-overlay">
 
           <div className="modal-confirm">
 
-            <h2>Remover pacote</h2>
+            <h2>Remover serviço</h2>
 
-            <p>
-              Deseja realmente remover este pacote?
-            </p>
+            <p>Deseja realmente remover este serviço?</p>
 
             <div className="modal-actions">
 
               <button
                 className="btn-cancelar"
-                onClick={()=>setPacoteExcluir(null)}
+                onClick={()=>setServicoExcluir(null)}
               >
                 Cancelar
               </button>
 
               <button
                 className="btn-remover"
-                onClick={removerPacote}
+                onClick={removerServico}
               >
                 Remover
               </button>
