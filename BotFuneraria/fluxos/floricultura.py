@@ -1,3 +1,5 @@
+from core.avisos import aviso_floricultura, aviso_atendente
+
 def fluxo_floricultura(session, mensagem):
 
     session.setdefault("etapa", "inicio")
@@ -216,6 +218,13 @@ Deseja adicionar ao pedido?""",
                     "mensagem": "Seu pedido está vazio."
                 }
 
+
+            aviso_floricultura(
+                session.get("nome"),
+                session.get("numero"),
+                session.get("carrinho", [])
+            )
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
@@ -225,6 +234,13 @@ Deseja adicionar ao pedido?""",
             }
 
         if mensagem == "9":
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Floricultura"
+            )
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
@@ -265,6 +281,14 @@ Deseja adicionar ao pedido?""",
     if session["etapa"] == "pos_interesse":
 
         if mensagem == "1":
+
+
+            aviso_floricultura(
+                session.get("nome"),
+                session.get("numero"),
+                session.get("carrinho", [])
+            )
+            
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 
