@@ -103,6 +103,7 @@ def fluxo_floricultura(session, mensagem):
                 )
 
             botoes += [
+                {"id": "7", "label": "💡 Gráfica"},
                 {"id": "9", "label": "Falar com atendente"},
                 {"id": "00", "label": "Menu principal"},
             ]
@@ -156,6 +157,29 @@ Deseja adicionar ao pedido?""",
                     ]
                 }
             ]
+
+        # ---------------- GRÁFICA ----------------
+
+        if etapa == "grafica":
+            return {
+                "tipo": "botoes",
+                "mensagem": """💡 *Gráfica*
+
+Materiais que podem ser solicitados:
+
+🪦 Placa para jazigo
+🖼️ Cerâmica / Moldura com foto
+🙏 Convite para missa de sétimo dia
+💼 Cartão de visita
+📝 Outros materiais personalizados
+
+👤 Deseja falar com nosso atendimento?""",
+                "botoes": [
+                    {"id": "1", "label": "Solicitar atendimento"},
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
+            }
 
         # ---------------- PÓS ITEM ----------------
 
@@ -234,6 +258,11 @@ Deseja adicionar ao pedido?""",
                 "mensagem": resumo_pedido() + "\n\n👤 Você será encaminhado para finalizar seu pedido."
             }
 
+        if mensagem == "7":
+            salvar_historico()
+            session["etapa"] = "grafica"
+            return renderizar()
+
         if mensagem == "9":
 
             aviso_atendente(
@@ -302,6 +331,28 @@ Deseja adicionar ao pedido?""",
             session["historico"] = []
             session["etapa"] = "menu"
             return renderizar()
+
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
+
+    if session["etapa"] == "grafica":
+
+        if mensagem == "1":
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Gráfica"
+            )
+
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": "💡 Você será encaminhado para nosso atendimento da gráfica."
+            }
 
         return {
             "tipo": "texto",
