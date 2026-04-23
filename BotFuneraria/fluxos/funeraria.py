@@ -370,9 +370,9 @@ Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
 🔑 *Chave PIX:*
 07559544000137
 
-Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇""",
+Para realizar o pagamento, é só clicar em *Copiar chave PIX* aqui embaixo 👇""",
                 "botoes": [
-                    {"id": "1", "label": "Já paguei"},
+                    {"id": "pix", "label": "Copiar chave PIX"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
                 ]
@@ -466,6 +466,7 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
         texto = """⚰️ *SEM VELÓRIO*
 
 💰 Valor: R$ 2.000,00
+💳 Em até 10x no cartão de crédito sem juros
 
 ✅ Caixão padrão até 1.90 comportando até 85kg com segurança
 ✅ Remoção e Cortejo
@@ -772,6 +773,7 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
         texto = f"""🏢 *{servico.get('nome')}*
 
 💰 A partir de {formatar_reais(float(servico.get('preco', 0)))}
+💳 Em até 10x no cartão de crédito sem juros
 
 ℹ️ Valor inicial considerando urna padrão para até 85kg.
 Para outras necessidades, consulte nossa equipe."""
@@ -891,46 +893,53 @@ Para outras necessidades, consulte nossa equipe."""
     # PAGAMENTO
     # =========================================================
     if session["etapa"] == "pagamento":
-        if mensagem != "1":
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
-        total = session.get("pagamento", {}).get("total", 0)
-        sinal = session.get("pagamento", {}).get("sinal", 0)
+        if mensagem == "pix":
 
-        salvar_pedido({
-            "servico": session.get("servico"),
-            "dados": session.get("dados", {}),
-            "pagamento": {
-                "total": total,
-                "sinal": sinal
-            },
-            "telefone": session.get("numero"),
-            "nome": session.get("nome"),
-            "status": "aberto",
-            "criado_em": datetime.now().isoformat()
-        })
+            total = session.get("pagamento", {}).get("total", 0)
+            sinal = session.get("pagamento", {}).get("sinal", 0)
 
-        aviso_atendente(
-            session.get("nome"),
-            session.get("numero"),
-            "Comprovante / Finalização funerária"
-        )  
+            salvar_pedido({
+                "servico": session.get("servico"),
+                "dados": session.get("dados", {}),
+                "pagamento": {
+                    "total": total,
+                    "sinal": sinal
+                },
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "aberto",
+                "criado_em": datetime.now().isoformat()
+            })
 
-        session["encerrar_bot"] = True
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Comprovante / Finalização funerária"
+            )
 
-        return {
-            "tipo": "texto",
-            "mensagem": """🙏 Obrigado.
+            session["encerrar_bot"] = True
+
+            return [
+                {
+                    "tipo": "pix",
+                    "chave": "07559544000137",
+                    "tipo_chave": "CNPJ"
+                },
+                {
+                    "tipo": "texto",
+                    "mensagem": """🙏 Obrigado.
 
 Agora, por favor, *envie o comprovante de pagamento* aqui no WhatsApp para que nossa atendente possa finalizar o processo com todo cuidado.
 
 Pode ficar tranquilo(a), nossa equipe vai cuidar de tudo com muito respeito, atenção e responsabilidade."""
-        }
+                }
+            ]
 
-    # =========================================================
-    # FALLBACK
-    # =========================================================
-    return {
-        "tipo": "texto",
-        "mensagem": "Não entendi sua resposta. Por favor, escolha uma opção válida."
-    }
+        # =========================================================
+        # FALLBACK
+        # =========================================================
+        return {
+            "tipo": "texto",
+            "mensagem": "Não entendi sua resposta. Por favor, escolha uma opção válida."
+        }

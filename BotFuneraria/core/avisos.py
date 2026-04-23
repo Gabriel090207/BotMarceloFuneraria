@@ -8,16 +8,63 @@ def enviar_aviso_interno(titulo, linhas):
     return enviar_texto(NUMERO_AVISOS, mensagem)
 
 
+# =========================
+# FORMATADORES
+# =========================
+
+def label_velorio(valor):
+    mapa = {
+        "1": "Sim",
+        "2": "Não",
+        "sim": "Sim",
+        "nao": "Não",
+    }
+    return mapa.get(str(valor).lower(), str(valor))
+
+
+def label_local_velorio(valor):
+    mapa = {
+        "1": "Na Funerária Canaã",
+        "2": "Em igreja ou residência",
+        "funeraria": "Na Funerária Canaã",
+        "externo": "Em igreja ou residência",
+    }
+    return mapa.get(str(valor).lower(), str(valor))
+
+
+def label_local_corpo(valor):
+    mapa = {
+        "1": "Hospital",
+        "2": "Residência",
+        "3": "IML",
+        "4": "Outro",
+    }
+    return mapa.get(str(valor), str(valor))
+
+
+def label_porte(valor):
+    mapa = {
+        "1": "Até 85kg",
+        "2": "Entre 85kg e 130kg",
+        "3": "Acima de 130kg",
+    }
+    return mapa.get(str(valor), str(valor))
+
+
+# =========================
+# AVISOS
+# =========================
+
 def aviso_funeraria(nome, telefone, dados, servico=None):
     linhas = [
         f"👤 Nome: {nome or '-'}",
         f"📞 Telefone: {telefone or '-'}",
-        f"🕯️ Velório: {dados.get('velorio', '-')}",
-        f"🏛️ Local do velório: {dados.get('local_velorio', '-')}",
+        f"🕯️ Velório: {label_velorio(dados.get('velorio', '-'))}",
+        f"🏛️ Local do velório: {label_local_velorio(dados.get('local_velorio', '-'))}",
         f"📅 Data do velório: {dados.get('data_velorio', '-')}",
-        f"📍 Local do ente querido: {dados.get('local_corpo', '-')}",
+        f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}",
         f"📌 Endereço atual: {dados.get('endereco_local_corpo', '-')}",
-        f"⚖️ Porte: {dados.get('porte', '-')}",
+        f"⚖️ Porte: {label_porte(dados.get('porte', '-'))}",
     ]
 
     if dados.get("hospital_nome"):
@@ -25,6 +72,15 @@ def aviso_funeraria(nome, telefone, dados, servico=None):
 
     if dados.get("liberacao_hospital"):
         linhas.append(f"🧾 Liberação no necrotério: {dados.get('liberacao_hospital')}")
+
+    if dados.get("destino"):
+        linhas.append(f"⚱️ Destino: {dados.get('destino')}")
+
+    if dados.get("cemiterio"):
+        linhas.append(f"🪦 Cemitério: {dados.get('cemiterio')}")
+
+    if dados.get("despedida"):
+        linhas.append(f"🙏 Despedida: {dados.get('despedida')}")
 
     if servico:
         linhas.append(f"⚰️ Serviço: {servico.get('nome', '-')}")

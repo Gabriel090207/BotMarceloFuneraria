@@ -121,6 +121,33 @@ def enviar_video(phone, url_video):
     return response.json()
 
 
+
+# ==================================================
+# BOTÃO PIX
+# ==================================================
+
+def enviar_botao_pix(phone, chave_pix, tipo="CNPJ"):
+    url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-button-pix"
+
+    payload = {
+        "phone": phone,
+        "pixKey": chave_pix,
+        "type": tipo
+    }
+
+    headers = {
+        "Client-Token": ZAPI_CLIENT_TOKEN
+    }
+
+    print("📤 Enviando BOTÃO PIX:", payload)
+    print("🌐 URL FINAL:", url)
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    print("📥 STATUS:", response.status_code)
+    print("📥 RESPOSTA:", response.text)
+
+    return response.json()
 # ==================================================
 # DISPATCHER
 # ==================================================
@@ -150,6 +177,13 @@ def enviar_mensagem(msg, numero):
 
     elif tipo == "video":
         return enviar_video(numero, msg.get("url"))
+
+    elif tipo == "pix":
+        return enviar_botao_pix(
+            numero,
+            msg.get("chave"),
+            msg.get("tipo_chave", "CNPJ")
+        )
 
     else:
         print("❌ Tipo desconhecido:", tipo)
