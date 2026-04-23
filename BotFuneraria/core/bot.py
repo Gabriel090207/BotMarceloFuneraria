@@ -9,7 +9,7 @@ from fluxos.planos_familiares import fluxo_planos_familiares
 from fluxos.financeiro import fluxo_financeiro
 from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
 from fluxos.convenios import fluxo_convenios
-
+from fluxos.planos_sinistro import fluxo_planos_sinistro
 
 SAUDACOES = [
     "oi", "ola", "olá", "bom dia", "boa tarde",
@@ -175,6 +175,9 @@ https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+A
 
     if session["fluxo"] == "planos":
         return fluxo_planos_familiares(session, mensagem)
+
+    if session["fluxo"] == "planos_sinistro":
+        return fluxo_planos_sinistro(session, mensagem)
 
     if session["fluxo"] == "convenios":
         return fluxo_convenios(session, mensagem)
