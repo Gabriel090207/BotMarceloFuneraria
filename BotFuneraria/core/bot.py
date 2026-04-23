@@ -97,7 +97,8 @@ Como podemos te ajudar hoje?""",
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "Financeiro / Administrativo"},
                 {"id": "5", "label": "Floricultura"},
-                {"id": "6", "label": "Falar com atendente"},
+                {"id": "6", "label": "📍 Localização"},
+                {"id": "7", "label": "Falar com atendente"},
             ]
         }
 
@@ -132,7 +133,29 @@ Como podemos te ajudar hoje?""",
             session["etapa"] = "inicio"
             return fluxo_floricultura(session, mensagem)
 
+
+
         elif mensagem == "6":
+            return {
+                "tipo": "botoes",
+                "mensagem": """📍 *Nossa localização*
+
+Rua Major Gabriel, 1833
+Centro - Manaus/AM
+CEP 69.020-060
+
+🗺️ Abra no mapa:
+https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+AM""",
+        "botoes": [
+            {"id": "0", "label": "Voltar"},
+            {"id": "00", "label": "Menu principal"},
+        ]
+    }
+
+
+
+        
+        elif mensagem == "7":
             session["fluxo"] = "atendente"
             session["etapa"] = "inicio"
             return fluxo_atendente(session, mensagem)

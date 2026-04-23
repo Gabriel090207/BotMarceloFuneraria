@@ -47,7 +47,8 @@ def fluxo_financeiro(session, mensagem):
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "Financeiro / Administrativo"},
                 {"id": "5", "label": "Floricultura"},
-                {"id": "6", "label": "Falar com atendente"},
+                {"id": "6", "label": "📍 Localização"},
+                {"id": "7", "label": "Falar com atendente"},
             ]
         }
 
