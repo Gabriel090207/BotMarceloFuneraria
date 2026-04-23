@@ -277,6 +277,20 @@ def fluxo_funeraria(session, mensagem):
 
         if etapa == "servicos":
 
+            if session["dados"].get("velorio") == "nao":
+                session["servicos"] = [{
+                    "nome": "Sem velório",
+                    "preco": 2000
+                }]
+
+                return {
+                    "tipo": "botoes",
+                    "mensagem": "⚰️ Escolha o serviço desejado:",
+                    "botoes": botao_voltar_menu([
+                        {"id": "1", "label": "Sem velório - R$ 2.000,00"}
+                    ])
+                }
+
             servicos = buscar_servicos_funerarios()
 
             local = session["dados"].get("local_velorio")
@@ -436,7 +450,7 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
 
         if mensagem == "2":
             session["dados"]["velorio"] = "nao"
-            ir_para("despedida_sem_velorio")
+            ir_para("data_velorio")
             return renderizar_etapa()
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -452,45 +466,34 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
 ✅ Remoção e Cortejo
 ✅ Pagamento de taxa municipal"""
 
+        session["servico"] = {
+            "nome": "Sem velório",
+            "preco": 2000
+        }
+
         if mensagem == "1":
             session["dados"]["despedida"] = "Sim"
+            texto += "\n\n🙏 Permanência por até 1h com a urna fechada."
 
-            session["servico"] = {
-                "nome": "Sem velório",
-                "preco": 2000
-            }
-
-            session["etapa"] = "resumo"
-
-            return [
-                {
-                    "tipo": "texto",
-                    "mensagem": texto + "\n\n🙏 Permanência por até 1h com a urna fechada."
-                },
-                renderizar_etapa()
-            ]
-
-        if mensagem == "2":
+        elif mensagem == "2":
             session["dados"]["despedida"] = "Não"
 
-            session["servico"] = {
-                "nome": "Sem velório",
-                "preco": 2000
-            }
+        else:
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }  
 
-            session["etapa"] = "resumo"
-
-            return [
-                {
-                    "tipo": "texto",
-                    "mensagem": texto
-                },
-                renderizar_etapa()
-            ]
+        session["etapa"] = "confirmar_servico"
 
         return {
-            "tipo": "texto",
-            "mensagem": "Escolha uma opção válida."
+            "tipo": "botoes",
+            "mensagem": texto + "\n\nDeseja confirmar?",
+            "botoes": [
+                {"id": "1", "label": "Confirmar"},
+                {"id": "0", "label": "Voltar"},
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
     # =========================================================
     # COM VELÓRIO
@@ -648,17 +651,34 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
 
         if mensagem == "2":
             session["dados"]["destino"] = "Cremação"
-            ir_para("conhece_funeraria")
+
+            if session["dados"].get("velorio") == "nao":
+                ir_para("despedida_sem_velorio")
+            else:
+                ir_para("conhece_funeraria")
+
             return renderizar_etapa()
+
 
         if mensagem == "3":
             session["dados"]["destino"] = "Translado"
-            ir_para("conhece_funeraria")
+
+            if session["dados"].get("velorio") == "nao":
+                ir_para("despedida_sem_velorio")
+            else:
+                ir_para("conhece_funeraria")
+
             return renderizar_etapa()
+
 
         if mensagem == "4":
             session["dados"]["destino"] = "Não informado"
-            ir_para("conhece_funeraria")
+
+            if session["dados"].get("velorio") == "nao":
+                ir_para("despedida_sem_velorio")
+            else:
+                ir_para("conhece_funeraria")
+
             return renderizar_etapa()
 
         return {
@@ -669,7 +689,10 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
 
     if session["etapa"] == "cemiterio_nome":
         session["dados"]["cemiterio"] = mensagem
-        ir_para("conhece_funeraria")
+        if session["dados"].get("velorio") == "nao":
+            ir_para("despedida_sem_velorio")
+        else:
+            ir_para("conhece_funeraria")
         return renderizar_etapa()
 
     if session["etapa"] == "conhece_funeraria":
