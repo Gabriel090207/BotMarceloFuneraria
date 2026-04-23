@@ -1,5 +1,7 @@
 from core.firebase import buscar_servicos_funerarios
 
+from core.avisos import aviso_orcamento, aviso_atendente
+
 VIDEO_ESTRUTURA = "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/midias%2FWhatsApp%20Video%202026-04-15%20at%2017.16.41.mp4?alt=media&token=a3297384-1607-45a2-a3a9-3772caf942e0"
 
 COBERTURA_COMPLETA = """
@@ -108,6 +110,13 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             ]
 
         if eh(mensagem, "3", "Falar com atendente"):
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Orçamento funerário"
+            )
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
             return {
@@ -325,6 +334,13 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
 
         session["dados"]["data"] = mensagem
         servico = session["dados"]["servico"]
+
+
+        aviso_orcamento(
+            session.get("nome"),
+            session.get("numero"),
+            session.get("dados", {})
+        )
 
         session["fluxo"] = "atendente"
         session["encerrar_bot"] = True

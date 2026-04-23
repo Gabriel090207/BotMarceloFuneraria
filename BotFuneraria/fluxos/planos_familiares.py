@@ -1,3 +1,5 @@
+from core.avisos import aviso_planos, aviso_atendente
+
 def _menu(titulo, opcoes):
     return {
         "tipo": "botoes",
@@ -320,6 +322,14 @@ Deseja seguir?""",
             return renderizar()
 
         if mensagem == "9":
+
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Planos"
+            )
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
             return {
@@ -397,6 +407,13 @@ Deseja seguir?""",
 
     if session["etapa"] == "coletar_idades":
         session["dados"]["idades"] = mensagem
+
+        aviso_planos(
+            session.get("nome"),
+            session.get("numero"),
+            session.get("dados", {})
+        )
+
         session["fluxo"] = "atendente"
         session["encerrar_bot"] = True
 
@@ -414,6 +431,13 @@ Idades: {session["dados"]["idades"]}
 
     if session["etapa"] == "coletar_cidade":
         session["dados"]["cidade"] = mensagem
+
+        aviso_planos(
+            session.get("nome"),
+            session.get("numero"),
+            session.get("dados", {})
+        )
+
         session["fluxo"] = "atendente"
         session["encerrar_bot"] = True
 
@@ -453,6 +477,13 @@ Cidade: {session["dados"]["cidade"]}
 
     if session["etapa"] == "sinistro_cidade":
         session["dados"]["cidade_sinistro"] = mensagem
+
+        aviso_planos(
+            session.get("nome"),
+            session.get("numero"),
+            session.get("dados", {})
+        )
+        
         session["fluxo"] = "atendente"
         session["encerrar_bot"] = True
 

@@ -3,6 +3,8 @@ from core.firebase import salvar_pedido
 from core.pagamentos import formatar_reais
 from core.firebase import buscar_servicos_funerarios
 
+from core.avisos import aviso_funeraria, aviso_atendente
+
 from fluxos.funeraria_orcamento import (
     fluxo_funeraria_orcamento,
     COBERTURA_COMPLETA,
@@ -638,14 +640,13 @@ Para outras necessidades, consulte nossa equipe."""
         else:
             texto += "\n" + COBERTURA_COMPLETA
 
-        texto += "\n\nDeseja confirmar ou alterar alguma coisa?"
+        texto += "\n\nDeseja confirmar?"
 
         respostas.append({
             "tipo": "botoes",
             "mensagem": texto,
             "botoes": [
                 {"id": "1", "label": "Confirmar"},
-                {"id": "2", "label": "Alterar"},
                 {"id": "0", "label": "Voltar"},
                 {"id": "00", "label": "Menu principal"},
             ]
@@ -685,6 +686,14 @@ Para outras necessidades, consulte nossa equipe."""
     if session["etapa"] == "resumo":
 
         if mensagem == "1":
+
+            aviso_funeraria(
+                session.get("nome"),
+                session.get("numero"),
+                session.get("dados", {}),
+                session.get("servico")
+            )
+
             ir_para("pagamento")
             return renderizar_etapa()
 
@@ -747,6 +756,12 @@ Para outras necessidades, consulte nossa equipe."""
             "status": "aberto",
             "criado_em": datetime.now().isoformat()
         })
+
+        aviso_atendente(
+            session.get("nome"),
+            session.get("numero"),
+            "Comprovante / Finalização funerária"
+        )  
 
         session["encerrar_bot"] = True
 

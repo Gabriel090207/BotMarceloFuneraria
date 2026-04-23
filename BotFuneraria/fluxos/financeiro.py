@@ -1,3 +1,5 @@
+from core.avisos import aviso_financeiro, aviso_atendente
+
 def _menu(titulo, opcoes):
     return {
         "tipo": "botoes",
@@ -49,6 +51,13 @@ def fluxo_financeiro(session, mensagem):
         }
 
     def finalizar():
+
+
+        aviso_financeiro(
+            session.get("nome"),
+            session.get("numero"),
+            session.get("dados", {})
+        )
         session["fluxo"] = "atendente"
         session["encerrar_bot"] = True
 
@@ -221,6 +230,13 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
         }
 
         if mensagem == "9":
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Financeiro - Planos"
+            )
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
             return {
@@ -250,6 +266,14 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
         }
 
         if mensagem == "9":
+
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Financeiro - Funerária"
+            )
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
             return {
