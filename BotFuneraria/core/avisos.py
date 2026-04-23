@@ -1,4 +1,4 @@
-from services.zapi import enviar_texto
+from integracoes.zapi import enviar_texto
 
 NUMERO_AVISOS = "5516993996654"
 
