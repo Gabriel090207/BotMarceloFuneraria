@@ -104,7 +104,6 @@ def fluxo_planos_familiares(session, mensagem):
                     ("2", "Contrato Futuro"),
                     ("3", "Abertura de Sinistro"),
                     ("4", "🕊️ Sou cliente"),
-                    ("5", "🤝 Indique e ganhe"),
                     ("6", "🧾 Desconto com parceiros"),
                     ("9", "Falar com atendente"),
                     ("00", "Voltar ao menu"),
