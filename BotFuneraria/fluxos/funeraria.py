@@ -398,7 +398,12 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
     # 🔥 TRATAR VOLTAR SOMENTE NO CONFIRMAR PACOTE
 
     if mensagem == "0" and session.get("etapa") == "confirmar_servico":
-        session["etapa"] = "servicos"
+
+        if session["dados"].get("velorio") == "nao":
+            session["etapa"] = "despedida_sem_velorio"
+        else:
+            session["etapa"] = "servicos"
+
         return renderizar_etapa()
 
     # =========================================================
