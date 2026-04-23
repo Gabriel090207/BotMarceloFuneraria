@@ -19,10 +19,36 @@ def fluxo_planos_sinistro(session, mensagem):
         session["etapa"] = nova
 
     def voltar():
+
+        # PRIMEIRA TELA DO SINISTRO -> VOLTA PARA MENU PLANOS
+        if session.get("etapa") == "velorio" and not session["historico"]:
+            nome = session.get("nome", "")
+            session["fluxo"] = "planos"
+            session["etapa"] = "menu"
+
+            return {
+                "tipo": "botoes",
+                "mensagem": f"""🛡️ Planos
+
+{nome}, escolha uma opção:""",
+                "botoes": [
+                    {"id": "1", "label": "Ver planos disponíveis"},
+                    {"id": "2", "label": "Contrato Futuro"},
+                    {"id": "3", "label": "Abertura de Sinistro"},
+                    {"id": "4", "label": "🕊️ Sou cliente"},
+                    {"id": "5", "label": "🤝 Indique e ganhe"},
+                    {"id": "6", "label": "🧾 Desconto com parceiros"},
+                    {"id": "9", "label": "Falar com atendente"},
+                    {"id": "00", "label": "Voltar ao menu"},
+                ]
+            }
+
+        # ETAPAS INTERNAS
         if session["historico"]:
             session["etapa"] = session["historico"].pop()
         else:
-            session["etapa"] = "inicio"
+            session["etapa"] = "velorio"
+
         return renderizar()
 
     def menu():
