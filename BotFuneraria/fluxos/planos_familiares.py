@@ -346,9 +346,9 @@ Deseja seguir?""",
     if session["etapa"] == "lista_planos":
 
         mapa = {
-            "1": ("plano_essencial", "Plano Essencial"),
-            "2": ("plano_valioso", "Plano Valioso"),
-            "3": ("plano_supremo", "Plano Supremo Luxo"),
+            "1": ("plano_essencial", "Plano Essencial - 03 Pessoas"),
+            "2": ("plano_valioso", "Plano Valioso - 05 Pessoas"),
+            "3": ("plano_supremo", "Plano Supremo Luxo - 05 Pessoas"),
             "4": ("plano_individual", "Individual / Personalizado"),
         }
 
@@ -483,7 +483,7 @@ Cidade: {session["dados"]["cidade"]}
             session.get("numero"),
             session.get("dados", {})
         )
-        
+
         session["fluxo"] = "atendente"
         session["encerrar_bot"] = True
 

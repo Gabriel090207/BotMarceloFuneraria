@@ -99,7 +99,7 @@ def fluxo_funeraria_orcamento(session, mensagem):
                 },
                 {
                     "tipo": "botoes",
-                    "mensagem": """🏢 *Conheça nossa estrutura*
+                    "mensagem": """🏢 *Conheça nossa estrutura* 🕊️
 
 Ambientes preparados para acolher sua família com conforto, respeito e tranquilidade.""",
                     "botoes": [

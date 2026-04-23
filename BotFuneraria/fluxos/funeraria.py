@@ -231,7 +231,7 @@ def fluxo_funeraria(session, mensagem):
         if etapa == "conhece_funeraria":
             return {
                 "tipo": "botoes",
-                "mensagem": "🏢 Você já conhece nossa estrutura?",
+                "mensagem": "🏢 Você já conhece nossa estrutura? 🕊️",
                 "botoes": botao_voltar_menu([
                     {"id": "1", "label": "Sim, já conheço"},
                     {"id": "2", "label": "Não, quero conhecer"},
@@ -565,7 +565,7 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
                 },
                 {
                     "tipo": "botoes",
-                    "mensagem": "🏢 Conheça nossa estrutura 🙏",
+                    "mensagem": "🏢 Conheça nossa estrutura 🕊️",
                     "botoes": [
                         {"id": "1", "label": "Ver serviços"},
                         {"id": "00", "label": "Menu principal"},
