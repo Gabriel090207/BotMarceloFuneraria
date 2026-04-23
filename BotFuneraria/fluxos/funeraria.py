@@ -602,7 +602,7 @@ Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
             }
 
         if mensagem == "3":
-            ir_para("porte")
+            ir_para("destino_final")
             return renderizar_etapa()
 
         ir_para("endereco_local_corpo")
