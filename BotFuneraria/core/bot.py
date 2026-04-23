@@ -133,12 +133,10 @@ Como podemos te ajudar hoje?""",
             session["etapa"] = "inicio"
             return fluxo_floricultura(session, mensagem)
 
-
-
         elif mensagem == "6":
-
             session["fluxo"] = "localizacao"
             session["etapa"] = "mostrar"
+
             return {
                 "tipo": "botoes",
                 "mensagem": """📍 *Nossa localização*
@@ -149,15 +147,11 @@ CEP 69.020-060
 
 🗺️ Abra no mapa:
 https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+AM""",
-        "botoes": [
-            {"id": "0", "label": "Voltar"},
-            {"id": "00", "label": "Menu principal"},
-        ]
-    }
+                "botoes": [
+                    {"id": "0", "label": "Menu Principal"},
+                ]
+            }
 
-
-
-        
         elif mensagem == "7":
             session["fluxo"] = "atendente"
             session["etapa"] = "inicio"
@@ -196,13 +190,14 @@ https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+A
 
     if session["fluxo"] == "localizacao":
 
-        if mensagem == "0":
+        if mensagem == "0" or mensagem == "Voltar":
             session["fluxo"] = None
             session["etapa_global"] = "menu"
+            session["etapa"] = "inicio"
 
             return {
                 "tipo": "botoes",
-                "mensagem": "Escolha uma opção:",
+                "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
                 "botoes": [
                     {"id": "1", "label": "Serviços funerários"},
                     {"id": "2", "label": "Planos"},
@@ -213,12 +208,6 @@ https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+A
                     {"id": "7", "label": "Falar com atendente"},
                 ]
             }
-
-        if mensagem == "00":
-            session["fluxo"] = None
-            session["etapa_global"] = "menu"
-            return responder(numero, "menu")
-    
 
     return {
         "tipo": "texto",

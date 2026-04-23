@@ -30,7 +30,20 @@ def fluxo_planos_sinistro(session, mensagem):
         session["etapa_global"] = "menu"
         session["historico"] = []
         session["etapa"] = "inicio"
-        return None
+
+        return {
+            "tipo": "botoes",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "botoes": [
+                {"id": "1", "label": "Serviços funerários"},
+                {"id": "2", "label": "Planos"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "Financeiro / Administrativo"},
+                {"id": "5", "label": "Floricultura"},
+                {"id": "6", "label": "📍 Localização"},
+                {"id": "7", "label": "Falar com atendente"},
+            ]
+        }
 
     def botao_voltar_menu(lista):
         return lista + [
@@ -46,6 +59,7 @@ def fluxo_planos_sinistro(session, mensagem):
         )
 
         session["encerrar_bot"] = True
+        session["fluxo"] = "atendente"
 
         return {
             "tipo": "texto",
@@ -205,6 +219,8 @@ def fluxo_planos_sinistro(session, mensagem):
             ir_para("data_velorio")
             return renderizar()
 
+        return renderizar()
+
     if session["etapa"] == "local_velorio":
         if mensagem == "1":
             session["dados"]["local_velorio"] = "Funerária"
@@ -215,6 +231,8 @@ def fluxo_planos_sinistro(session, mensagem):
             session["dados"]["local_velorio"] = "Igreja / Residência"
             ir_para("endereco_velorio")
             return renderizar()
+
+        return renderizar()
 
     if session["etapa"] == "endereco_velorio":
         session["dados"]["endereco_velorio"] = mensagem
@@ -236,6 +254,8 @@ def fluxo_planos_sinistro(session, mensagem):
         if mensagem == "3":
             ir_para("data_digitada")
             return renderizar()
+
+        return renderizar()
 
     if session["etapa"] == "data_digitada":
         session["dados"]["data_velorio"] = mensagem
@@ -264,14 +284,19 @@ def fluxo_planos_sinistro(session, mensagem):
             ir_para("endereco_local")
             return renderizar()
 
+        return renderizar()
+
     if session["etapa"] == "hospital_nome":
         session["dados"]["hospital_nome"] = mensagem
         ir_para("hospital_liberacao")
         return renderizar()
 
     if session["etapa"] == "hospital_liberacao":
-        session["dados"]["liberacao_hospital"] = "Sim" if mensagem == "1" else "Não"
-        ir_para("destino")
+        if mensagem in ["1", "2"]:
+            session["dados"]["liberacao_hospital"] = "Sim" if mensagem == "1" else "Não"
+            ir_para("destino")
+            return renderizar()
+
         return renderizar()
 
     if session["etapa"] == "endereco_local":
@@ -301,13 +326,18 @@ def fluxo_planos_sinistro(session, mensagem):
             ir_para("porte")
             return renderizar()
 
+        return renderizar()
+
     if session["etapa"] == "cemiterio":
         session["dados"]["cemiterio"] = mensagem
         ir_para("porte")
         return renderizar()
 
     if session["etapa"] == "porte":
-        session["dados"]["porte"] = mensagem
-        return finalizar()
+        if mensagem in ["1", "2", "3"]:
+            session["dados"]["porte"] = mensagem
+            return finalizar()
+
+        return renderizar()
 
     return renderizar()
