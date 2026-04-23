@@ -1,4 +1,5 @@
 from core.avisos import aviso_planos, aviso_atendente
+from fluxos.planos_sinistro import fluxo_planos_sinistro
 
 def _menu(titulo, opcoes):
     return {
@@ -11,9 +12,12 @@ def _menu(titulo, opcoes):
 def fluxo_planos_familiares(session, mensagem):
 
     session.setdefault("etapa", "inicio")
-    session.setdefault("historico", [])
     session.setdefault("dados", {})
 
+    if session.get("fluxo") != "planos":
+        session["historico"] = []
+
+    session["fluxo"] = "planos"
     nome = session.get("nome", "")
 
     # =================================================
@@ -72,9 +76,10 @@ def fluxo_planos_familiares(session, mensagem):
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
-                {"id": "3", "label": "Financeiro / Administrativo"},
-                {"id": "4", "label": "Floricultura"},
-                {"id": "5", "label": "Falar com atendente"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "Financeiro / Administrativo"},
+                {"id": "5", "label": "Floricultura"},
+                {"id": "6", "label": "Falar com atendente"},
             ]
         }
 
@@ -97,6 +102,9 @@ def fluxo_planos_familiares(session, mensagem):
                     ("1", "Ver planos disponíveis"),
                     ("2", "Contrato Futuro"),
                     ("3", "Abertura de Sinistro"),
+                    ("4", "🕊️ Sou cliente"),
+                    ("5", "🤝 Indique e ganhe"),
+                    ("6", "🧾 Desconto com parceiros"),
                     ("9", "Falar com atendente"),
                     ("00", "Voltar ao menu"),
                 ]
@@ -168,8 +176,15 @@ def fluxo_planos_familiares(session, mensagem):
 
 💰 *R$ 157/mês*
 
-{cobertura_valioso}
-✅ Coroa de flores para uma homenagem ainda mais especial{info_importante}""",
+✅ Salão completo 24h na Funerária Canaã
+✅ Caixão padrão até 1.90 comportando até 85kg com segurança
+✅ Transporte completo
+✅ Preparação completa + Tanatopraxia (24h)
+✅ Ornamentação com flores do campo naturais
+✅ Coroa de flores para uma homenagem ainda mais especial
+✅ Cerimonial ecumênico para homenagem com capelão e músico
+✅ Kit café + Copa 24h
+✅ Carteirinha digital com acesso à nossa rede de parceiros em todos os setores da vida, garantindo descontos em diversos serviços{info_importante}""",
                 [
                     ("1", "Tenho interesse"),
                     ("2", "Ver outros planos"),
@@ -203,14 +218,14 @@ def fluxo_planos_familiares(session, mensagem):
             return _menu(
                 """📄 *Contrato Futuro*
 
-💰 *A partir de R$ 3.000*
+💰 *Até R$ 3.000,00*
 
 ✅ Personalizado com os itens escolhidos
 ✅ Até 1 ano para fazer a quitação
 ✅ Após a quitação, pode utilizar para qualquer pessoa com a cobertura escolhida
 ✅ Sem reajuste
 ✅ Sem carência
-✅ Caso utilize antes da quitação, paga apenas o saldo restante
+✅ Caso utilize antes da quitação, pague apenas a diferença no dia
 
 Deseja seguir?""",
                 [
@@ -219,6 +234,62 @@ Deseja seguir?""",
                     ("00", "Menu principal"),
                 ]
             )
+
+
+        # -------------------------------------------------
+        # SOU CLIENTE
+        # -------------------------------------------------
+
+        if etapa == "sou_cliente":
+            return _menu(
+                """🕊️ *Área do Cliente*
+
+Nosso aplicativo é novo e reúne várias funções para facilitar seu dia a dia.
+
+Deseja receber o link para baixar no Android?""",
+                [
+                    ("1", "Receber link do APP"),
+                    ("0", "Voltar"),
+                    ("00", "Menu principal"),
+                ]
+            )
+
+        # -------------------------------------------------
+        # INDIQUE
+        # -------------------------------------------------
+
+        if etapa == "indique":
+            return _menu(
+                """🤝 *Indique e Ganhe*
+
+Em breve mais detalhes sobre esta novidade.""",
+                [
+                    ("9", "Falar com atendente"),
+                    ("0", "Voltar"),
+                    ("00", "Menu principal"),
+                ]
+            )
+
+        # -------------------------------------------------
+        # PARCEIROS
+        # -------------------------------------------------
+
+        if etapa == "parceiros":
+            return _menu(
+                """🧾 *Desconto com parceiros*""",
+                [   
+                    ("1", "Solicitar carteirinha digital"),
+                    ("2", "Acessar parceiros e Club Certo"),
+                    ("0", "Voltar"),
+                    ("00", "Menu principal"),
+                ]
+            )
+
+        if etapa == "carteirinha_nome":
+            return {
+                "tipo": "texto",
+                "mensagem": "👤 Informe o nome completo do(a) titular."
+            }
 
         # -------------------------------------------------
         # COLETAS
@@ -317,8 +388,26 @@ Deseja seguir?""",
             return renderizar()
 
         if mensagem == "3":
+            session["historico"] = []
+            session["dados"] = {}
+            session["fluxo"] = "planos_sinistro"
+            session["etapa"] = "inicio"
+            return fluxo_planos_sinistro(session, mensagem)
+
+
+        if mensagem == "4":
             salvar_historico()
-            session["etapa"] = "sinistro_nome"
+            session["etapa"] = "sou_cliente"
+            return renderizar()
+
+        if mensagem == "5":
+            salvar_historico()
+            session["etapa"] = "indique"
+            return renderizar()
+
+        if mensagem == "6":
+            salvar_historico()
+            session["etapa"] = "parceiros"
             return renderizar()
 
         if mensagem == "9":
@@ -339,6 +428,110 @@ Deseja seguir?""",
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
+
+
+    if session["etapa"] == "sou_cliente":
+
+        if mensagem == "1":
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Planos - Sou cliente / APP"
+            )
+
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": """🕊️ *Área do Cliente*
+
+Nosso aplicativo é novo e tem várias funções para facilitar seu dia a dia.
+
+📲 Link do APP Android:
+https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacanaa
+
+👤 Se tiver qualquer dúvida, você será encaminhado para nosso atendimento."""
+            }
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+
+    if session["etapa"] == "indique":
+
+        if mensagem == "9":
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Planos - Indique e ganhe"
+            )
+
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": "🤝 Você será encaminhado para nosso atendimento."
+            }
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+
+    if session["etapa"] == "parceiros":
+
+        if mensagem == "1":
+            salvar_historico()
+            session["etapa"] = "carteirinha_nome"
+            return renderizar()
+
+        if mensagem == "2":
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Planos - Parceiros / Club Certo"
+            )
+
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": """🧾 *Desconto com parceiros*
+
+📲 Link do Club Certo:
+https://play.google.com/store/apps/details?id=com.devusama.clubecerto
+
+📄 O PDF com nossos parceiros será enviado em seguida pela equipe.
+
+ℹ️ Os parceiros são para todos os nossos clientes.
+O Club Certo é destinado aos titulares. Caso queira solicitar para dependente, existe adicional.
+
+👤 Em caso de dúvidas, você será encaminhado para nosso atendimento."""
+            }
+
+        return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+
+    if session["etapa"] == "carteirinha_nome":
+        session["dados"]["nome_titular_carteirinha"] = mensagem
+
+        aviso_atendente(
+            session.get("nome"),
+            session.get("numero"),
+            "Planos - Solicitação de carteirinha digital"
+        )
+
+        session["fluxo"] = "atendente"
+        session["encerrar_bot"] = True
+
+        return {
+            "tipo": "texto",
+            "mensagem": f"""🧾 Solicitação registrada com sucesso.
+
+Titular: {session["dados"]["nome_titular_carteirinha"]}
+
+👤 Você será encaminhado para nosso atendimento."""
+        }
     # =================================================
     # LISTA PLANOS
     # =================================================

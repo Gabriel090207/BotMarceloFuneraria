@@ -62,9 +62,10 @@ def fluxo_floricultura(session, mensagem):
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
-                {"id": "3", "label": "Financeiro / Administrativo"},
-                {"id": "4", "label": "Floricultura"},
-                {"id": "5", "label": "Falar com atendente"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "Financeiro / Administrativo"},
+                {"id": "5", "label": "Floricultura"},
+                {"id": "6", "label": "Falar com atendente"},
             ]
         }
 
@@ -288,7 +289,7 @@ Deseja adicionar ao pedido?""",
                 session.get("numero"),
                 session.get("carrinho", [])
             )
-            
+
             session["fluxo"] = "atendente"
             session["encerrar_bot"] = True
 

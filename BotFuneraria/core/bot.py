@@ -8,7 +8,7 @@ from fluxos.atendente import fluxo_atendente
 from fluxos.planos_familiares import fluxo_planos_familiares
 from fluxos.financeiro import fluxo_financeiro
 from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
-
+from fluxos.convenios import fluxo_convenios
 
 
 SAUDACOES = [
@@ -94,9 +94,10 @@ Como podemos te ajudar hoje?""",
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
-                {"id": "3", "label": "Financeiro / Administrativo"},
-                {"id": "4", "label": "Floricultura"},
-                {"id": "5", "label": "Falar com atendente"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "Financeiro / Administrativo"},
+                {"id": "5", "label": "Floricultura"},
+                {"id": "6", "label": "Falar com atendente"},
             ]
         }
 
@@ -117,16 +118,21 @@ Como podemos te ajudar hoje?""",
             return fluxo_planos_familiares(session, mensagem)
 
         elif mensagem == "3":
+            session["fluxo"] = "convenios"
+            session["etapa"] = "inicio"
+            return fluxo_convenios(session, mensagem)
+
+        elif mensagem == "4":
             session["fluxo"] = "financeiro"
             session["etapa"] = "inicio"
             return fluxo_financeiro(session, mensagem)
 
-        elif mensagem == "4":
+        elif mensagem == "5":
             session["fluxo"] = "floricultura"
             session["etapa"] = "inicio"
             return fluxo_floricultura(session, mensagem)
 
-        elif mensagem == "5":
+        elif mensagem == "6":
             session["fluxo"] = "atendente"
             session["etapa"] = "inicio"
             return fluxo_atendente(session, mensagem)
@@ -149,6 +155,9 @@ Como podemos te ajudar hoje?""",
 
     if session["fluxo"] == "planos":
         return fluxo_planos_familiares(session, mensagem)
+
+    if session["fluxo"] == "convenios":
+        return fluxo_convenios(session, mensagem)
 
     if session["fluxo"] == "floricultura":
         return fluxo_floricultura(session, mensagem)

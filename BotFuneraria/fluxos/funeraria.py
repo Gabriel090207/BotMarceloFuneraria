@@ -113,7 +113,12 @@ def fluxo_funeraria(session, mensagem):
             linhas.append(f"📅 Data do velório: {dados.get('data_velorio', '-')}")
             
         linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}")
-        linhas.append(f"📌 Endereço do local atual: {dados.get('endereco_local_corpo', '-')}")
+
+        if dados.get("local_corpo") == "1":
+            linhas.append(f"📌 Local atual: {dados.get('hospital_nome', '-')}")
+
+        elif dados.get("local_corpo") in ["2", "4"]:
+            linhas.append(f"📌 Local atual: {dados.get('endereco_local_corpo', '-')}")
         linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte', '-'))}")
         if dados.get("destino"):
             linhas.append(f"⚱️ Destino: {dados.get('destino')}")

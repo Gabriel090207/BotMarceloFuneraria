@@ -44,9 +44,10 @@ def fluxo_financeiro(session, mensagem):
             "botoes": [
                 {"id": "1", "label": "Serviços funerários"},
                 {"id": "2", "label": "Planos"},
-                {"id": "3", "label": "Financeiro / Administrativo"},
-                {"id": "4", "label": "Floricultura"},
-                {"id": "5", "label": "Falar com atendente"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "Financeiro / Administrativo"},
+                {"id": "5", "label": "Floricultura"},
+                {"id": "6", "label": "Falar com atendente"},
             ]
         }
 
@@ -91,7 +92,8 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
                 [
                     ("1", "Planos"),
                     ("2", "Funerária"),
-                    ("3", "Outro assunto"),
+                    ("3", "Seja um parceiro nosso"),
+                    ("4", "Outro assunto"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
                 ]
@@ -207,7 +209,24 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
             session["etapa"] = "funeraria"
             return renderizar()
 
+        
         if mensagem == "3":
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Parceria Comercial"
+            )
+
+            session["fluxo"] = "atendente"
+            session["encerrar_bot"] = True
+
+            return {
+                "tipo": "texto",
+                "mensagem": "🤝 Você será encaminhado para nosso setor responsável por parcerias."
+            }
+
+        if mensagem == "4":
             session["dados"]["assunto"] = "Outro assunto"
             salvar_historico()
             session["etapa"] = "coletar_nome"
