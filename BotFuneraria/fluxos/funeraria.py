@@ -249,12 +249,12 @@ def fluxo_funeraria(session, mensagem):
         if etapa == "destino_final":
             return {
                 "tipo": "botoes",
-                "mensagem": "A família já possui jazigo ou deseja outro destino?",
+                "mensagem": "🪦 Qual o destino final do seu ente querido?",
                 "botoes": botao_voltar_menu([
-                    {"id": "1", "label": "Jazigo em cemitério"},
-                    {"id": "2", "label": "Cremação"},
-                    {"id": "3", "label": "Translado (viagem)"},
-                    {"id": "4", "label": "Não"},
+                    {"id": "1", "label": "Jazigo particular"},
+                    {"id": "2", "label": "Sem jazigo particular"},
+                    {"id": "3", "label": "Cremação"},
+                    {"id": "4", "label": "Translado"},
                 ])
             }
 
@@ -262,6 +262,12 @@ def fluxo_funeraria(session, mensagem):
             return {
                 "tipo": "texto",
                 "mensagem": "Qual o nome do cemitério?"
+            }
+
+        if etapa == "cidade_destino":
+            return {
+                "tipo": "texto",
+                "mensagem": "📍 Informe a cidade e estado de destino para cotação."
             }
 
 
@@ -656,64 +662,72 @@ Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
         return renderizar_etapa()
 
     if session["etapa"] == "porte":
+
         if mensagem not in ["1", "2", "3"]:
-            return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+            return {
+                "tipo": "texto",
+                "mensagem": "Escolha uma opção válida."
+            }
 
         session["dados"]["porte"] = mensagem
 
-        # 🔥 EDITANDO
+        # Se estiver editando
         if session.get("editando") == "porte":
             session.pop("editando", None)
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
-        ir_para("destino_final")
-        return renderizar_etapa()
+        # Até 85kg segue normal
+        if mensagem == "1":
+
+            # Se for translado, pedir cidade destino
+            if session["dados"].get("destino") == "Translado":
+                ir_para("cidade_destino")
+            else:
+                ir_para("conhece_funeraria")
+
+            return renderizar_etapa()
+
+        # Acima de 85kg = atendente
+        aviso_atendente(
+            session.get("nome"),
+            session.get("numero"),
+            "Atendimento funerário - peso acima de 85kg"
+        )
+
+        session["encerrar_bot"] = True
+
+        return {
+            "tipo": "texto",
+            "mensagem": "🙏 Para esse atendimento, vou te encaminhar agora para um atendente que irá te auxiliar com todo cuidado."
+        }
 
     if session["etapa"] == "destino_final":
 
         if mensagem == "1":
-            session["dados"]["destino"] = "Jazigo"
+            session["dados"]["destino"] = "Jazigo particular"
             ir_para("cemiterio_nome")
             return renderizar_etapa()
 
         if mensagem == "2":
-            session["dados"]["destino"] = "Cremação"
-
-            if session["dados"].get("velorio") == "nao":
-                ir_para("despedida_sem_velorio")
-            else:
-                ir_para("conhece_funeraria")
-
+            session["dados"]["destino"] = "Sem jazigo particular"
+            ir_para("porte")
             return renderizar_etapa()
-
 
         if mensagem == "3":
-            session["dados"]["destino"] = "Translado"
-
-            if session["dados"].get("velorio") == "nao":
-                ir_para("despedida_sem_velorio")
-            else:
-                ir_para("conhece_funeraria")
-
+            session["dados"]["destino"] = "Cremação"
+            ir_para("porte")
             return renderizar_etapa()
 
-
         if mensagem == "4":
-            session["dados"]["destino"] = "Não informado"
-
-            if session["dados"].get("velorio") == "nao":
-                ir_para("despedida_sem_velorio")
-            else:
-                ir_para("conhece_funeraria")
-
+            session["dados"]["destino"] = "Translado"
+            ir_para("porte")
             return renderizar_etapa()
 
         return {
             "tipo": "texto",
             "mensagem": "Escolha uma opção válida."
         }
-
 
     if session["etapa"] == "cemiterio_nome":
         session["dados"]["cemiterio"] = mensagem
@@ -911,6 +925,26 @@ Para outras necessidades, consulte nossa equipe."""
             return renderizar_etapa()
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
+
+    
+
+
+    if session["etapa"] == "cidade_destino":
+
+        session["dados"]["cidade_destino"] = mensagem
+
+        aviso_atendente(
+            session.get("nome"),
+            session.get("numero"),
+            f"Translado para {mensagem}"
+        )
+
+        session["encerrar_bot"] = True
+
+        return {
+            "tipo": "texto",
+            "mensagem": "🙏 Recebemos as informações. Vou te encaminhar agora para um atendente realizar a cotação do translado."
+        }
     # =========================================================
     # PAGAMENTO
     # =========================================================
