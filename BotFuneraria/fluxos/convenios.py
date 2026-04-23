@@ -29,7 +29,20 @@ def fluxo_convenios(session, mensagem):
         session["etapa_global"] = "menu"
         session["historico"] = []
         session["etapa"] = "inicio"
-        return None
+
+        return {
+            "tipo": "botoes",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "botoes": [
+                {"id": "1", "label": "Serviços funerários"},
+                {"id": "2", "label": "Planos"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "Financeiro / Administrativo"},
+                {"id": "5", "label": "Floricultura"},
+                {"id": "6", "label": "📍 Localização"},
+                {"id": "7", "label": "Falar com atendente"},
+            ]
+        }
 
     def menu(msg, botoes):
         return {
@@ -67,16 +80,18 @@ def fluxo_convenios(session, mensagem):
 
         etapa = session["etapa"]
 
+        # MENU INICIAL (sem voltar)
         if etapa == "inicio" or etapa == "menu":
             session["etapa"] = "menu"
 
             return menu(
                 "🗃️ *Convênios*\n\nComo podemos ajudar?",
-                botoes_padrao([
+                [
                     {"id": "1", "label": "Abertura de Sinistro"},
                     {"id": "2", "label": "Migração empresarial"},
                     {"id": "3", "label": "Orçamento para convênio"},
-                ])
+                    {"id": "00", "label": "Menu principal"},
+                ]
             )
 
         if etapa == "sinistro_tipo":
@@ -177,9 +192,7 @@ def fluxo_convenios(session, mensagem):
 
         if mensagem in ["2", "3"]:
             session["dados"]["tipo"] = (
-                "Dependente"
-                if mensagem == "2"
-                else "Associado"
+                "Dependente" if mensagem == "2" else "Associado"
             )
             salvar()
             session["etapa"] = "nome_titular"
@@ -223,7 +236,6 @@ def fluxo_convenios(session, mensagem):
     # ==================================================
 
     if session["etapa"] == "orcamento":
-
         return encaminhar(
             "Convênio - Orçamento",
             "🙏 Proposta recebida. Você será encaminhado para nosso atendimento."

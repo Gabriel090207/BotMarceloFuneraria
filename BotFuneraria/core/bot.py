@@ -136,6 +136,9 @@ Como podemos te ajudar hoje?""",
 
 
         elif mensagem == "6":
+
+            session["fluxo"] = "localizacao"
+            session["etapa"] = "mostrar"
             return {
                 "tipo": "botoes",
                 "mensagem": """📍 *Nossa localização*
@@ -190,6 +193,32 @@ https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+A
 
     if session["fluxo"] == "financeiro":
         return fluxo_financeiro(session, mensagem)
+
+    if session["fluxo"] == "localizacao":
+
+        if mensagem == "0":
+            session["fluxo"] = None
+            session["etapa_global"] = "menu"
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "Escolha uma opção:",
+                "botoes": [
+                    {"id": "1", "label": "Serviços funerários"},
+                    {"id": "2", "label": "Planos"},
+                    {"id": "3", "label": "🗃️ Convênios"},
+                    {"id": "4", "label": "Financeiro / Administrativo"},
+                    {"id": "5", "label": "Floricultura"},
+                    {"id": "6", "label": "📍 Localização"},
+                    {"id": "7", "label": "Falar com atendente"},
+                ]
+            }
+
+        if mensagem == "00":
+            session["fluxo"] = None
+            session["etapa_global"] = "menu"
+            return responder(numero, "menu")
+    
 
     return {
         "tipo": "texto",
