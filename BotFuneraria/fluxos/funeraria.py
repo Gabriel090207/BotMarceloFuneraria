@@ -358,25 +358,47 @@ def fluxo_funeraria(session, mensagem):
         if etapa == "pagamento":
             total, sinal = calcular_pagamento()
 
-            return {
-                "tipo": "botoes",
+            salvar_pedido({
+                "servico": session.get("servico"),
+                "dados": session.get("dados", {}),
+                "pagamento": {
+                    "total": total,
+                    "sinal": sinal
+                },
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "aberto",
+                "criado_em": datetime.now().isoformat()
+            })
+
+            aviso_atendente(
+                session.get("nome"),
+                session.get("numero"),
+                "Comprovante / Finalização funerária"
+            )
+
+            session["encerrar_bot"] = True
+
+            return [
+            {
+                "tipo": "texto",
                 "mensagem": f"""💳 *Pagamento da entrada (sinal)*
 
 Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
 
 💰 Valor total: {formatar_reais(total)}
-💵 Entrada (10%): {formatar_reais(sinal)}
-
-🔑 *Chave PIX:*
-07559544000137
-
-Para realizar o pagamento, é só clicar em *Copiar chave PIX* aqui embaixo 👇""",
-                "botoes": [
-                    {"id": "pix", "label": "Copiar chave PIX"},
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
+💵 Entrada (10%): {formatar_reais(sinal)}"""
+            },
+            {
+                "tipo": "pix",
+                "chave": "07559544000137",
+                "tipo_chave": "CNPJ"
+            },
+            {
+                "tipo": "texto",
+                "mensagem": "🙏 Após realizar o pagamento, envie o comprovante aqui no WhatsApp para darmos continuidade ao atendimento."
             }
+        ]
 
         return {
             "tipo": "texto",
@@ -893,53 +915,7 @@ Para outras necessidades, consulte nossa equipe."""
     # PAGAMENTO
     # =========================================================
     if session["etapa"] == "pagamento":
-
-        if mensagem == "pix":
-
-            total = session.get("pagamento", {}).get("total", 0)
-            sinal = session.get("pagamento", {}).get("sinal", 0)
-
-            salvar_pedido({
-                "servico": session.get("servico"),
-                "dados": session.get("dados", {}),
-                "pagamento": {
-                    "total": total,
-                    "sinal": sinal
-                },
-                "telefone": session.get("numero"),
-                "nome": session.get("nome"),
-                "status": "aberto",
-                "criado_em": datetime.now().isoformat()
-            })
-
-            aviso_atendente(
-                session.get("nome"),
-                session.get("numero"),
-                "Comprovante / Finalização funerária"
-            )
-
-            session["encerrar_bot"] = True
-
-            return [
-                {
-                    "tipo": "pix",
-                    "chave": "07559544000137",
-                    "tipo_chave": "CNPJ"
-                },
-                {
-                    "tipo": "texto",
-                    "mensagem": """🙏 Obrigado.
-
-Agora, por favor, *envie o comprovante de pagamento* aqui no WhatsApp para que nossa atendente possa finalizar o processo com todo cuidado.
-
-Pode ficar tranquilo(a), nossa equipe vai cuidar de tudo com muito respeito, atenção e responsabilidade."""
-                }
-            ]
-
-        # =========================================================
-        # FALLBACK
-        # =========================================================
         return {
             "tipo": "texto",
-            "mensagem": "Não entendi sua resposta. Por favor, escolha uma opção válida."
+            "mensagem": "Assim que concluir o pagamento, envie o comprovante aqui no WhatsApp."
         }
