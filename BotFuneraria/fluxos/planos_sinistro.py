@@ -36,7 +36,6 @@ def fluxo_planos_sinistro(session, mensagem):
                     {"id": "2", "label": "Contrato Futuro"},
                     {"id": "3", "label": "Abertura de Sinistro"},
                     {"id": "4", "label": "🕊️ Sou cliente"},
-                    {"id": "5", "label": "🤝 Indique e ganhe"},
                     {"id": "6", "label": "🧾 Desconto com parceiros"},
                     {"id": "9", "label": "Falar com atendente"},
                     {"id": "00", "label": "Voltar ao menu"},
