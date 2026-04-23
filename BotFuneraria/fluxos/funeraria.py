@@ -731,10 +731,7 @@ Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
 
     if session["etapa"] == "cemiterio_nome":
         session["dados"]["cemiterio"] = mensagem
-        if session["dados"].get("velorio") == "nao":
-            ir_para("despedida_sem_velorio")
-        else:
-            ir_para("conhece_funeraria")
+        ir_para("porte")
         return renderizar_etapa()
 
     if session["etapa"] == "conhece_funeraria":
