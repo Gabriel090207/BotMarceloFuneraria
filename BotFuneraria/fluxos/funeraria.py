@@ -102,6 +102,9 @@ def fluxo_funeraria(session, mensagem):
         linhas.append("📋 *Resumo do atendimento*")
         linhas.append("")
         linhas.append(f"🕯️ Velório: {label_velorio(dados.get('velorio', '-'))}")
+        if dados.get("velorio") == "nao":
+            linhas.append(f"🙏 Despedida: {dados.get('despedida', '-')}")
+
 
         if dados.get("velorio") == "sim":
             linhas.append(f"🏛️ Local do velório: {label_local_velorio(dados.get('local_velorio', '-'))}")
@@ -112,6 +115,11 @@ def fluxo_funeraria(session, mensagem):
         linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}")
         linhas.append(f"📌 Endereço do local atual: {dados.get('endereco_local_corpo', '-')}")
         linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte', '-'))}")
+        if dados.get("destino"):
+            linhas.append(f"⚱️ Destino: {dados.get('destino')}")
+
+        if dados.get("cemiterio"):
+            linhas.append(f"🪦 Cemitério: {dados.get('cemiterio')}")
         servico = session.get("servico")
 
         if servico:
@@ -163,6 +171,16 @@ def fluxo_funeraria(session, mensagem):
                 "mensagem": """Para começarmos com cuidado e organização, você pode me informar:
 
 🕯️ *Haverá velório?*""",
+                "botoes": botao_voltar_menu([
+                    {"id": "1", "label": "Sim"},
+                    {"id": "2", "label": "Não"},
+                ])
+            }
+
+        if etapa == "despedida_sem_velorio":
+            return {
+                "tipo": "botoes",
+                "mensagem": "Os familiares desejam realizar uma despedida?",
                 "botoes": botao_voltar_menu([
                     {"id": "1", "label": "Sim"},
                     {"id": "2", "label": "Não"},
@@ -225,6 +243,25 @@ def fluxo_funeraria(session, mensagem):
                     {"id": "2", "label": "Entre 85kg e 130kg"},
                     {"id": "3", "label": "Acima de 130kg"},
                 ])
+            }
+
+
+        if etapa == "destino_final":
+            return {
+                "tipo": "botoes",
+                "mensagem": "A família já possui jazigo ou deseja outro destino?",
+                "botoes": botao_voltar_menu([
+                    {"id": "1", "label": "Jazigo em cemitério"},
+                    {"id": "2", "label": "Cremação"},
+                    {"id": "3", "label": "Translado (viagem)"},
+                    {"id": "4", "label": "Não"},
+                ])
+            }
+
+        if etapa == "cemiterio_nome":
+            return {
+                "tipo": "texto",
+                "mensagem": "Qual o nome do cemitério?"
             }
 
 
@@ -399,11 +436,62 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
 
         if mensagem == "2":
             session["dados"]["velorio"] = "nao"
-            ir_para("data_velorio")
+            ir_para("despedida_sem_velorio")
             return renderizar_etapa()
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
 
+
+    if session["etapa"] == "despedida_sem_velorio":
+
+        texto = """⚰️ *SEM VELÓRIO*
+
+💰 Valor: R$ 2.000,00
+
+✅ Caixão padrão até 1.90 comportando até 85kg com segurança
+✅ Remoção e Cortejo
+✅ Pagamento de taxa municipal"""
+
+        if mensagem == "1":
+            session["dados"]["despedida"] = "Sim"
+
+            session["servico"] = {
+                "nome": "Sem velório",
+                "preco": 2000
+            }
+
+            session["etapa"] = "resumo"
+
+            return [
+                {
+                    "tipo": "texto",
+                    "mensagem": texto + "\n\n🙏 Permanência por até 1h com a urna fechada."
+                },
+                renderizar_etapa()
+            ]
+
+        if mensagem == "2":
+            session["dados"]["despedida"] = "Não"
+
+            session["servico"] = {
+                "nome": "Sem velório",
+                "preco": 2000
+            }
+
+            session["etapa"] = "resumo"
+
+            return [
+                {
+                    "tipo": "texto",
+                    "mensagem": texto
+                },
+                renderizar_etapa()
+            ]
+
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
     # =========================================================
     # COM VELÓRIO
     # =========================================================
@@ -476,6 +564,10 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
                 "mensagem": "🏥 Qual o nome do hospital?"
             }
 
+        if mensagem == "3":
+            ir_para("porte")
+            return renderizar_etapa()
+
         ir_para("endereco_local_corpo")
         return renderizar_etapa()
 
@@ -544,6 +636,39 @@ Assim que realizar o pagamento, é só clicar em *Já paguei* aqui embaixo 👇"
             session["etapa"] = "resumo"
             return renderizar_etapa()
 
+        ir_para("destino_final")
+        return renderizar_etapa()
+
+    if session["etapa"] == "destino_final":
+
+        if mensagem == "1":
+            session["dados"]["destino"] = "Jazigo"
+            ir_para("cemiterio_nome")
+            return renderizar_etapa()
+
+        if mensagem == "2":
+            session["dados"]["destino"] = "Cremação"
+            ir_para("conhece_funeraria")
+            return renderizar_etapa()
+
+        if mensagem == "3":
+            session["dados"]["destino"] = "Translado"
+            ir_para("conhece_funeraria")
+            return renderizar_etapa()
+
+        if mensagem == "4":
+            session["dados"]["destino"] = "Não informado"
+            ir_para("conhece_funeraria")
+            return renderizar_etapa()
+
+        return {
+            "tipo": "texto",
+            "mensagem": "Escolha uma opção válida."
+        }
+
+
+    if session["etapa"] == "cemiterio_nome":
+        session["dados"]["cemiterio"] = mensagem
         ir_para("conhece_funeraria")
         return renderizar_etapa()
 
@@ -771,8 +896,7 @@ Para outras necessidades, consulte nossa equipe."""
 
 Agora, por favor, *envie o comprovante de pagamento* aqui no WhatsApp para que nossa atendente possa finalizar o processo com todo cuidado.
 
-Pode ficar tranquilo(a), nossa equipe vai cuidar de tudo com muito respeito, atenção e responsabilidade.
-Desde o translado até a organização completa."""
+Pode ficar tranquilo(a), nossa equipe vai cuidar de tudo com muito respeito, atenção e responsabilidade."""
         }
 
     # =========================================================
