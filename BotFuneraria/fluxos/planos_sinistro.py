@@ -88,7 +88,7 @@ def fluxo_planos_sinistro(session, mensagem):
 
         return {
             "tipo": "texto",
-            "mensagem": "🙏 Recebemos as informações. Você será encaminhado para nosso atendimento."
+            "mensagem": "👤 Recebemos as informações. Você será encaminhado para nosso atendimento."
         }
 
     # =================================================

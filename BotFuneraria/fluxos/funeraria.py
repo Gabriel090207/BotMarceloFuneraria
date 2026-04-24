@@ -962,7 +962,7 @@ Para outras necessidades, consulte nossa equipe."""
 
         return {
             "tipo": "texto",
-            "mensagem": "🙏 Recebemos as informações. Vou te encaminhar agora para um atendente realizar a cotação do translado."
+            "mensagem": "👤 Recebemos as informações. Vou te encaminhar agora para um atendente realizar a cotação do translado."
         }
     # =========================================================
     # PAGAMENTO

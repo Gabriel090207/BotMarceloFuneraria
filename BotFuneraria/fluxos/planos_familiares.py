@@ -471,7 +471,7 @@ https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacan
 
             return {
                 "tipo": "texto",
-                "mensagem": "🤝 Você será encaminhado para nosso atendimento."
+                "mensagem": "👤 Você será encaminhado para nosso atendimento."
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}

@@ -224,7 +224,7 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
 
             return {
                 "tipo": "texto",
-                "mensagem": "🤝 Você será encaminhado para nosso setor responsável por parcerias."
+                "mensagem": "👤 Você será encaminhado para nosso setor responsável por parcerias."
             }
 
         if mensagem == "4":

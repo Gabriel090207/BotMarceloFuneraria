@@ -354,7 +354,7 @@ Deseja adicionar ao pedido?""",
 
             return {
                 "tipo": "texto",
-                "mensagem": "💡 Você será encaminhado para nosso atendimento da gráfica."
+                "mensagem": "👤 Você será encaminhado para nosso atendimento da gráfica."
             }
 
         return {

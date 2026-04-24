@@ -228,7 +228,7 @@ def fluxo_convenios(session, mensagem):
 
         return encaminhar(
             "Convênio - Migração empresarial",
-            "🙏 Solicitação recebida. Você será encaminhado para nosso atendimento."
+            "👤 Solicitação recebida. Você será encaminhado para nosso atendimento."
         )
 
     # ==================================================
@@ -238,7 +238,7 @@ def fluxo_convenios(session, mensagem):
     if session["etapa"] == "orcamento":
         return encaminhar(
             "Convênio - Orçamento",
-            "🙏 Proposta recebida. Você será encaminhado para nosso atendimento."
+            "👤 Proposta recebida. Você será encaminhado para nosso atendimento."
         )
 
     return renderizar()
