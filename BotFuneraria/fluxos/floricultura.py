@@ -91,11 +91,11 @@ def fluxo_floricultura(session, mensagem):
                 msg = f"{nome}, o que mais você deseja?"
 
             botoes = [
-                {"id": "1", "label": "Arranjos e Presentes"},
-                {"id": "2", "label": "Coroa padrão"},
-                {"id": "3", "label": "Coroa com rosas"},
-                {"id": "4", "label": "Buquê padrão"},
-                {"id": "5", "label": "Buquê com rosas"},
+                {"id": "1", "label": "🎁 Arranjos e Presentes"},
+                {"id": "2", "label": "🌸 Coroa padrão"},
+                {"id": "3", "label": "🌸 Coroa com rosas"},
+                {"id": "4", "label": "🌼 Buquê padrão"},
+                {"id": "5", "label": "💐 Buquê com rosas"},
             ]
 
             if session["carrinho"]:

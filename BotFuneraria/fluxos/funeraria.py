@@ -49,8 +49,25 @@ def fluxo_funeraria(session, mensagem):
 
     def ir_menu_principal():
         session["historico"] = []
-        session["etapa"] = "menu_principal"
-        return renderizar_etapa()
+        session["dados"] = {}
+        session["subfluxo"] = None
+        session["fluxo"] = None
+        session["etapa"] = "inicio"
+        session["etapa_global"] = "menu"
+
+        return {
+            "tipo": "botoes",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "botoes": [
+                {"id": "1", "label": "⚰️ Serviços funerários"},
+                {"id": "2", "label": "🛡️ Planos"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "💼 Financeiro / Administrativo"},
+                {"id": "5", "label": "🌷 Floricultura"},
+                {"id": "6", "label": "📍 Localização"},
+                {"id": "7", "label": "👤 Falar com atendente"},
+            ]
+        }
 
     def botao_voltar_menu(lista_botoes):
         return lista_botoes + [
