@@ -162,22 +162,27 @@ Deseja adicionar ao pedido?""",
         # ---------------- GRÁFICA ----------------
 
         if etapa == "grafica":
-            return {
-                "tipo": "botoes",
-                "mensagem": """💡 *Gráfica*
+            return [
+                {
+                    "tipo": "texto",
+                    "mensagem": "💡 Enviando catálogo da gráfica..."
+                },
+                {
+                    "tipo": "documento",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/grafica.pdf?alt=media&token=02f7baf6-213f-4a10-8d29-8d24416c5427",
+                    "nome": "catalogo-grafica.pdf"
+                },
+                {   
+                    "tipo": "botoes",
+                    "mensagem": "👤 Deseja falar com nosso atendimento?",
+                    "botoes": [
+                        {"id": "1", "label": "Solicitar atendimento"},
+                        {"id": "0", "label": "Voltar"},
+                        {"id": "00", "label": "Menu principal"},
+                    ]
+                }
 
-
-📎 Catálogo de materiais:
-https://botmarcelofuneraria.onrender.com/static/grafica.pdf
-
-
-👤 Deseja falar com nosso atendimento?""",
-                "botoes": [
-                    {"id": "1", "label": "Solicitar atendimento"},
-                    {"id": "0", "label": "Voltar"},
-                    {"id": "00", "label": "Menu principal"},
-                ]
-            }
+            ]
 
         # ---------------- PÓS ITEM ----------------
 

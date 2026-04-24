@@ -122,6 +122,27 @@ def enviar_video(phone, url_video):
 
 
 
+
+def enviar_documento(phone, documento, nome_arquivo="catalogo.pdf"):
+    url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-document/pdf"
+
+    payload = {
+        "phone": phone,
+        "document": documento,
+        "fileName": nome_arquivo
+    }
+
+    headers = {
+        "Client-Token": ZAPI_CLIENT_TOKEN
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+
+    print("📥 STATUS:", response.status_code)
+    print("📥 RESPOSTA:", response.text)
+
+    return response.json()
+
 # ==================================================
 # BOTÃO PIX
 # ==================================================
@@ -183,6 +204,14 @@ def enviar_mensagem(msg, numero):
             numero,
             msg.get("chave"),
             msg.get("tipo_chave", "CNPJ")
+        )
+
+
+    elif tipo == "documento":
+        return enviar_documento(
+            numero,
+            msg.get("url"),
+            msg.get("nome", "catalogo.pdf")
         )
 
     else:
