@@ -166,13 +166,10 @@ Deseja adicionar ao pedido?""",
                 "tipo": "botoes",
                 "mensagem": """💡 *Gráfica*
 
-Materiais que podem ser solicitados:
 
-🪦 Placa para jazigo
-🖼️ Cerâmica / Moldura com foto
-🙏 Convite para missa de sétimo dia
-💼 Cartão de visita
-📝 Outros materiais personalizados
+📎 Catálogo de materiais:
+https://botmarcelofuneraria.onrender.com/static/grafica.pdf
+
 
 👤 Deseja falar com nosso atendimento?""",
                 "botoes": [
