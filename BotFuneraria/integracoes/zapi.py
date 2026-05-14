@@ -71,7 +71,7 @@ def enviar_botoes(phone, mensagem, botoes):
 # IMAGEM
 # ==================================================
 
-def enviar_imagem(phone, url_imagem):
+def enviar_mensagem(numero, msg):
     url = f"{ZAPI_BASE_URL}/instances/{ZAPI_INSTANCE_ID}/token/{ZAPI_TOKEN}/send-image"
 
     payload = {
@@ -226,6 +226,6 @@ def enviar_resposta(resposta, numero):
 
     if isinstance(resposta, list):
         for item in resposta:
-            enviar_mensagem(item, numero)
+            enviar_mensagem(numero, item)
     else:
-        enviar_mensagem(resposta, numero)
+        enviar_mensagem(numero, resposta)
