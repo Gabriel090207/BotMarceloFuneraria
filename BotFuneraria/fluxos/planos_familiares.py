@@ -13,6 +13,7 @@ def fluxo_planos_familiares(session, mensagem):
 
     session.setdefault("etapa", "inicio")
     session.setdefault("dados", {})
+    session.setdefault("historico", [])
 
     if session.get("fluxo") != "planos":
         session["historico"] = []
@@ -279,7 +280,8 @@ Em breve mais detalhes sobre esta novidade.""",
                 """🧾 *Desconto com parceiros*""",
                 [   
                     ("1", "Solicitar carteirinha digital"),
-                    ("2", "Acessar parceiros e Club Certo"),
+                    ("2", "📄 Acessar parceiros"),
+                    ("3", "📲 Club Certo"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
                 ]
@@ -485,28 +487,42 @@ https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacan
             return renderizar()
 
         if mensagem == "2":
-            aviso_atendente(
-                session.get("nome"),
-                session.get("numero"),
-                "Planos - Parceiros / Club Certo"
-            )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
+            return [
+                {
+                    "tipo": "texto",
+                    "mensagem": "📄 Enviando lista de parceiros..."
+                },
+                {
+                    "tipo": "documento",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/Canaa%CC%83%20Parceiros_20260430_075641_0000.pdf?alt=media&token=aa62e871-c5ca-4828-b237-19d684841b56",
+                    "nome": "parceiros-canaa.pdf"
+                },
+                {
+                    "tipo": "texto",
+                    "mensagem": """ℹ️ Os parceiros são para todos os nossos clientes.
+
+        👤 Em caso de dúvidas, fale com nosso atendimento."""
+                }
+            ]
+
+
+        if mensagem == "3":
 
             return {
-                "tipo": "texto",
-                "mensagem": """🧾 *Desconto com parceiros*
+                "tipo": "botoes",
+                "mensagem": """📲 *Club Certo*
 
-📲 Link do Club Certo:
-https://play.google.com/store/apps/details?id=com.devusama.clubecerto
+        Baixe o aplicativo pelo link abaixo:
 
-📄 O PDF com nossos parceiros será enviado em seguida pela equipe.
+        https://play.google.com/store/apps/details?id=com.devusama.clubecerto
 
-ℹ️ Os parceiros são para todos os nossos clientes.
-O Club Certo é destinado aos titulares. Caso queira solicitar para dependente, existe adicional.
-
-👤 Em caso de dúvidas, você será encaminhado para nosso atendimento."""
+        ℹ️ O Club Certo é destinado aos titulares.
+        Caso queira solicitar para dependente, existe adicional.""",
+                "botoes": [
+                    {"id": "0", "label": "Voltar"},
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
