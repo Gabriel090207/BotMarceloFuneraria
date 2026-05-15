@@ -60,9 +60,9 @@ async def webhook(request: Request):
         # ---------------------------
 
 
-        from core.sessoes import sessoes
+        from core.session import sessions
 
-        session = sessoes.setdefault(numero, {})
+        session = sessions.setdefault(numero, {})
         session["ultima_interacao"] = datetime.now().timestamp()
 
         resposta = responder(numero, mensagem)

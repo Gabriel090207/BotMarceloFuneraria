@@ -1,7 +1,7 @@
 import time
 from threading import Thread
 
-from core.sessoes import sessoes
+from core.session import sessions
 from core.avisos import enviar_aviso_interno
 from integracoes.zapi import enviar_texto
 
@@ -31,7 +31,7 @@ def verificar_inatividade():
 
         agora = time.time()
 
-        for numero, session in list(sessoes.items()):
+        for numero, session in list(sessions.items()):
 
             ultima = session.get("ultima_interacao")
 
