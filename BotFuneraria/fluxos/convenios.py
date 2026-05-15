@@ -64,12 +64,17 @@ def fluxo_convenios(session, mensagem):
             origem
         )
 
-        session["encerrar_bot"] = True
-        session["fluxo"] = "atendente"
-
         return {
-            "tipo": "texto",
-            "mensagem": texto
+            "tipo": "botoes",
+            "mensagem": f"""{texto}
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     # ==================================================
