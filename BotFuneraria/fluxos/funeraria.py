@@ -405,12 +405,10 @@ def fluxo_funeraria(session, mensagem):
                 "Comprovante / Finalização funerária"
             )
 
-            session["encerrar_bot"] = True
-
             return [
             {
                 "tipo": "texto",
-                "mensagem": f"""💳 *Pagamento da entrada (sinal)*
+                "mensagem": f"""👤 *Pagamento da entrada (sinal)*
 
 Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
 
@@ -423,10 +421,18 @@ Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
                 "tipo_chave": "CNPJ"
             },
             {
-                "tipo": "texto",
-                "mensagem": "🙏 Após realizar o pagamento, envie o comprovante aqui no WhatsApp para darmos continuidade ao atendimento."
+                "tipo": "botoes",
+                "mensagem": """👤 Após realizar o pagamento, envie o comprovante diretamente para nosso plantonista.
+
+📲 WhatsApp do plantonista:
+https://wa.me/5592995131313
+
+ℹ️ Nossa equipe continuará seu atendimento humano por lá.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
-        ]
+            ]
 
         return {
             "tipo": "texto",
@@ -717,11 +723,17 @@ Para concluirmos o atendimento, solicitamos o pagamento de *10% do valor total*.
             "Atendimento funerário - peso acima de 85kg"
         )
 
-        session["encerrar_bot"] = True
-
         return {
-            "tipo": "texto",
-            "mensagem": "🙏 Para esse atendimento, vou te encaminhar agora para um atendente que irá te auxiliar com todo cuidado."
+            "tipo": "botoes",
+            "mensagem": """👤 Nossa equipe humana irá te auxiliar com todo cuidado.
+
+📲 Fale agora com nosso plantonista:
+ https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     if session["etapa"] == "destino_final":
@@ -958,11 +970,17 @@ Para outras necessidades, consulte nossa equipe."""
             f"Translado para {mensagem}"
         )
 
-        session["encerrar_bot"] = True
-
         return {
-            "tipo": "texto",
-            "mensagem": "👤 Recebemos as informações. Vou te encaminhar agora para um atendente realizar a cotação do translado."
+            "tipo": "botoes",
+            "mensagem": """👤 Recebemos as informações para cotação do translado.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
     # =========================================================
     # PAGAMENTO
