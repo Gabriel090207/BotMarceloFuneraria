@@ -55,7 +55,7 @@ def responder(numero, mensagem):
         return {
             "tipo": "texto",
             "mensagem": f"""
-        {saudacao}, bem-vindo(a) à Funerária Canaã 🕊️
+{saudacao}, bem-vindo(a) à Funerária Canaã 🕊️
 
 🤖 Este é nosso atendimento automático 24h exclusivo via WhatsApp.
 
@@ -162,9 +162,22 @@ https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+A
             }
 
         elif mensagem == "7":
-            session["fluxo"] = "atendente"
-            session["etapa"] = "inicio"
-            return fluxo_atendente(session, mensagem)
+
+            return {
+                "tipo": "botoes",
+                "mensagem": """👤 *Atendimento Humano*
+
+Você pode falar diretamente com nosso plantonista pelo WhatsApp:
+
+📲 https://wa.me/5592995131313
+
+ℹ️ Nosso atendimento automático continua disponível 24h.
+
+Solicitações administrativas, financeiras e demais setores serão respondidas em horário comercial.""",
+                "botoes": [
+                    {"id": "0", "label": "Menu principal"},
+                ]
+            }
 
         else:
             return {

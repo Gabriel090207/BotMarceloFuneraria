@@ -1,6 +1,6 @@
 from integracoes.zapi import enviar_texto
 
-NUMERO_AVISOS = "5592995131313"
+NUMERO_AVISOS = "5516993072704"
 NUMERO_PLANTONISTA = "5592995131313"
 
 
