@@ -728,7 +728,7 @@ https://wa.me/5592995131313
             "mensagem": """👤 Nossa equipe humana irá te auxiliar com todo cuidado.
 
 📲 Fale agora com nosso plantonista:
- https://wa.me/5592995131313
+https://wa.me/5592995131313
 
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
@@ -988,5 +988,8 @@ https://wa.me/5592995131313
     if session["etapa"] == "pagamento":
         return {
             "tipo": "texto",
-            "mensagem": "Assim que concluir o pagamento, envie o comprovante aqui no WhatsApp."
+            "mensagem": """👤 Assim que concluir o pagamento, envie o comprovante para nosso plantonista.
+
+📲 WhatsApp:
+https://wa.me/5592995131313"""
         }
