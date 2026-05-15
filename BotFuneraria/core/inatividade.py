@@ -38,13 +38,17 @@ def verificar_inatividade():
             if not ultima:
                 continue
 
-            # já avisado
+            # evita duplicidade
             if session.get("inatividade_notificada"):
                 continue
 
             tempo_parado = agora - ultima
 
             if tempo_parado >= TEMPO_LIMITE:
+
+                # evita aviso vazio
+                if not session.get("dados"):
+                    continue
 
                 linhas = gerar_resumo(session)
 
@@ -63,7 +67,14 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram encaminhadas para nossa equipe."""
                 )
 
+                # marca como notificado
                 session["inatividade_notificada"] = True
+
+                # limpa sessão
+                session["historico"] = []
+                session["dados"] = {}
+                session["fluxo"] = None
+                session["etapa"] = "inicio"
 
         time.sleep(15)
 
@@ -76,3 +87,4 @@ def iniciar_monitor():
     )
 
     thread.start()
+
