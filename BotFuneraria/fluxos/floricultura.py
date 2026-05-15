@@ -253,12 +253,19 @@ Deseja adicionar ao pedido?""",
                 session.get("carrinho", [])
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
-
             return {
-                "tipo": "texto",
-                "mensagem": resumo_pedido() + "\n\n👤 Você será encaminhado para finalizar seu pedido."
+                "tipo": "botoes",
+                "mensagem": resumo_pedido() + """
+
+👤 *Pedido enviado com sucesso para nosso plantonista.*
+
+📲 Finalize diretamente pelo WhatsApp:
+https://wa.me/5592995131313
+
+ℹ️ Envie qualquer informação complementar no atendimento humano.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         if mensagem == "7":
@@ -322,12 +329,19 @@ Deseja adicionar ao pedido?""",
                 session.get("carrinho", [])
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
-
             return {
-                "tipo": "texto",
-                "mensagem": resumo_pedido() + "\n\n👤 Você será encaminhado para finalizar seu pedido."
+                "tipo": "botoes",
+                "mensagem": resumo_pedido() + """
+
+👤 *Pedido enviado com sucesso para nosso plantonista.*
+
+📲 Finalize diretamente pelo WhatsApp:
+https://wa.me/5592995131313
+
+ℹ️ Envie qualquer informação complementar no atendimento humano.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         if mensagem == "2":
