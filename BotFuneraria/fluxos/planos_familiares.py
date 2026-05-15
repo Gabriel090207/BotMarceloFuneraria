@@ -502,7 +502,7 @@ https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacan
                     "tipo": "texto",
                     "mensagem": """ℹ️ Os parceiros são para todos os nossos clientes.
 
-        👤 Em caso de dúvidas, fale com nosso atendimento."""
+👤 Em caso de dúvidas, fale com nosso atendimento."""
                 }
             ]
 
@@ -513,12 +513,12 @@ https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacan
                 "tipo": "botoes",
                 "mensagem": """📲 *Club Certo*
 
-        Baixe o aplicativo pelo link abaixo:
+Baixe o aplicativo pelo link abaixo:
 
-        https://play.google.com/store/apps/details?id=com.devusama.clubecerto
+https://play.google.com/store/apps/details?id=com.devusama.clubecerto
 
-        ℹ️ O Club Certo é destinado aos titulares.
-        Caso queira solicitar para dependente, existe adicional.""",
+ℹ️ O Club Certo é destinado aos titulares.
+Caso queira solicitar para dependente, existe adicional.""",
                 "botoes": [
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},

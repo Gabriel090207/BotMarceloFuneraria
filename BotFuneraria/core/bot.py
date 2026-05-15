@@ -55,10 +55,19 @@ def responder(numero, mensagem):
         return {
             "tipo": "texto",
             "mensagem": f"""
-{saudacao}, bem-vindo (a) a Funerária Canaã 🕊️
+        {saudacao}, bem-vindo(a) à Funerária Canaã 🕊️
 
-Antes de iniciar o atendimento, poderia me informar seu nome?
-"""
+🤖 Este é nosso atendimento automático 24h exclusivo via WhatsApp.
+
+📞 Caso prefira ligação ou atendimento humano imediato, fale com nosso plantonista:
+
+➡️ Falar com plantonista:
+https://wa.me/5592995131313
+
+ℹ️ Ao final do atendimento, você também poderá ser direcionado para nossa equipe humana para continuidade, envio de comprovantes e finalização do serviço.
+
+Antes de iniciar, poderia me informar seu nome? 🙏
+        """
         }
 
     # -------------------------------------------------
