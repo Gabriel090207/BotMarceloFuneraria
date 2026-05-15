@@ -77,18 +77,24 @@ def fluxo_planos_sinistro(session, mensagem):
         ]
 
     def finalizar():
+
         aviso_atendente(
             session.get("nome"),
             session.get("numero"),
             "Abertura de Sinistro"
         )
 
-        session["encerrar_bot"] = True
-        session["fluxo"] = "atendente"
-
         return {
-            "tipo": "texto",
-            "mensagem": "👤 Recebemos as informações. Você será encaminhado para nosso atendimento."
+            "tipo": "botoes",
+            "mensagem": """👤 Recebemos as informações da abertura de sinistro.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ Nossa equipe já recebeu sua solicitação e irá auxiliar no atendimento.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     # =================================================
