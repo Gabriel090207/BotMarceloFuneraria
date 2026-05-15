@@ -209,7 +209,7 @@ https://wa.me/5592995131313
         if session["dados"]["tipo"] == "Titular":
             return encaminhar(
                 "Convênio - Abertura de Sinistro",
-                "🙏 Recebemos as informações. Você será encaminhado para nosso atendimento."
+                "👤 Recebemos as informações. Você será encaminhado para nosso atendimento."
             )
 
         salvar()
@@ -221,7 +221,7 @@ https://wa.me/5592995131313
 
         return encaminhar(
             "Convênio - Abertura de Sinistro",
-            "🙏 Recebemos as informações. Você será encaminhado para nosso atendimento.\n\n📄 Tenha em mãos o documento de filiação. A elegibilidade será verificada pela equipe."
+            "👤 Recebemos as informações. Você será encaminhado para nosso atendimento.\n\n📄 Tenha em mãos o documento de filiação. A elegibilidade será verificada pela equipe."
         )
 
     # ==================================================
