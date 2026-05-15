@@ -175,7 +175,7 @@ Você pode falar diretamente com nosso plantonista pelo WhatsApp:
 
 Solicitações administrativas, financeiras e demais setores serão respondidas em horário comercial.""",
                 "botoes": [
-                    {"id": "0", "label": "Menu principal"},
+                    {"id": "00", "label": "Menu principal"},
                 ]
             }
 
