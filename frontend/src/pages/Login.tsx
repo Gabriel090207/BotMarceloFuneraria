@@ -43,7 +43,7 @@ export default function Login(){
 
       await signInWithEmailAndPassword(auth,email,senha)
 
-      navigate("/")
+      navigate("/servicos")
 
     }catch(e:any){
 

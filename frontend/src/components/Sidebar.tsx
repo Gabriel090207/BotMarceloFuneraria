@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom"
 import {
-  FiHome,
-  FiShoppingCart,
   FiBox,
   FiSettings
 } from "react-icons/fi"
@@ -58,15 +56,7 @@ export default function Sidebar(){
 
         <nav>
 
-          <Link to="/" onClick={()=>setOpen(false)}>
-            <FiHome />
-            Dashboard
-          </Link>
-
-          <Link to="/pedidos" onClick={()=>setOpen(false)}>
-            <FiShoppingCart />
-            Pedidos
-          </Link>
+         
 
           <Link to="/servicos" onClick={()=>setOpen(false)}>
             <FiBox />
