@@ -54,25 +54,28 @@ def fluxo_financeiro(session, mensagem):
 
     def finalizar():
 
-
         aviso_financeiro(
             session.get("nome"),
             session.get("numero"),
             session.get("dados", {})
         )
-        session["fluxo"] = "atendente"
-        session["encerrar_bot"] = True
 
         return {
-            "tipo": "texto",
-            "mensagem": f"""📋 Solicitação registrada.
+            "tipo": "botoes",
+            "mensagem": f"""👤 Solicitação registrada com sucesso.
 
-Assunto: {session["dados"].get("assunto")}
-Nome: {session["dados"].get("nome")}
-CPF: {session["dados"].get("cpf")}
-Descrição: {session["dados"].get("descricao", "Não informada")}
+📋 Assunto: {session["dados"].get("assunto")}
+👤 Nome: {session["dados"].get("nome")}
+🪪 CPF: {session["dados"].get("cpf")}
+📝 Descrição: {session["dados"].get("descricao", "Não informada")}
 
-👤 Você será encaminhado para nosso atendimento."""
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     def renderizar():
@@ -219,12 +222,17 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
                 "Parceria Comercial"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
-
             return {
-                "tipo": "texto",
-                "mensagem": "👤 Você será encaminhado para nosso setor responsável por parcerias."
+                "tipo": "botoes",
+                "mensagem": """👤 Nosso setor comercial irá te auxiliar com as parcerias.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         if mensagem == "4":
@@ -257,11 +265,17 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
                 "Financeiro - Planos"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
             return {
-                "tipo": "texto",
-                "mensagem": "👤 Você será encaminhado para nosso atendimento."
+                "tipo": "botoes",
+                "mensagem": """👤 Nossa equipe irá te auxiliar com seu atendimento financeiro.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         if mensagem in mapa:
@@ -287,18 +301,23 @@ Descrição: {session["dados"].get("descricao", "Não informada")}
 
         if mensagem == "9":
 
-
             aviso_atendente(
                 session.get("nome"),
                 session.get("numero"),
                 "Financeiro - Funerária"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
             return {
-                "tipo": "texto",
-                "mensagem": "👤 Você será encaminhado para nosso atendimento."
+                "tipo": "botoes",
+                "mensagem": """👤 Nossa equipe irá te auxiliar com seu atendimento financeiro.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         if mensagem in mapa:
