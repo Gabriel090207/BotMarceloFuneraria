@@ -7,7 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute"
 
 import Login from "./pages/Login"
 
-import Dashboard from "./pages/Dashboard"
+
 import Pedidos from "./pages/Pedidos"
 
 import Servicos from "./pages/Servicos"
@@ -41,7 +41,7 @@ export default function App(){
           }
         >
 
-          <Route index element={<Dashboard />} />
+          <Route index element={<Servicos />} />
 
           <Route path="pedidos" element={<Pedidos />} />
 
