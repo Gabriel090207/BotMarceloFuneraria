@@ -1,14 +1,17 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+from datetime import datetime
 
 from core.bot import responder
 from integracoes.zapi import enviar_resposta
+from core.inatividade import iniciar_monitor
 
 load_dotenv()
 
 app = FastAPI()
 
+iniciar_monitor()
 
 @app.get("/")
 def home():
@@ -55,6 +58,12 @@ async def webhook(request: Request):
         # ---------------------------
         # PROCESSA BOT
         # ---------------------------
+
+
+        from core.sessoes import sessoes
+
+        session = sessoes.setdefault(numero, {})
+        session["ultima_interacao"] = datetime.now().timestamp()
 
         resposta = responder(numero, mensagem)
 
