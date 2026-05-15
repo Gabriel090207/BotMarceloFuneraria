@@ -55,24 +55,38 @@ def label_porte(valor):
 # =========================
 # AVISOS
 # =========================
-
 def aviso_funeraria(nome, telefone, dados, servico=None):
     linhas = [
         f"👤 Nome: {nome or '-'}",
         f"📞 Telefone: {telefone or '-'}",
-        f"🕯️ Velório: {label_velorio(dados.get('velorio', '-'))}",
-        f"🏛️ Local do velório: {label_local_velorio(dados.get('local_velorio', '-'))}",
-        f"📅 Data do velório: {dados.get('data_velorio', '-')}",
-        f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}",
-        f"📌 Endereço atual: {dados.get('endereco_local_corpo', '-')}",
-        f"⚖️ Porte: {label_porte(dados.get('porte', '-'))}",
     ]
+
+    if dados.get("velorio"):
+        linhas.append(f"🕯️ Velório: {label_velorio(dados.get('velorio'))}")
+
+    if dados.get("local_velorio"):
+        linhas.append(f"🏛️ Local do velório: {label_local_velorio(dados.get('local_velorio'))}")
+
+    if dados.get("endereco_velorio"):
+        linhas.append(f"📍 Endereço do velório: {dados.get('endereco_velorio')}")
+
+    if dados.get("data_velorio"):
+        linhas.append(f"📅 Data do velório: {dados.get('data_velorio')}")
+
+    if dados.get("local_corpo"):
+        linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo'))}")
 
     if dados.get("hospital_nome"):
         linhas.append(f"🏥 Hospital: {dados.get('hospital_nome')}")
 
+    if dados.get("endereco_local_corpo"):
+        linhas.append(f"📌 Endereço atual: {dados.get('endereco_local_corpo')}")
+
     if dados.get("liberacao_hospital"):
         linhas.append(f"🧾 Liberação no necrotério: {dados.get('liberacao_hospital')}")
+
+    if dados.get("porte"):
+        linhas.append(f"⚖️ Porte: {label_porte(dados.get('porte'))}")
 
     if dados.get("destino"):
         linhas.append(f"⚱️ Destino: {dados.get('destino')}")
@@ -84,11 +98,13 @@ def aviso_funeraria(nome, telefone, dados, servico=None):
         linhas.append(f"🙏 Despedida: {dados.get('despedida')}")
 
     if servico:
-        linhas.append(f"⚰️ Serviço: {servico.get('nome', '-')}")
-        linhas.append(f"💰 Valor: {servico.get('preco', '-')}")
+        if servico.get("nome"):
+            linhas.append(f"⚰️ Serviço: {servico.get('nome')}")
+
+        if servico.get("preco"):
+            linhas.append(f"💰 Valor: {servico.get('preco')}")
 
     return enviar_aviso_interno("Novo atendimento funerário", linhas)
-
 
 def aviso_orcamento(nome, telefone, dados):
     servico = dados.get("servico", {})

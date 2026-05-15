@@ -117,11 +117,17 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                 "Orçamento funerário"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
             return {
-                "tipo": "texto",
-                "mensagem": "👤 Você será encaminhado para nosso atendimento."
+                "tipo": "botoes",
+                "mensagem": """👤 Nossa equipe humana irá te auxiliar com todo cuidado.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         if eh(mensagem, "0", "Voltar"):
@@ -342,19 +348,22 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
             session.get("dados", {})
         )
 
-        session["fluxo"] = "atendente"
-        session["encerrar_bot"] = True
-
         return {
-            "tipo": "texto",
-            "mensagem": f"""📋 *Solicitação registrada*
+            "tipo": "botoes",
+            "mensagem": f"""👤 *Solicitação registrada com sucesso.*
 
-Interesse: {servico["nome"]}
-Nome: {session["dados"]["nome"]}
-Cidade: {session["dados"]["cidade"]}
-Data: {session["dados"]["data"]}
+🏢 Interesse: {servico["nome"]}
+👤 Nome: {session["dados"]["nome"]}
+🏙️ Cidade: {session["dados"]["cidade"]}
+📅 Data: {session["dados"]["data"]}
 
-👤 Você será encaminhado para nosso atendimento."""
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     return {
