@@ -129,14 +129,19 @@ def fluxo_funeraria(session, mensagem):
                 linhas.append(f"📍 Endereço do velório: {dados.get('endereco_velorio', '-')}")
             linhas.append(f"📅 Data do velório: {dados.get('data_velorio', '-')}")
             
-        linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo', '-'))}")
+        if dados.get("local_corpo"):
+            linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo'))}")
 
-        if dados.get("local_corpo") == "1":
-            linhas.append(f"📌 Local atual: {dados.get('hospital_nome', '-')}")
+        if dados.get("local_corpo") == "1" and dados.get("hospital_nome"):
+            linhas.append(f"📌 Hospital: {dados.get('hospital_nome')}")
 
-        elif dados.get("local_corpo") in ["2", "4"]:
-            linhas.append(f"📌 Local atual: {dados.get('endereco_local_corpo', '-')}")
-        linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte', '-'))}")
+        elif (
+            dados.get("local_corpo") in ["2", "4"]
+            and dados.get("endereco_local_corpo")
+        ):
+            linhas.append(f"📌 Endereço atual: {dados.get('endereco_local_corpo')}")
+        if dados.get("porte"):
+            linhas.append(f"⚖️ Porte aproximado: {label_porte(dados.get('porte'))}")
         if dados.get("destino"):
             linhas.append(f"⚱️ Destino: {dados.get('destino')}")
 
@@ -145,8 +150,11 @@ def fluxo_funeraria(session, mensagem):
         servico = session.get("servico")
 
         if servico:
-            linhas.append(f"⚰️ Serviço: {servico.get('nome', '-')}")
-            linhas.append(f"💰 Valor: R$ {servico.get('preco', '-')}")
+            if servico.get("nome"):
+                linhas.append(f"⚰️ Serviço: {servico.get('nome')}")
+
+            if servico.get("preco"):
+                linhas.append(f"💰 Valor: R$ {servico.get('preco')}")
         
 
         
@@ -399,11 +407,7 @@ def fluxo_funeraria(session, mensagem):
                 "criado_em": datetime.now().isoformat()
             })
 
-            aviso_atendente(
-                session.get("nome"),
-                session.get("numero"),
-                "Comprovante / Finalização funerária"
-            )
+           
 
             return [
             {
@@ -547,6 +551,9 @@ https://wa.me/5592995131313
             }  
 
         session["etapa"] = "confirmar_servico"
+        session["aguardando_confirmacao"] = False
+
+        
 
         return {
             "tipo": "botoes",
@@ -875,6 +882,7 @@ Para outras necessidades, consulte nossa equipe."""
         })
 
         session["etapa"] = "confirmar_servico"
+        session["aguardando_confirmacao"] = False
 
         return respostas
 
@@ -884,6 +892,10 @@ Para outras necessidades, consulte nossa equipe."""
     # =========================================================
 
     if session["etapa"] == "confirmar_servico":
+
+        if session.get("aguardando_confirmacao") != True:
+            session["aguardando_confirmacao"] = True
+            return None
 
         if mensagem == "0":
             session["etapa"] = "servicos"
