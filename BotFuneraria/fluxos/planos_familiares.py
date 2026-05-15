@@ -414,18 +414,23 @@ Em breve mais detalhes sobre esta novidade.""",
 
         if mensagem == "9":
 
-
             aviso_atendente(
                 session.get("nome"),
                 session.get("numero"),
                 "Planos"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
             return {
-                "tipo": "texto",
-                "mensagem": "👤 Você será encaminhado para nosso atendimento."
+                "tipo": "botoes",
+                "mensagem": """👤 Nossa equipe irá te auxiliar com os planos.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -441,19 +446,23 @@ Em breve mais detalhes sobre esta novidade.""",
                 "Planos - Sou cliente / APP"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
 
             return {
-                "tipo": "texto",
+                "tipo": "botoes",
                 "mensagem": """🕊️ *Área do Cliente*
 
-Nosso aplicativo é novo e tem várias funções para facilitar seu dia a dia.
+Nosso aplicativo reúne várias funções para facilitar seu dia a dia.
 
 📲 Link do APP Android:
 https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacanaa
 
-👤 Se tiver qualquer dúvida, você será encaminhado para nosso atendimento."""
+ℹ️ Se tiver qualquer dúvida, nossa equipe irá te auxiliar.
+            
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313""",
+                "botoes": [
+                        {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -462,18 +471,24 @@ https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacan
     if session["etapa"] == "indique":
 
         if mensagem == "9":
+
             aviso_atendente(
                 session.get("nome"),
                 session.get("numero"),
                 "Planos - Indique e ganhe"
             )
 
-            session["fluxo"] = "atendente"
-            session["encerrar_bot"] = True
-
             return {
-                "tipo": "texto",
-                "mensagem": "👤 Você será encaminhado para nosso atendimento."
+                "tipo": "botoes",
+                "mensagem": """👤 Nossa equipe irá te auxiliar com o programa Indique e Ganhe.
+
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+                "botoes": [
+                    {"id": "00", "label": "Menu principal"},
+                ]
             }
 
         return {"tipo": "texto", "mensagem": "Escolha uma opção válida."}
@@ -537,16 +552,19 @@ Caso queira solicitar para dependente, existe adicional.""",
             "Planos - Solicitação de carteirinha digital"
         )
 
-        session["fluxo"] = "atendente"
-        session["encerrar_bot"] = True
-
         return {
-            "tipo": "texto",
+            "tipo": "botoes",
             "mensagem": f"""🧾 Solicitação registrada com sucesso.
 
-Titular: {session["dados"]["nome_titular_carteirinha"]}
+👤 Titular: {session["dados"]["nome_titular_carteirinha"]}
 
-👤 Você será encaminhado para nosso atendimento."""
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
     # =================================================
     # LISTA PLANOS
@@ -623,19 +641,22 @@ Titular: {session["dados"]["nome_titular_carteirinha"]}
             session.get("dados", {})
         )
 
-        session["fluxo"] = "atendente"
-        session["encerrar_bot"] = True
-
         return {
-            "tipo": "texto",
+            "tipo": "botoes",
             "mensagem": f"""📋 Interesse registrado com sucesso.
 
-Interesse: {session["dados"]["tipo_interesse"]}
-Nome: {session["dados"]["nome_completo"]}
-Pessoas: {session["dados"]["quantidade"]}
-Idades: {session["dados"]["idades"]}
+🛡️ Interesse: {session["dados"]["tipo_interesse"]}
+👤 Nome: {session["dados"]["nome_completo"]}
+👥 Pessoas: {session["dados"]["quantidade"]}
+🎂 Idades: {session["dados"]["idades"]}
 
-👤 Você será encaminhado para finalizar o atendimento."""
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     if session["etapa"] == "coletar_cidade":
@@ -647,19 +668,22 @@ Idades: {session["dados"]["idades"]}
             session.get("dados", {})
         )
 
-        session["fluxo"] = "atendente"
-        session["encerrar_bot"] = True
-
         return {
-            "tipo": "texto",
+            "tipo": "botoes",
             "mensagem": f"""📋 Interesse registrado com sucesso.
 
-Interesse: {session["dados"]["tipo_interesse"]}
-Nome: {session["dados"]["nome_completo"]}
-Pessoas: {session["dados"]["quantidade"]}
-Cidade: {session["dados"]["cidade"]}
+🛡️ Interesse: {session["dados"]["tipo_interesse"]}
+👤 Nome: {session["dados"]["nome_completo"]}
+👥 Pessoas: {session["dados"]["quantidade"]}
+🏙️ Cidade: {session["dados"]["cidade"]}
 
-👤 Você será encaminhado para finalizar o atendimento."""
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     # =================================================
@@ -692,20 +716,23 @@ Cidade: {session["dados"]["cidade"]}
             session.get("numero"),
             session.get("dados", {})
         )
-        
-        session["fluxo"] = "atendente"
-        session["encerrar_bot"] = True
 
         return {
-            "tipo": "texto",
+            "tipo": "botoes",
             "mensagem": f"""📋 Solicitação de sinistro registrada.
 
-Responsável: {session["dados"]["responsavel"]}
-CPF: {session["dados"]["cpf"]}
-Falecido(a): {session["dados"]["falecido"]}
-Cidade: {session["dados"]["cidade_sinistro"]}
+👤 Responsável: {session["dados"]["responsavel"]}
+🪪 CPF: {session["dados"]["cpf"]}
+🕊️ Falecido(a): {session["dados"]["falecido"]}
+🏙️ Cidade: {session["dados"]["cidade_sinistro"]}
 
-👤 Você será encaminhado para nosso atendimento."""
+📲 Fale agora com nosso plantonista:
+https://wa.me/5592995131313
+
+ℹ️ As informações já foram enviadas para nossa equipe.""",
+            "botoes": [
+                {"id": "00", "label": "Menu principal"},
+            ]
         }
 
     return renderizar()
