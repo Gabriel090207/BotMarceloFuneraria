@@ -117,6 +117,23 @@ Como podemos te ajudar hoje?""",
 
     if session["etapa_global"] == "menu" and session["fluxo"] is None:
 
+
+        if mensagem == "00":
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
+                "botoes": [
+                    {"id": "1", "label": "⚰️ Serviços funerários"},
+                    {"id": "2", "label": "🛡️ Planos"},
+                    {"id": "3", "label": "🗃️ Convênios"},
+                    {"id": "4", "label": "💼 Financeiro / Administrativo"},
+                    {"id": "5", "label": "🌷 Floricultura"},
+                    {"id": "6", "label": "📍 Localização"},
+                    {"id": "7", "label": "👤 Falar com atendente"},
+                ]
+            }
+
         if mensagem == "1":
             session["fluxo"] = "funeraria"
             session["etapa"] = "inicio"
