@@ -305,6 +305,16 @@
 
 }
 
+.btn-cancelar{
+
+  background-color:#DC2626;
+   border-radius:6px;
+    padding:10px 18px;
+
+  color:#ffffff;
+
+}
+
 @keyframes modalShow{
 
   from{
