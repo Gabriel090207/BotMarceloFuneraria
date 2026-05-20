@@ -58,6 +58,7 @@ def fluxo_convenios(session, mensagem):
         return lista + [
             {"id": "0", "label": "Voltar"},
             {"id": "00", "label": "Menu principal"},
+            {"id": "99", "label": "🔄 Reiniciar atendimento"},
         ]
 
     def encaminhar(origem, texto):
@@ -77,7 +78,6 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
-                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -100,7 +100,6 @@ https://wa.me/5592995131313
                     {"id": "2", "label": "Migração empresarial"},
                     {"id": "3", "label": "Orçamento para convênio"},
                     {"id": "00", "label": "Menu principal"},
-                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             )
 
@@ -111,7 +110,6 @@ https://wa.me/5592995131313
                     {"id": "1", "label": "Titular"},
                     {"id": "2", "label": "Dependente cadastrado"},
                     {"id": "3", "label": "Associado do titular"},
-                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ])
             )
 
