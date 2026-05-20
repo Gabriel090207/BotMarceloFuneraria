@@ -43,6 +43,20 @@ def responder(numero, mensagem):
     session = get_session(numero)
     session["numero"] = numero
 
+
+    # ==================================================
+    # REINICIAR ATENDIMENTO
+    # ==================================================
+
+    if mensagem == "99":
+
+        session.clear()
+
+        session["numero"] = numero
+        session["etapa_global"] = "inicio"
+
+        return responder(numero, "")
+
     if session.get("encerrar_bot") is True:
         return None
 
@@ -130,6 +144,7 @@ Como podemos te ajudar hoje?""",
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
                 {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -154,6 +169,7 @@ Como podemos te ajudar hoje?""",
                     {"id": "6", "label": "🏢 Conhecer estrutura"},
                     {"id": "7", "label": "📍 Localização"},
                     {"id": "8", "label": "👤 Falar com atendente"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -231,6 +247,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                     "mensagem": "Clique aqui para voltar ao menu principal:",
                     "botoes": [
                         {"id": "00", "label": "Menu principal"},
+                        {"id": "99", "label": "🔄 Reiniciar atendimento"},
                     ]
                 }
             ]
@@ -269,6 +286,7 @@ Você pode falar diretamente com nosso plantonista pelo WhatsApp:
 Solicitações administrativas, financeiras e demais setores serão respondidas em horário comercial.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -325,6 +343,7 @@ Solicitações administrativas, financeiras e demais setores serão respondidas 
                     {"id": "6", "label": "🏢 Conhecer estrutura"},
                     {"id": "7", "label": "📍 Localização"},
                     {"id": "8", "label": "👤 Falar com atendente"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -347,6 +366,7 @@ Solicitações administrativas, financeiras e demais setores serão respondidas 
                     {"id": "6", "label": "🏢 Conhecer estrutura"},
                     {"id": "7", "label": "📍 Localização"},
                     {"id": "8", "label": "👤 Falar com atendente"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
