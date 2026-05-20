@@ -1,6 +1,10 @@
 from core.session import get_session
 from datetime import datetime
 import pytz
+import os
+import threading
+import time
+import schedule
 
 from fluxos.floricultura import fluxo_floricultura
 from fluxos.funeraria import fluxo_funeraria
@@ -10,6 +14,23 @@ from fluxos.financeiro import fluxo_financeiro
 from fluxos.funeraria_orcamento import fluxo_funeraria_orcamento
 from fluxos.convenios import fluxo_convenios
 from fluxos.planos_sinistro import fluxo_planos_sinistro
+
+
+
+def reiniciar_bot():
+    print("🔄 Reiniciando bot automaticamente...")
+    os._exit(0)
+
+
+def agendar_reinicio():
+    schedule.every().day.at("00:00").do(reiniciar_bot)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(30)
+
+
+threading.Thread(target=agendar_reinicio, daemon=True).start()
 
 SAUDACOES = [
     "oi", "ola", "olá", "bom dia", "boa tarde",
