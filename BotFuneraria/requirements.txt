@@ -4,3 +4,4 @@ python-dotenv
 mercadopago
 firebase-admin
 pytz
+schedule

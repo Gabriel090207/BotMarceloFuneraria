@@ -127,8 +127,9 @@ Como podemos te ajudar hoje?""",
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "💼 Financeiro / Administrativo"},
                 {"id": "5", "label": "🌷 Floricultura"},
-                {"id": "6", "label": "📍 Localização"},
-                {"id": "7", "label": "👤 Falar com atendente"},
+                {"id": "6", "label": "🏢 Conhecer estrutura"},
+                {"id": "7", "label": "📍 Localização"},
+                {"id": "8", "label": "👤 Falar com atendente"},
             ]
         }
 
@@ -150,8 +151,9 @@ Como podemos te ajudar hoje?""",
                     {"id": "3", "label": "🗃️ Convênios"},
                     {"id": "4", "label": "💼 Financeiro / Administrativo"},
                     {"id": "5", "label": "🌷 Floricultura"},
-                    {"id": "6", "label": "📍 Localização"},
-                    {"id": "7", "label": "👤 Falar com atendente"},
+                    {"id": "6", "label": "🏢 Conhecer estrutura"},
+                    {"id": "7", "label": "📍 Localização"},
+                    {"id": "8", "label": "👤 Falar com atendente"},
                 ]
             }
 
@@ -181,6 +183,58 @@ Como podemos te ajudar hoje?""",
             return fluxo_floricultura(session, mensagem)
 
         elif mensagem == "6":
+
+            return [
+
+                {
+                    "tipo": "texto",
+                    "mensagem": """🏢 *Conheça nossa estrutura* 🕊️
+
+        Ambientes preparados para acolher sua família com conforto, respeito e tranquilidade."""
+                },
+
+                {
+                    "tipo": "texto",
+                    "mensagem": "🌷 *Floricultura*"
+                },
+
+                {
+                    "tipo": "imagem",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2012.14.58.jpeg?alt=media&token=3bc66648-e393-434d-83e4-99a1f46b6119"
+                },
+
+                {
+                    "tipo": "imagem",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2012.16.14.jpeg?alt=media&token=cd1783e5-ebf3-43f3-b094-a0703f24ba39"
+                },
+
+                {
+                    "tipo": "imagem",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2012.15.47.jpeg?alt=media&token=c096122d-31d1-4a5d-8ca9-ca25a7085579"
+                },
+
+               
+                {
+                    "tipo": "texto",
+                    "mensagem": "🏢 *Nossa estrutura*"
+                },
+
+
+                {
+                    "tipo": "video",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/midias%2FWhatsApp%20Video%202026-04-15%20at%2017.16.41.mp4?alt=media&token=a3297384-1607-45a2-a3a9-3772caf942e0"
+                },
+
+                {
+                    "tipo": "botoes",
+                    "mensagem": "Escolha uma opção:",
+                    "botoes": [
+                        {"id": "00", "label": "Menu principal"},
+                    ]
+                }
+            ]
+
+        elif mensagem == "7":
             session["fluxo"] = "localizacao"
             session["etapa"] = "mostrar"
 
@@ -199,7 +253,7 @@ https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+A
                 ]
             }
 
-        elif mensagem == "7":
+        elif mensagem == "8":
 
             return {
                 "tipo": "botoes",
@@ -267,8 +321,9 @@ Solicitações administrativas, financeiras e demais setores serão respondidas 
                     {"id": "3", "label": "🗃️ Convênios"},
                     {"id": "4", "label": "💼 Financeiro / Administrativo"},
                     {"id": "5", "label": "🌷 Floricultura"},
-                    {"id": "6", "label": "📍 Localização"},
-                    {"id": "7", "label": "👤 Falar com atendente"},
+                    {"id": "6", "label": "🏢 Conhecer estrutura"},
+                    {"id": "7", "label": "📍 Localização"},
+                    {"id": "8", "label": "👤 Falar com atendente"},
                 ]
             }
 
