@@ -184,13 +184,16 @@ Como podemos te ajudar hoje?""",
 
         elif mensagem == "6":
 
+            session["fluxo"] = "estrutura"
+            session["etapa"] = "visualizando"
+
             return [
 
                 {
                     "tipo": "texto",
                     "mensagem": """🏢 *Conheça nossa estrutura* 🕊️
 
-        Ambientes preparados para acolher sua família com conforto, respeito e tranquilidade."""
+Ambientes preparados para acolher sua família com conforto, respeito e tranquilidade."""
                 },
 
                 {
@@ -218,8 +221,6 @@ Como podemos te ajudar hoje?""",
                     "tipo": "texto",
                     "mensagem": "🏢 *Nossa estrutura*"
                 },
-
-
                 {
                     "tipo": "video",
                     "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/midias%2FWhatsApp%20Video%202026-04-15%20at%2017.16.41.mp4?alt=media&token=a3297384-1607-45a2-a3a9-3772caf942e0"
@@ -227,7 +228,7 @@ Como podemos te ajudar hoje?""",
 
                 {
                     "tipo": "botoes",
-                    "mensagem": "Escolha uma opção:",
+                    "mensagem": "Clique aqui para voltar ao menu principal:",
                     "botoes": [
                         {"id": "00", "label": "Menu principal"},
                     ]
@@ -326,6 +327,33 @@ Solicitações administrativas, financeiras e demais setores serão respondidas 
                     {"id": "8", "label": "👤 Falar com atendente"},
                 ]
             }
+
+    if session["fluxo"] == "estrutura":
+
+        if mensagem == "00":
+            session["fluxo"] = None
+            session["etapa_global"] = "menu"
+            session["etapa"] = "inicio"
+
+            return {
+                "tipo": "botoes",
+                "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
+                "botoes": [
+                    {"id": "1", "label": "⚰️ Serviços funerários"},
+                    {"id": "2", "label": "🛡️ Planos"},
+                    {"id": "3", "label": "🗃️ Convênios"},
+                    {"id": "4", "label": "💼 Financeiro / Administrativo"},
+                    {"id": "5", "label": "🌷 Floricultura"},
+                    {"id": "6", "label": "🏢 Conhecer estrutura"},
+                    {"id": "7", "label": "📍 Localização"},
+                    {"id": "8", "label": "👤 Falar com atendente"},
+                ]
+            }
+
+        return {
+            "tipo": "texto",
+            "mensagem": "Clique no botão abaixo para voltar ao menu principal."
+        }
 
     return {
         "tipo": "texto",
