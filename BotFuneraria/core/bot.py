@@ -232,6 +232,26 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                     "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2012.15.47.jpeg?alt=media&token=c096122d-31d1-4a5d-8ca9-ca25a7085579"
                 },
 
+                {
+                    "tipo": "texto",
+                    "mensagem": "🍽️ Restaurante"
+                },
+
+                {
+                    "tipo": "imagem",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2022.32.37%20(1).jpeg?alt=media&token=00db4ce7-c238-4ccf-92a4-3491bdaac9bb"
+                },
+
+                {
+                    "tipo": "imagem",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2022.32.37%20(2).jpeg?alt=media&token=57b549a8-cdfa-464c-9751-b19602c16f56"
+                },
+
+                {
+                    "tipo": "imagem",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/WhatsApp%20Image%202026-05-20%20at%2022.32.37.jpeg?alt=media&token=9afe9c3d-1f96-4361-8d6a-8c068234086e"
+                },
+
                
                 {
                     "tipo": "texto",
