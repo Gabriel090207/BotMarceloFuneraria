@@ -50,6 +50,7 @@ def fluxo_financeiro(session, mensagem):
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
                 {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -76,6 +77,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -101,6 +103,7 @@ https://wa.me/5592995131313
                     ("4", "Outro assunto"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -120,6 +123,7 @@ https://wa.me/5592995131313
                     ("9", "Falar com atendente"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -138,6 +142,7 @@ https://wa.me/5592995131313
                     ("9", "Falar com atendente"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -152,6 +157,7 @@ https://wa.me/5592995131313
                 "botoes": [
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -162,6 +168,7 @@ https://wa.me/5592995131313
                 "botoes": [
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -172,6 +179,7 @@ https://wa.me/5592995131313
                 "botoes": [
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -233,6 +241,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -276,6 +285,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -318,6 +328,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 

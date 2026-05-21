@@ -45,6 +45,7 @@ def menu_principal():
             {"id": "3", "label": "Financeiro / Administrativo"},
             {"id": "4", "label": "Floricultura"},
             {"id": "5", "label": "Falar com atendente"},
+            {"id": "99", "label": "🔄 Reiniciar atendimento"},
         ]
     }
 
@@ -76,6 +77,7 @@ def fluxo_funeraria_orcamento(session, mensagem):
                 {"id": "3", "label": "Falar com atendente"},
                 {"id": "0", "label": "Voltar"},
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -105,6 +107,7 @@ Ambientes preparados para acolher sua família com conforto, respeito e tranquil
                     "botoes": [
                         {"id": "1", "label": "Ver serviços"},
                         {"id": "00", "label": "Menu principal"},
+                        {"id": "99", "label": "🔄 Reiniciar atendimento"},
                     ]
                 }
             ]
@@ -127,6 +130,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -191,6 +195,7 @@ https://wa.me/5592995131313
 
         botoes.append({"id": "0", "label": "Voltar"})
         botoes.append({"id": "00", "label": "Menu principal"})
+        botoes.append({"id": "99", "label": "🔄 Reiniciar atendimento"})
 
         session["etapa"] = "menu_lista"
 
@@ -266,6 +271,7 @@ https://wa.me/5592995131313
                         {"id": "2", "label": "Ver outra opção"},
                         {"id": "0", "label": "Voltar"},
                         {"id": "00", "label": "Menu principal"},
+                        {"id": "99", "label": "🔄 Reiniciar atendimento"},
                     ]
                 })
 
@@ -363,6 +369,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 

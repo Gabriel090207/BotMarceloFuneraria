@@ -83,6 +83,7 @@ def fluxo_planos_familiares(session, mensagem):
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
                 {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -109,6 +110,7 @@ def fluxo_planos_familiares(session, mensagem):
                     ("6", "🧾 Desconto com parceiros"),
                     ("9", "Falar com atendente"),
                     ("00", "Voltar ao menu"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -126,6 +128,8 @@ def fluxo_planos_familiares(session, mensagem):
                     ("4", "Individual / Personalizado"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
+                    
                 ]
             )
 
@@ -152,6 +156,7 @@ def fluxo_planos_familiares(session, mensagem):
                     ("2", "Ver outros planos"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -169,6 +174,7 @@ def fluxo_planos_familiares(session, mensagem):
                     ("2", "Ver outros planos"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -192,6 +198,7 @@ def fluxo_planos_familiares(session, mensagem):
                     ("2", "Ver outros planos"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -209,6 +216,7 @@ def fluxo_planos_familiares(session, mensagem):
                     ("2", "Ver outros planos"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -234,6 +242,7 @@ Deseja seguir?""",
                     ("1", "Tenho interesse"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -253,6 +262,7 @@ Deseja receber o link para baixar no Android?""",
                     ("1", "Receber link do APP"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -269,6 +279,7 @@ Em breve mais detalhes sobre esta novidade.""",
                     ("9", "Falar com atendente"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -285,6 +296,7 @@ Em breve mais detalhes sobre esta novidade.""",
                     ("3", "📲 Club Certo"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
+                    ("99", "🔄 Reiniciar atendimento"),
                 ]
             )
 
@@ -366,6 +378,11 @@ Em breve mais detalhes sobre esta novidade.""",
     if mensagem == "00":
         return menu_principal()
 
+    if mensagem == "99":
+        session.clear()
+        session["etapa_global"] = "inicio"
+        return None
+
     # =================================================
     # INÍCIO
     # =================================================
@@ -431,6 +448,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -463,6 +481,7 @@ https://play.google.com/store/apps/details?id=com.funerariacanaa.appfunerariacan
 https://wa.me/5592995131313""",
                 "botoes": [
                         {"id": "00", "label": "Menu principal"},
+                        {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -489,6 +508,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -538,6 +558,7 @@ Caso queira solicitar para dependente, existe adicional.""",
                 "botoes": [
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -565,6 +586,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
     # =================================================
@@ -657,6 +679,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -684,6 +707,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -733,6 +757,7 @@ https://wa.me/5592995131313
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 

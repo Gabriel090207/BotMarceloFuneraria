@@ -68,6 +68,7 @@ def fluxo_floricultura(session, mensagem):
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
                 {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
 
@@ -97,6 +98,7 @@ def fluxo_floricultura(session, mensagem):
                 {"id": "3", "label": "🌸 Coroa com rosas"},
                 {"id": "4", "label": "🌼 Buquê padrão"},
                 {"id": "5", "label": "💐 Buquê com rosas"},
+               
             ]
 
             if session["carrinho"]:
@@ -108,6 +110,8 @@ def fluxo_floricultura(session, mensagem):
                 {"id": "7", "label": "💡 Gráfica"},
                 {"id": "9", "label": "Falar com atendente"},
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
+                
             ]
 
             return {
@@ -129,6 +133,7 @@ https://floriculturavalledasflores.com.br""",
                 "botoes": [
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -156,6 +161,7 @@ Deseja adicionar ao pedido?""",
                         {"id": "1", "label": "Confirmar"},
                         {"id": "0", "label": "Voltar"},
                         {"id": "00", "label": "Menu principal"},
+                        {"id": "99", "label": "🔄 Reiniciar atendimento"},
                     ]
                 }
             ]
@@ -180,6 +186,7 @@ Deseja adicionar ao pedido?""",
                         {"id": "1", "label": "Solicitar atendimento"},
                         {"id": "0", "label": "Voltar"},
                         {"id": "00", "label": "Menu principal"},
+                        {"id": "99", "label": "🔄 Reiniciar atendimento"},
                     ]
                 }
 
@@ -196,6 +203,7 @@ Deseja adicionar ao pedido?""",
                     {"id": "2", "label": "Sim"},
                     {"id": "0", "label": "Voltar"},
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -266,6 +274,7 @@ https://wa.me/5592995131313
 ℹ️ Envie qualquer informação complementar no atendimento humano.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 
@@ -342,6 +351,7 @@ https://wa.me/5592995131313
 ℹ️ Envie qualquer informação complementar no atendimento humano.""",
                 "botoes": [
                     {"id": "00", "label": "Menu principal"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 ]
             }
 

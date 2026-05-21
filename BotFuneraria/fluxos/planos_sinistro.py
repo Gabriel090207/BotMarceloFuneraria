@@ -68,6 +68,7 @@ def fluxo_planos_sinistro(session, mensagem):
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
                 {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"}
             ]
         }
 
@@ -95,6 +96,7 @@ https://wa.me/5592995131313
 ℹ️ Nossa equipe já recebeu sua solicitação e irá auxiliar no atendimento.""",
             "botoes": [
                 {"id": "00", "label": "Menu principal"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"}
             ]
         }
 
@@ -143,6 +145,7 @@ https://wa.me/5592995131313
                     {"id": "1", "label": "Hoje"},
                     {"id": "2", "label": "Amanhã"},
                     {"id": "3", "label": "Outro"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"}
                 ])
             }
 
@@ -161,6 +164,7 @@ https://wa.me/5592995131313
                     {"id": "2", "label": "Residência"},
                     {"id": "3", "label": "IML"},
                     {"id": "4", "label": "Outro"},
+                    {"id": "99", "label": "🔄 Reiniciar atendimento"}
                 ])
             }
 
@@ -232,6 +236,11 @@ https://wa.me/5592995131313
 
     if mensagem == "00":
         return menu()
+
+    if mensagem == "99":
+        session.clear()
+        session["etapa_global"] = "inicio"
+        return None
 
     if session["etapa"] == "inicio":
         return renderizar()
