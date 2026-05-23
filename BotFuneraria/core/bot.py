@@ -285,7 +285,7 @@ Centro - Manaus/AM
 CEP 69.020-060
 
 🗺️ Abra no mapa:
-https://www.google.com/maps/search/?api=1&query=Rua+Major+Gabriel,+1833+Manaus+AM""",
+https://maps.app.goo.gl/aMejMLkjo19JTk1Z7?g_st=aw""",
                 "botoes": [
                     {"id": "0", "label": "Menu Principal"},
                 ]
