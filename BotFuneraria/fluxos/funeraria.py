@@ -678,24 +678,28 @@ https://wa.me/5592995131313
         if mensagem == "1":
             session["dados"]["liberacao_hospital"] = "Sim"
 
+            session["etapa"] = "porte"
+
+            return [
+                {
+                    "tipo": "texto",
+                    "mensagem": "🙏 Pedimos que um familiar aguarde no local para recepcionar nossa equipe."
+                },
+                renderizar_etapa()
+            ]
+
         elif mensagem == "2":
             session["dados"]["liberacao_hospital"] = "Não"
+
+            session["etapa"] = "porte"
+
+            return renderizar_etapa()
 
         else:
             return {
                 "tipo": "texto",
                 "mensagem": "Escolha uma opção válida."
             }
-
-        session["etapa"] = "porte"
-
-        return [
-            {
-                "tipo": "texto",
-                "mensagem": "🙏 Pedimos que um familiar aguarde no local para recepcionar nossa equipe."
-            },
-            renderizar_etapa()
-        ]
 
     if session["etapa"] == "endereco_local_corpo":
         session["dados"]["endereco_local_corpo"] = mensagem
