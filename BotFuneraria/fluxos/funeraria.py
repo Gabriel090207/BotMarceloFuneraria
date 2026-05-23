@@ -262,6 +262,16 @@ def fluxo_funeraria(session, mensagem):
                 ])
             }
 
+        if etapa == "hospital_liberacao":
+            return {
+                "tipo": "botoes",
+                "mensagem": "O ente querido já foi liberado no necrotério?",
+                "botoes": botao_voltar_menu([
+                    {"id": "1", "label": "Sim"},
+                    {"id": "2", "label": "Não"},
+                ])
+            }
+
         if etapa == "endereco_local_corpo":
             return {
                 "tipo": "texto",
@@ -656,6 +666,8 @@ https://wa.me/5592995131313
 
         ir_para("endereco_local_corpo")
         return renderizar_etapa()
+
+    
 
 
     if session["etapa"] == "hospital_nome":
