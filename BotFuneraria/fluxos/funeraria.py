@@ -337,7 +337,7 @@ def fluxo_funeraria(session, mensagem):
                     "tipo": "botoes",
                     "mensagem": "⚰️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
                     "botoes": botao_voltar_menu([
-                        {"id": "1", "label": "Sem velório - R$ 2.000,00"}
+                        {"id": "1", "label": "R$ 2.000,00 - Sem velório"}
                     ])
                 }
 
