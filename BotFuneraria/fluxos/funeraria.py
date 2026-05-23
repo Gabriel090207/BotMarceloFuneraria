@@ -335,7 +335,7 @@ def fluxo_funeraria(session, mensagem):
 
                 return {
                     "tipo": "botoes",
-                    "mensagem": "⚰️ Escolha o serviço desejado:",
+                    "mensagem": "⚰️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
                     "botoes": botao_voltar_menu([
                         {"id": "1", "label": "Sem velório - R$ 2.000,00"}
                     ])
@@ -366,13 +366,13 @@ def fluxo_funeraria(session, mensagem):
 
                 botoes.append({
                     "id": str(i + 1),
-                    "label": f"{p.get('nome')} - a partir de {preco}"
+                    "label": f"{preco} • {p.get('nome')[:18]}"
   
                 })
 
             return {
                 "tipo": "botoes",
-                "mensagem": "⚰️ Escolha o serviço desejado:",
+                "mensagem": "⚰️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
                 "botoes": botao_voltar_menu(botoes)
             }
 
