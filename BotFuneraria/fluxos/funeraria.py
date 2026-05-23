@@ -678,7 +678,7 @@ https://wa.me/5592995131313
         if mensagem == "1":
             session["dados"]["liberacao_hospital"] = "Sim"
 
-            session["etapa"] = "porte"
+            ir_para("porte")
 
             return [
                 {
@@ -691,7 +691,7 @@ https://wa.me/5592995131313
         elif mensagem == "2":
             session["dados"]["liberacao_hospital"] = "Não"
 
-            session["etapa"] = "porte"
+            ir_para("porte")
 
             return renderizar_etapa()
 
