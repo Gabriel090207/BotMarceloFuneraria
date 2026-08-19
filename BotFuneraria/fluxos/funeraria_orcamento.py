@@ -241,10 +241,13 @@ https://wa.me/5592995131313
                             "url": img
                         })
 
+                preco_formatado = f"{float(servico['preco']):,.2f}"
+                preco_formatado = preco_formatado.replace(",", "TEMP").replace(".", ",").replace("TEMP", ".")
+
                 texto = f"""🏢 *{servico["nome"]}*
 
-💰 R$ {float(servico["preco"]):,.2f}
-""".replace(",", "X").replace(".", ",").replace("X", ".")
+💰 R$ {preco_formatado}
+"""
 
                 if servico.get("capacidade"):
                     texto += f"\n✅ Capacidade interna: {servico['capacidade']}"
