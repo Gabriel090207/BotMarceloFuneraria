@@ -881,10 +881,18 @@ https://wa.me/5592995131313
             })
 
         # mensagem final
+        # mensagem final
+        preco_servico = float(servico.get("preco", 0))
+
+        if preco_servico in [2500.0, 3000.0]:
+            texto_parcelamento = "💳 Em até 10x sem juros somente nas bandeiras Visa e MasterCard"
+        else:
+            texto_parcelamento = "💳 Em até 10x no cartão de crédito sem juros"
+
         texto = f"""🏢 *{servico.get('nome')}*
 
-💰 A partir de {formatar_reais(float(servico.get('preco', 0)))}
-💳 Em até 10x no cartão de crédito sem juros
+💰 A partir de {formatar_reais(preco_servico)}
+{texto_parcelamento}
 
 ℹ️ Valor inicial considerando urna padrão para até 85kg.
 Para outras necessidades, consulte nossa equipe."""
