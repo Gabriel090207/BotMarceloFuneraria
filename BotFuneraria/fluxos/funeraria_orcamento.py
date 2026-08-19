@@ -241,12 +241,22 @@ https://wa.me/5592995131313
                             "url": img
                         })
 
-                preco_formatado = f"{float(servico['preco']):,.2f}"
+                preco_servico = float(servico["preco"])
+
+                if preco_servico in [2500.0, 3000.0]:
+                    texto_parcelamento = (
+                        "💳 Em até 10x sem juros somente nas bandeiras Visa e MasterCard"
+                    )
+                else:
+                    texto_parcelamento = "💳 Em até 10x no cartão de crédito sem juros"
+
+                preco_formatado = f"{preco_servico:,.2f}"
                 preco_formatado = preco_formatado.replace(",", "TEMP").replace(".", ",").replace("TEMP", ".")
 
                 texto = f"""🏢 *{servico["nome"]}*
 
 💰 R$ {preco_formatado}
+{texto_parcelamento}
 """
 
                 if servico.get("capacidade"):
