@@ -531,7 +531,7 @@ https://wa.me/5592995131313
                 },
                 {
                     "tipo": "documento",
-                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/Canaa%CC%83%20Parceiros_20260430_075641_0000.pdf?alt=media&token=aa62e871-c5ca-4828-b237-19d684841b56",
+                    "url": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/Livreto_20260820_164822_0000.pdf?alt=media&token=1e6f72f6-9a74-42db-a3a0-6603ba93e998",
                     "nome": "parceiros-canaa.pdf"
                 },
                 {
