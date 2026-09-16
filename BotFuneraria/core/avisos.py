@@ -99,7 +99,7 @@ def aviso_funeraria(nome, telefone, dados, servico=None):
 
     if servico:
         if servico.get("nome"):
-            linhas.append(f"⚰️ Serviço: {servico.get('nome')}")
+            linhas.append(f"🕊️ Serviço: {servico.get('nome')}")
 
         if servico.get("preco"):
             linhas.append(f"💰 Valor: {servico.get('preco')}")

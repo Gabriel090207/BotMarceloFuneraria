@@ -34,14 +34,14 @@ def fluxo_convenios(session, mensagem):
             "tipo": "botoes",
             "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
-                {"id": "1", "label": "⚰️ Serviços funerários"},
+                {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "1", "label": "🕊️ Serviços Imediatos"},
                 {"id": "2", "label": "🛡️ Planos"},
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "💼 Financeiro / Administrativo"},
                 {"id": "5", "label": "🌷 Floricultura"},
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
-                {"id": "8", "label": "👤 Falar com atendente"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 
             ]

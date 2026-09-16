@@ -59,14 +59,14 @@ def fluxo_funeraria(session, mensagem):
             "tipo": "botoes",
             "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
-                {"id": "1", "label": "⚰️ Serviços funerários"},
+                {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "1", "label": "🕊️ Serviços Imediatos"},
                 {"id": "2", "label": "🛡️ Planos"},
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "💼 Financeiro / Administrativo"},
                 {"id": "5", "label": "🌷 Floricultura"},
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
-                {"id": "8", "label": "👤 Falar com atendente"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
@@ -154,7 +154,7 @@ def fluxo_funeraria(session, mensagem):
 
         if servico:
             if servico.get("nome"):
-                linhas.append(f"⚰️ Serviço: {servico.get('nome')}")
+                linhas.append(f"🕊️ Serviço: {servico.get('nome')}")
 
             if servico.get("preco"):
                 linhas.append(f"💰 Valor: R$ {servico.get('preco')}")
@@ -188,7 +188,7 @@ def fluxo_funeraria(session, mensagem):
         if etapa == "menu_principal":
             return {
                 "tipo": "botoes",
-                "mensagem": f"""⚰️ *Serviços Funerários*
+                "mensagem": f"""🕊️ *Serviços Imediatos*
 
 {nome}, o que você procura no momento?""",
                 "botoes": [
@@ -335,7 +335,7 @@ def fluxo_funeraria(session, mensagem):
 
                 return {
                     "tipo": "botoes",
-                    "mensagem": "⚰️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
+                    "mensagem": "🕊️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
                     "botoes": botao_voltar_menu([
                         {"id": "1", "label": "R$ 2.000,00 - Sem velório"}
                     ])
@@ -372,7 +372,7 @@ def fluxo_funeraria(session, mensagem):
 
             return {
                 "tipo": "botoes",
-                "mensagem": "⚰️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
+                "mensagem": "🕊️ Escolha o serviço desejado, Parcelamos em até 10x sem juros:",
                 "botoes": botao_voltar_menu(botoes)
             }
 

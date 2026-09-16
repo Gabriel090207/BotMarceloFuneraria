@@ -37,17 +37,21 @@ def eh(msg, *opcoes):
 
 def menu_principal():
     return {
-        "tipo": "botoes",
-        "mensagem": "🕊️ *Menu Principal*\n\nEscolha uma opção:",
-        "botoes": [
-            {"id": "1", "label": "Serviços funerários"},
-            {"id": "2", "label": "Planos"},
-            {"id": "3", "label": "Financeiro / Administrativo"},
-            {"id": "4", "label": "Floricultura"},
-            {"id": "5", "label": "Falar com atendente"},
-            {"id": "99", "label": "🔄 Reiniciar atendimento"},
-        ]
-    }
+            "tipo": "botoes",
+            "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
+            "botoes": [
+                {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "1", "label": "🕊️ Serviços Imediatos"},
+                {"id": "2", "label": "🛡️ Planos"},
+                {"id": "3", "label": "🗃️ Convênios"},
+                {"id": "4", "label": "💼 Financeiro / Administrativo"},
+                {"id": "5", "label": "🌷 Floricultura"},
+                {"id": "6", "label": "🏢 Conhecer estrutura"},
+                {"id": "7", "label": "📍 Localização"},
+                {"id": "99", "label": "🔄 Reiniciar atendimento"},
+            ]
+        }
+    
 
 
 def fluxo_funeraria_orcamento(session, mensagem):
@@ -72,9 +76,9 @@ def fluxo_funeraria_orcamento(session, mensagem):
 
 {nome}, como podemos te ajudar?""",
             "botoes": [
+                {"id": "3", "label": "Falar com atendente"},
                 {"id": "1", "label": "Ver serviços e valores"},
                 {"id": "2", "label": "Conhecer estrutura"},
-                {"id": "3", "label": "Falar com atendente"},
                 {"id": "0", "label": "Voltar"},
                 {"id": "00", "label": "Menu principal"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},

@@ -60,14 +60,14 @@ def fluxo_floricultura(session, mensagem):
             "tipo": "botoes",
             "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
-                {"id": "1", "label": "⚰️ Serviços funerários"},
+                {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "1", "label": "🕊️ Serviços Imediatos"},
                 {"id": "2", "label": "🛡️ Planos"},
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "💼 Financeiro / Administrativo"},
                 {"id": "5", "label": "🌷 Floricultura"},
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
-                {"id": "8", "label": "👤 Falar com atendente"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
@@ -93,6 +93,7 @@ def fluxo_floricultura(session, mensagem):
                 msg = f"{nome}, o que mais você deseja?"
 
             botoes = [
+                {"id": "9", "label": "Falar com atendente"},
                 {"id": "1", "label": "🎁 Arranjos e Presentes"},
                 {"id": "2", "label": "🌸 Coroa padrão"},
                 {"id": "3", "label": "🌸 Coroa com rosas"},
@@ -108,7 +109,6 @@ def fluxo_floricultura(session, mensagem):
 
             botoes += [
                 {"id": "7", "label": "💡 Gráfica"},
-                {"id": "9", "label": "Falar com atendente"},
                 {"id": "00", "label": "Menu principal"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},
                 

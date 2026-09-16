@@ -75,14 +75,14 @@ def fluxo_planos_familiares(session, mensagem):
             "tipo": "botoes",
             "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
-                {"id": "1", "label": "⚰️ Serviços funerários"},
+                {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "1", "label": "🕊️ Serviços Imediatos"},
                 {"id": "2", "label": "🛡️ Planos"},
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "💼 Financeiro / Administrativo"},
                 {"id": "5", "label": "🌷 Floricultura"},
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
-                {"id": "8", "label": "👤 Falar com atendente"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
@@ -103,12 +103,12 @@ def fluxo_planos_familiares(session, mensagem):
 
 {nome}, escolha uma opção:""",
                 [
+                    ("9", "Falar com atendente"),
                     ("1", "Ver planos disponíveis"),
                     ("2", "Contrato Futuro"),
                     ("3", "Abertura de Sinistro"),
                     ("4", "🕊️ Sou cliente"),
                     ("6", "🧾 Desconto com parceiros"),
-                    ("9", "Falar com atendente"),
                     ("00", "Voltar ao menu"),
                     ("99", "🔄 Reiniciar atendimento"),
                 ]

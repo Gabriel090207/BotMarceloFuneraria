@@ -42,14 +42,14 @@ def fluxo_financeiro(session, mensagem):
             "tipo": "botoes",
             "mensagem": "🕊️ Voltamos ao menu principal.\n\nEscolha uma opção:",
             "botoes": [
-                {"id": "1", "label": "⚰️ Serviços funerários"},
+                {"id": "8", "label": "👤 Falar com atendente"},
+                {"id": "1", "label": "🕊️ Serviços Imediatos"},
                 {"id": "2", "label": "🛡️ Planos"},
                 {"id": "3", "label": "🗃️ Convênios"},
                 {"id": "4", "label": "💼 Financeiro / Administrativo"},
                 {"id": "5", "label": "🌷 Floricultura"},
                 {"id": "6", "label": "🏢 Conhecer estrutura"},
                 {"id": "7", "label": "📍 Localização"},
-                {"id": "8", "label": "👤 Falar com atendente"},
                 {"id": "99", "label": "🔄 Reiniciar atendimento"},
             ]
         }
@@ -115,12 +115,12 @@ https://wa.me/5592995131313
             return _menu(
                 "📄 Assunto sobre Planos:",
                 [
+                    ("9", "Falar com atendente"),
                     ("1", "Segunda via mensalidade"),
                     ("2", "Declaração anual de quitação"),
                     ("3", "Solicitar boleto / link"),
                     ("4", "Verificar situação do plano"),
                     ("5", "Outras solicitações"),
-                    ("9", "Falar com atendente"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
                     ("99", "🔄 Reiniciar atendimento"),
@@ -135,11 +135,11 @@ https://wa.me/5592995131313
             return _menu(
                 "🏢 Assunto sobre Funerária:",
                 [
+                    ("9", "Falar com atendente"),
                     ("1", "Nota fiscal"),
                     ("2", "Segunda via recibo"),
                     ("3", "Dúvidas sobre pagamento"),
                     ("4", "Outras solicitações"),
-                    ("9", "Falar com atendente"),
                     ("0", "Voltar"),
                     ("00", "Menu principal"),
                     ("99", "🔄 Reiniciar atendimento"),
