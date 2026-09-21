@@ -11,13 +11,13 @@ def fluxo_floricultura(session, mensagem):
     produtos = {
         "2": {
             "nome": "🌸 Coroa de flores naturais do campo",
-            "preco": "R$ 350,00",
+            "preco": "R$ 400,00",
             "descricao": "Modelo padrão.",
             "imagem": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/floricultura%2Fcoroa_padrao.png?alt=media&token=f14263ac-c37b-46d3-8e28-fc8e5233dbb3"
         },
         "3": {
             "nome": "🌸 Coroa de flores naturais com 6 rosas",
-            "preco": "R$ 400,00",
+            "preco": "R$ 450,00",
             "descricao": "Modelo especial.",
             "imagem": "https://firebasestorage.googleapis.com/v0/b/bot-marcelofloricultura.firebasestorage.app/o/floricultura%2Fcoroa_rosas.png?alt=media&token=8801a471-b2a7-4a94-ad22-ab5c4183c35c"
         },

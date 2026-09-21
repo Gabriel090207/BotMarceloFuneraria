@@ -964,6 +964,7 @@ Para outras necessidades, consulte nossa equipe."""
                 "telefone": session.get("numero"),
                 "nome": session.get("nome"),
                 "status": "aberto",
+                "atendimento_transferido": False,
                 "criado_em": datetime.now().isoformat()
             })
 
