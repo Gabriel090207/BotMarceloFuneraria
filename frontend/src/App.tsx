@@ -4,6 +4,9 @@ import ScrollToTop from "./components/ScrollToTop"
 
 import AdminLayout from "./layout/AdminLayout"
 import ProtectedRoute from "./components/ProtectedRoute"
+import AdminRoute from "./components/AdminRoute"
+import NumerosInternos from "./pages/NumerosInternos"
+import NovoNumeroInterno from "./pages/NovoNumeroInterno"
 
 import Login from "./pages/Login"
 
@@ -58,6 +61,8 @@ export default function App(){
 
           {/* CONFIGURAÇÕES */}
           <Route path="configuracoes" element={<Configuracoes />} />
+          <Route path="numeros-internos" element={<AdminRoute><NumerosInternos /></AdminRoute>} />
+          <Route path="numeros-internos/novo" element={<AdminRoute><NovoNumeroInterno /></AdminRoute>} />
 
         </Route>
 

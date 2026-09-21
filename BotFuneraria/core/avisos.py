@@ -1,4 +1,5 @@
 from integracoes.zapi import enviar_texto
+from core.notificacoes import criar_notificacao
 
 NUMERO_AVISOS = "5592995131313"
 NUMERO_PLANTONISTA = "5592995131313"
@@ -55,85 +56,50 @@ def label_porte(valor):
 # =========================
 # AVISOS
 # =========================
-def aviso_funeraria(nome, telefone, dados, servico=None):
-    linhas = [
-        f"👤 Nome: {nome or '-'}",
-        f"📞 Telefone: {telefone or '-'}",
-    ]
-
-    if dados.get("velorio"):
-        linhas.append(f"🕯️ Velório: {label_velorio(dados.get('velorio'))}")
-
-    if dados.get("local_velorio"):
-        linhas.append(f"🏛️ Local do velório: {label_local_velorio(dados.get('local_velorio'))}")
-
-    if dados.get("endereco_velorio"):
-        linhas.append(f"📍 Endereço do velório: {dados.get('endereco_velorio')}")
-
+def aviso_funeraria(nome, telefone, dados, servico=None, *, pedido_id):
+    snapshot = {}
+    if servico and servico.get("nome"):
+        snapshot["servico_nome"] = servico["nome"]
     if dados.get("data_velorio"):
-        linhas.append(f"📅 Data do velório: {dados.get('data_velorio')}")
+        snapshot["data_velorio"] = dados["data_velorio"]
 
-    if dados.get("local_corpo"):
-        linhas.append(f"📍 Local do ente querido: {label_local_corpo(dados.get('local_corpo'))}")
+    return criar_notificacao(
+        tipo="funeraria_resumo_confirmado",
+        titulo="Atendimento funerário confirmado",
+        telefone_cliente=telefone,
+        nome_cliente=nome,
+        origem="Serviços funerários",
+        pedido_id=pedido_id,
+        dados=snapshot,
+    )
 
-    if dados.get("hospital_nome"):
-        linhas.append(f"🏥 Hospital: {dados.get('hospital_nome')}")
-
-    if dados.get("endereco_local_corpo"):
-        linhas.append(f"📌 Endereço atual: {dados.get('endereco_local_corpo')}")
-
-    if dados.get("liberacao_hospital"):
-        linhas.append(f"🧾 Liberação no necrotério: {dados.get('liberacao_hospital')}")
-
-    if dados.get("porte"):
-        linhas.append(f"⚖️ Porte: {label_porte(dados.get('porte'))}")
-
-    if dados.get("destino"):
-        linhas.append(f"⚱️ Destino: {dados.get('destino')}")
-
-    if dados.get("cemiterio"):
-        linhas.append(f"🪦 Cemitério: {dados.get('cemiterio')}")
-
-    if dados.get("despedida"):
-        linhas.append(f"🙏 Despedida: {dados.get('despedida')}")
-
-    if servico:
-        if servico.get("nome"):
-            linhas.append(f"🕊️ Serviço: {servico.get('nome')}")
-
-        if servico.get("preco"):
-            linhas.append(f"💰 Valor: {servico.get('preco')}")
-
-    return enviar_aviso_interno("Novo atendimento funerário", linhas)
 
 def aviso_orcamento(nome, telefone, dados):
     servico = dados.get("servico", {})
 
-    linhas = [
-        f"👤 Nome: {dados.get('nome') or nome or '-'}",
-        f"📞 Telefone: {telefone or '-'}",
-        f"🏢 Interesse: {servico.get('nome', '-')}",
-        f"🏙️ Cidade: {dados.get('cidade', '-')}",
-        f"📅 Data: {dados.get('data', '-')}",
-    ]
-
-    return enviar_aviso_interno("Novo orçamento funerário", linhas)
+    return criar_notificacao(
+        tipo="orcamento_funerario_solicitado",
+        titulo="Orçamento funerário solicitado",
+        telefone_cliente=telefone,
+        nome_cliente=dados.get("nome") or nome,
+        origem="Orçamento funerário",
+        dados={
+            "servico": servico.get("nome"),
+            "cidade": dados.get("cidade"),
+            "data": dados.get("data"),
+        },
+    )
 
 
 def aviso_floricultura(nome, telefone, carrinho):
-    linhas = [
-        f"👤 Nome: {nome or '-'}",
-        f"📞 Telefone: {telefone or '-'}",
-        "🌸 Pedido:",
-    ]
-
-    if carrinho:
-        for item in carrinho:
-            linhas.append(f"• {item}")
-    else:
-        linhas.append("• Sem itens informados")
-
-    return enviar_aviso_interno("Novo pedido floricultura", linhas)
+    return criar_notificacao(
+        tipo="floricultura_pedido_solicitado",
+        titulo="Pedido de floricultura",
+        telefone_cliente=telefone,
+        nome_cliente=nome,
+        origem="Floricultura",
+        dados={"itens": [{"nome": item} for item in (carrinho or [])]},
+    )
 
 
 def aviso_planos(nome, telefone, dados=None):
@@ -165,10 +131,10 @@ def aviso_financeiro(nome, telefone, dados=None):
 
 
 def aviso_atendente(nome, telefone, origem):
-    linhas = [
-        f"👤 Nome: {nome or '-'}",
-        f"📞 Telefone: {telefone or '-'}",
-        f"📍 Origem: {origem}",
-    ]
-
-    return enviar_aviso_interno("Cliente pediu atendente", linhas)
+    return criar_notificacao(
+        tipo="atendimento_humano_solicitado",
+        titulo="Atendimento humano solicitado",
+        telefone_cliente=telefone,
+        nome_cliente=nome,
+        origem=origem,
+    )

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import {
   FiBox,
+  FiPhone,
   FiSettings
 } from "react-icons/fi"
 
@@ -64,6 +65,13 @@ export default function Sidebar(){
           </Link>
 
          
+
+          {role === "admin" && (
+            <Link to="/numeros-internos" onClick={()=>setOpen(false)}>
+              <FiPhone />
+              Números internos
+            </Link>
+          )}
 
           {role === "admin" && (
             <Link to="/configuracoes" onClick={()=>setOpen(false)}>

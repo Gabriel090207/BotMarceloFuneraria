@@ -408,22 +408,8 @@ def fluxo_funeraria(session, mensagem):
             }
 
         if etapa == "pagamento":
-            total, sinal = calcular_pagamento()
-
-            salvar_pedido({
-                "servico": session.get("servico"),
-                "dados": session.get("dados", {}),
-                "pagamento": {
-                    "total": total,
-                    "sinal": sinal
-                },
-                "telefone": session.get("numero"),
-                "nome": session.get("nome"),
-                "status": "aberto",
-                "criado_em": datetime.now().isoformat()
-            })
-
-           
+            total = session["pagamento"]["total"]
+            sinal = session["pagamento"]["sinal"]
 
             return [
             {
@@ -546,7 +532,7 @@ https://wa.me/5592995131313
 
     if session["etapa"] == "despedida_sem_velorio":
 
-        texto = """⚰️ *SEM VELÓRIO*
+        texto = """🕊️ *SEM VELÓRIO*
 
 💰 Valor: R$ 2.000,00
 💳 Em até 10x no cartão de crédito sem juros
@@ -967,12 +953,33 @@ Para outras necessidades, consulte nossa equipe."""
 
         if mensagem == "1":
 
-            aviso_funeraria(
-                session.get("nome"),
-                session.get("numero"),
-                session.get("dados", {}),
-                session.get("servico")
-            )
+            total, sinal = calcular_pagamento()
+            pedido_id = salvar_pedido({
+                "servico": session.get("servico"),
+                "dados": session.get("dados", {}),
+                "pagamento": {
+                    "total": total,
+                    "sinal": sinal
+                },
+                "telefone": session.get("numero"),
+                "nome": session.get("nome"),
+                "status": "aberto",
+                "criado_em": datetime.now().isoformat()
+            })
+
+            try:
+                aviso_funeraria(
+                    session.get("nome"),
+                    session.get("numero"),
+                    session.get("dados", {}),
+                    session.get("servico"),
+                    pedido_id=pedido_id,
+                )
+            except Exception as erro:
+                print(
+                    "Falha ao criar notificação do pedido:", pedido_id,
+                    "Tipo:", type(erro).__name__,
+                )
 
             ir_para("pagamento")
             return renderizar_etapa()

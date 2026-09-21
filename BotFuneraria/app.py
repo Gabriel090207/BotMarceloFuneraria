@@ -6,6 +6,7 @@ from datetime import datetime
 from core.bot import responder
 from integracoes.zapi import enviar_resposta
 from core.inatividade import iniciar_monitor
+from core.numeros_internos import eh_numero_interno
 
 load_dotenv()
 
@@ -51,6 +52,21 @@ async def webhook(request: Request):
 
         if not numero or not mensagem:
             print("⚠️ Ignorado: sem número ou mensagem")
+            return JSONResponse(content={"status": "ignorado"})
+
+        try:
+            numero_interno = eh_numero_interno(numero)
+        except Exception as erro:
+            print(
+                "❌ Falha na verificação de número interno; automação interrompida.",
+                "Tipo:", type(erro).__name__
+            )
+            return JSONResponse(
+                status_code=503,
+                content={"status": "indisponivel"}
+            )
+
+        if numero_interno:
             return JSONResponse(content={"status": "ignorado"})
 
         print(f"📲 {numero}: {mensagem}")

@@ -28,7 +28,8 @@ db = firestore.client()
 
 
 def salvar_pedido(dados):
-    db.collection("pedidos").add(dados)
+    _, referencia = db.collection("pedidos").add(dados)
+    return referencia.id
 
 
 def buscar_servicos_funerarios():

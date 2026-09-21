@@ -3,6 +3,7 @@ from threading import Thread
 
 from core.session import sessions
 from core.avisos import enviar_aviso_interno
+from core.numeros_internos import eh_numero_interno
 from integracoes.zapi import enviar_texto
 
 TEMPO_LIMITE = 180  # 3 minutos
@@ -48,6 +49,19 @@ def verificar_inatividade():
 
                 # evita aviso vazio
                 if not session.get("dados"):
+                    continue
+
+                try:
+                    numero_interno = eh_numero_interno(numero)
+                except Exception as erro:
+                    print(
+                        "❌ Falha na verificação de número interno no monitor; "
+                        "efeitos de inatividade ignorados para esta sessão.",
+                        "Tipo:", type(erro).__name__
+                    )
+                    continue
+
+                if numero_interno:
                     continue
 
                 linhas = gerar_resumo(session)

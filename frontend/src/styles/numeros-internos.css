@@ -1,0 +1,16 @@
+.numeros-internos header p { margin-top: 12px; }
+.numeros-internos .urnas-header { gap: 20px; flex-wrap: wrap; }
+.numeros-internos .urnas-table h2 { margin-bottom: 16px; }
+.numeros-tabela { overflow-x: auto; margin-top: 20px; }
+.numeros-internos table { min-width: 580px; }
+.numeros-internos td { overflow-wrap: anywhere; }
+.numeros-acoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.numeros-internos button:disabled { opacity: .6; cursor: not-allowed; }
+.numeros-internos [role="alert"] { color: #a31717; }
+.numeros-internos [role="status"] { color: #166534; }
+.numeros-internos .modal-confirm { max-width: calc(100vw - 32px); overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .numeros-internos .nova-urna-form, .numeros-internos .urnas-table { padding: 18px; }
+  .numeros-internos .nova-urna-grid { grid-template-columns: minmax(0, 1fr); }
+  .numeros-internos .nova-urna-field input { min-width: 0; }
+}
