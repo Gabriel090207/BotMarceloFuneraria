@@ -285,7 +285,11 @@ Centro - Manaus/AM
 CEP 69.020-060
 
 🗺️ Abra no mapa:
-https://maps.app.goo.gl/aMejMLkjo19JTk1Z7?g_st=aw""",
+https://maps.app.goo.gl/aMejMLkjo19JTk1Z7?g_st=aw
+
+📌 *Unidade Planalto*
+Av. Constantinopla, 14 - Planalto
+Em frente ao banheiro do SESC""",
                 "botoes": [
                     {"id": "0", "label": "Menu Principal"},
                 ]
