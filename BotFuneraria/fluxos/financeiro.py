@@ -56,6 +56,12 @@ def fluxo_financeiro(session, mensagem):
 
     def finalizar():
 
+        link_plantonista = (
+            "https://wa.me/5592995091515"
+            if session["dados"].get("assunto") == "Segunda via mensalidade"
+            else "https://wa.me/5592995131313"
+        )
+
         aviso_financeiro(
             session.get("nome"),
             session.get("numero"),
@@ -72,7 +78,7 @@ def fluxo_financeiro(session, mensagem):
 📝 Descrição: {session["dados"].get("descricao", "Não informada")}
 
 📲 Fale agora com nosso plantonista:
-https://wa.me/5592995131313
+{link_plantonista}
 
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
