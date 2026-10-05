@@ -581,7 +581,7 @@ Caso queira solicitar para dependente, existe adicional.""",
 👤 Titular: {session["dados"]["nome_titular_carteirinha"]}
 
 📲 Fale agora com nosso plantonista:
-https://wa.me/5592995131313
+https://wa.me/5592995091515
 
 ℹ️ As informações já foram enviadas para nossa equipe.""",
             "botoes": [
